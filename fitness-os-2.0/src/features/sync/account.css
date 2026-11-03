@@ -1,0 +1,62 @@
+.account-shell { max-width: 1140px; margin: 10px auto 30px; }
+.account-heading { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; margin: 0 0 27px; }
+.account-heading h1 { font-size: clamp(25px, 3vw, 36px); font-weight: 600; line-height: 1.35; letter-spacing: -1px; }
+.account-heading p { margin-top: 12px; color: var(--muted-foreground); font-size: 12px; }
+.account-connection { display: inline-flex; align-items: center; flex-shrink: 0; gap: 9px; border: 1px solid var(--border); padding: 9px 12px; border-radius: 30px; font-size: 10px; color: var(--muted-foreground); }
+.account-connection svg { color: var(--accent); }
+.account-tabs { display: flex; gap: 5px; padding: 6px; border: 1px solid var(--border); background: var(--surface); border-radius: 9px; margin-bottom: 24px; overflow-x: auto; }
+.account-tabs a { display: flex; align-items: center; justify-content: center; gap: 9px; flex: 1; white-space: nowrap; min-height: 45px; padding: 10px 18px; color: var(--muted-foreground); border-radius: 5px; font-size: 12px; }
+.account-tabs a:hover, .account-tabs a[aria-current="page"] { background: var(--surface-raised); color: var(--accent); }
+.account-grid { display: grid; grid-template-columns: 1.15fr 1fr; gap: 20px; align-items: start; }
+.account-panel { border: 1px solid var(--border); background: var(--surface); padding: 28px; border-radius: 9px; min-width: 0; }
+.account-panel + .account-panel { margin-top: 20px; }
+.account-grid > .account-panel + .account-panel { margin-top: 0; }
+.account-panel h2 { font-size: 19px; font-weight: 550; letter-spacing: -.3px; }
+.account-panel .account-description { color: var(--muted-foreground); font-size: 12px; line-height: 1.85; margin: 9px 0 22px; }
+.account-panel h3 { font-size: 14px; font-weight: 500; }
+.account-form { display: grid; gap: 18px; }
+.account-form label, .account-field { display: grid; gap: 8px; font-size: 12px; color: var(--muted-foreground); }
+.account-form input, .account-form select, .account-field input { width: 100%; min-height: 45px; padding: 11px 13px; background: var(--background); color: var(--foreground); border: 1px solid var(--border); border-radius: 5px; }
+.account-form input:focus, .account-form select:focus { border-color: var(--accent); }
+.account-form .account-check { display: flex; align-items: center; gap: 10px; line-height: 1.7; }
+.account-form input[type="checkbox"], .account-check input { width: 16px; height: 16px; min-height: 16px; accent-color: var(--accent); }
+.account-form small { font-size: 10px; line-height: 1.7; color: var(--faint-foreground); }
+.account-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 20px; }
+.account-form .account-actions { margin-top: 2px; }
+.account-actions .button { white-space: normal; }
+.account-notice { margin-top: 15px; font-size: 12px; padding: 13px 15px; border: 1px solid var(--border); border-radius: 5px; color: var(--accent); line-height: 1.8; overflow-wrap: anywhere; }
+.account-error { color: #e8a6a6; border-color: #b664643e; }
+[data-theme="light"] .account-error { color: #923e3e; }
+.account-gate { display: flex; flex-direction: column; gap: 16px; align-items: flex-start; padding: 40px; }
+.account-gate > svg { color: var(--accent); }
+.account-gate p { max-width: 620px; font-size: 12px; color: var(--muted-foreground); line-height: 1.9; }
+.account-info { display: grid; gap: 16px; margin: 24px 0 0; }
+.account-info div { display: grid; gap: 5px; }
+.account-info dt { color: var(--muted-foreground); font-size: 11px; }
+.account-info dd { margin: 0; font-size: 12px; overflow-wrap: anywhere; }
+.account-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 15px; margin: 24px 0; }
+.account-metrics > div { border-left: 1px solid var(--border); padding: 8px 18px; }
+.account-metrics strong { display: block; font-size: 23px; font-weight: 500; }
+.account-metrics span { color: var(--muted-foreground); font-size: 11px; }
+.account-list { list-style: none; margin: 18px 0 0; padding: 0; }
+.account-list li { padding: 18px 0; border-top: 1px solid var(--border-subtle); font-size: 12px; overflow-wrap: anywhere; }
+.account-list li > p { font-size: 11px; color: var(--muted-foreground); margin-top: 7px; }
+.account-queue-title, .account-media-title { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; align-items: center; }
+.account-pill { padding: 3px 8px; font-size: 10px; border: 1px solid var(--border); border-radius: 30px; color: var(--accent); }
+.account-conflict { padding: 14px; margin-top: 12px; background: var(--background); border-radius: 5px; }
+.account-conflict pre { white-space: pre-wrap; font-size: 11px; max-height: 180px; overflow: auto; }
+.account-conflict summary { cursor: pointer; color: var(--muted-foreground); font-size: 11px; }
+.account-empty { color: var(--muted-foreground); font-size: 12px; padding: 24px 0 0; line-height: 1.85; }
+.account-danger { border-color: #a65f5f55; }
+.account-danger .account-description { margin-bottom: 20px; }
+.account-danger-button { background: #b35151; color: #fff; border-color: #b35151; }
+.account-danger-button:hover { background: #a14646; }
+.account-delete-step { border-top: 1px solid var(--border); margin-top: 20px; padding-top: 20px; }
+.account-consent-row { display: flex; align-items: flex-start; gap: 10px; margin: 15px 0; font-size: 12px; color: var(--muted-foreground); line-height: 1.8; }
+.account-consent-row input { margin-top: 4px; accent-color: var(--accent); }
+.account-consent-row strong { display: block; color: var(--foreground); font-weight: 500; }
+.account-consent-row small { display: block; font-size: 11px; }
+.account-mini-copy { color: var(--faint-foreground); font-size: 10px; line-height: 1.85; margin-top: 16px; }
+.account-media-title code { font-size: 10px; color: var(--muted-foreground); overflow-wrap: anywhere; }
+@media (max-width: 900px) { .account-grid { grid-template-columns: 1fr; } .account-grid > .account-panel + .account-panel { margin-top: 0; } }
+@media (max-width: 600px) { .account-shell { margin-top: 2px; } .account-heading { flex-direction: column; align-items: flex-start; gap: 17px; } .account-tabs { gap: 2px; padding: 4px; } .account-tabs a { padding: 8px 10px; font-size: 11px; min-height: 42px; gap: 6px; } .account-tabs a svg { display: none; } .account-panel { padding: 22px 18px; } .account-panel h2 { font-size: 18px; } .account-metrics { gap: 5px; } .account-metrics > div { padding: 7px 10px; } .account-metrics strong { font-size: 19px; } .account-form input, .account-form select { font-size: 16px; } }

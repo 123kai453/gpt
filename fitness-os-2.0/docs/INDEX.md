@@ -66,3 +66,15 @@
 - [发布说明与历史状态解释](../delivery/phase1-1/PUBLISH_NOTES.md)
 - [GitHub可直接查看的七组截图](../delivery/phase1-1/SCREENSHOTS.md)
 - [PHASE 1.1交付时完整实施记录](../delivery/phase1-1/PHASE1_IMPLEMENTATION_REPORT.md)
+
+## PHASE 2 账户与云同步
+
+当前 Cloud 工作目录：`/workspace/fitness-os-phase2/fitness-os-2.0`。上方 PHASE 0/1 审阅结论是历史记录，以各阶段最新验证报告区分当前状态。原始 17 份档案保持不变。
+
+- [正式执行指令](PHASE2_EXECUTION_PROMPT.txt)
+- [实施报告](PHASE2_IMPLEMENTATION_REPORT.md)
+- [数据库结构与后续扩展](DATABASE_SCHEMA.md)
+- [安全与 RLS](SECURITY_AND_RLS_REPORT.md)
+- [同步架构](SYNC_ARCHITECTURE.md)
+- [环境配置](ENV_SETUP.md)
+- [实际测试报告](TEST_REPORT.md)

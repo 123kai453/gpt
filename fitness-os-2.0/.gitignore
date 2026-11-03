@@ -10,3 +10,7 @@ playwright-report/
 !documentation-originals/**/.env.example
 *.tsbuildinfo
 .DS_Store
+# Supabase local runtime and account export artifacts (never version private data).
+supabase/.temp/
+supabase/.branches/
+.private-test-artifacts/

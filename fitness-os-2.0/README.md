@@ -1,16 +1,16 @@
 # FITNESS OS 2.0
 
-当前工作副本：**PHASE 1.1 Premium Visual Redesign**。[视觉报告](docs/PHASE1_1_VISUAL_REPORT.md) · [素材来源](docs/VISUAL_ASSETS.md) · [动效规范](docs/MOTION_DESIGN.md)。保留43模块、PWA与全部原始需求；本分支是用户授权保存的完整PHASE 1.1交付版本。
+当前分支：`feature/phase2-cloud-foundation`，基于 PHASE 1.1 稳定提交 `8d0c462`。账户认证、资料/偏好同步、离线队列和私有媒体基础已加入；实际验证与尚未完成的云端部署见 [PHASE 2 实施报告](docs/PHASE2_IMPLEMENTATION_REPORT.md)。未合并 main。
 
-交付分支：`delivery/fitness-os-phase1-1`。入口：[七组前后截图](delivery/phase1-1/SCREENSHOTS.md) · [Windows/手机运行](docs/WINDOWS_LOCAL_RUN.md) · [发布说明](delivery/phase1-1/PUBLISH_NOTES.md)。main和原有报告保留不变。
+PHASE 1.1 稳定版本保留在 `delivery/fitness-os-phase1-1`：[视觉报告](docs/PHASE1_1_VISUAL_REPORT.md) · [素材来源](docs/VISUAL_ASSETS.md) · [七组前后截图](delivery/phase1-1/SCREENSHOTS.md)。17 份原始文档、43 个模块、品牌视觉与 PWA 保留。
 
-响应式运动与营养产品的 PHASE 1 工程：原创 Dashboard、完整模块入口、深浅主题和基础 PWA。业务数据、认证、云同步和真实设备尚未接入。
+配置与运行：[ENV_SETUP](docs/ENV_SETUP.md)。缺少 Supabase 配置时可以浏览公开界面，认证和账户操作会明确显示不可用。运动、营养、AI、GPS、真实手表连接属于后续阶段。
 
 ## 开发环境
 
-- 工作目录：`/workspace/fitness-os-2.0`。
+- Cloud 工作目录：`/workspace/fitness-os-phase2/fitness-os-2.0`；本机使用 clone 后的 `fitness-os-2.0/` 子目录。
 - Node.js 24（本次环境24.19.0），pnpm 11.25.0；版本固定于 `.node-version` 和 `package.json`。
-- GitHub仓库：`123kai453/gpt`；本子项目位于仓库的 `fitness-os-2.0/`。请clone `delivery/fitness-os-phase1-1`，而不是main；原Cloud副本未配置remote的记录属于历史状态。
+- GitHub仓库：`123kai453/gpt`；本子项目位于仓库的 `fitness-os-2.0/`。PHASE 2 请 clone `feature/phase2-cloud-foundation`；main 和 PHASE 1.1 交付分支保留。
 - 原 `/workspace/gpt` 项目不作为本项目代码目录，不修改其文件或分支。不需要创建 worktree。
 
 ## 安装与启动
@@ -19,6 +19,7 @@
 
 ```sh
 pnpm install --frozen-lockfile
+# 复制 .env.example 为 .env.local，填写自己的配置后启动。
 pnpm dev
 ```
 
@@ -52,12 +53,12 @@ pnpm需要能访问依赖存储；若Cloud沙箱提示其SQLite store无写权�
 
 - Dashboard使用真实空状态，没有编造训练、心率、体重、热量或AI分析。
 - 产品导航覆盖运动、营养、AI、数据、设备、导入、社区和管理模块；后续业务页面显示所属PHASE及尚未开放的状态。
-- 默认深色，浅色可选；主题保存在当前浏览器，不是账户云同步。
+- 默认深色，浅色可选；顶部主题按钮保存当前浏览器偏好，账户资料页可显式保存并同步账户主题。
 - PWA在生产模式和安全上下文启用。开发模式不注册离线缓存。
 - Service Worker只缓存公开静态资源和通用离线外壳，不缓存页面、健康数据或鉴权API。
-- 离线刷新显示通用外壳，不等于已实现离线业务记录。更新由用户确认后激活。
+- 离线刷新显示通用外壳；已打开且登录的资料页可将账户修改保存在 IndexedDB 队列。离线不缓存私人 HTML，恢复网络后自动同步。更新由用户确认后激活。
 - 安装入口按浏览器实际能力显示；iPhone Safari、真实安装和原生设备仍需真机验证。
-- 无需填写API Key即可运行PHASE 1。没有数据库迁移、收费API、真实设备、GPS或复杂3D实现。
+- 无需配置即可浏览公开界面。真实账户需要 Supabase 配置与迁移；没有收费 AI API、真实设备、GPS 或复杂 3D 实现。
 
 ## 文档与路线
 

@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { Download, RefreshCw, WifiOff, X } from "lucide-react";
+import { useAuth } from "@/features/auth/auth-provider";
+import { useSync } from "@/features/sync/sync-provider";
 
 type InstallEvent = Event & {
   prompt: () => Promise<void>;
@@ -18,6 +20,8 @@ function readEnvironment(): WorkerStatus | "supported" {
 function serverEnvironment(): WorkerStatus | "supported" { return "checking"; }
 
 export function PwaControls() {
+  const { user } = useAuth();
+  const sync = useSync();
   const environment = useSyncExternalStore(subscribeEnvironment, readEnvironment, serverEnvironment);
   const [online, setOnline] = useState(true);
   const [open, setOpen] = useState(false);
@@ -165,7 +169,7 @@ export function PwaControls() {
       {!online && (
         <div className="pwa-offline" role="status">
           <WifiOff size={15} aria-hidden="true" />
-          <span>当前离线 · 业务记录与云同步尚未启用</span>
+          <span>{user ? `当前离线 · 账户待同步 ${sync.pending.length} 项，请保留此页面` : "当前离线 · 业务记录与云同步尚未启用"}</span>
         </div>
       )}
       <div className={`pwa-position${online ? "" : " is-offline"}`}>

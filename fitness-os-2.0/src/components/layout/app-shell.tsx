@@ -7,6 +7,7 @@ import { motion, useReducedMotion } from "motion/react";
 import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "./theme-provider";
+import { AccountStatus } from "./account-status";
 
 const nav: { href: string; label: string; icon: LucideIcon; section?: string }[] = [
   { href: "/", label: "总览", icon: House },
@@ -42,17 +43,18 @@ export function AppShell({ children }: { children: ReactNode }) {
       <div className="sidebar-bottom">
         <Link href="/explore" className="phase-note"><span className="phase-note-icon"><LayoutGrid size={18} /></span><div><strong>你的健康系统，正在生长</strong><span>查看全部模块与开发阶段</span></div><ArrowUpRight size={15} /></Link>
         <Link href="/settings" className={`nav-item ${isActive("/settings") ? "is-active" : ""}`}><Settings2 size={18} /><span>设置与偏好</span></Link>
-        <div className="sidebar-status"><span className="status-dot" /><span>界面基础已就绪</span><span className="mono">PHASE 1.1</span></div>
+        <Link href="/account/profile" className="nav-item"><HeartPulse size={18} /><span>我的账户与同步</span></Link>
+        <div className="sidebar-status"><span className="status-dot" /><span>账户与同步基础</span><span className="mono">PHASE 2</span></div>
       </div>
     </aside>
     <div className="app-body">
       <header className="topbar">
         <div className="desktop-breadcrumb"><span>FITNESS OS</span><ChevronRight size={13} /><strong>{activeLabel}</strong></div>
         <div className="mobile-brand"><Brand compact /></div>
-        <div className="topbar-actions"><span className="local-mode"><span />尚未连接云端</span><Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="切换主题" title={theme === "dark" ? "切换到浅色模式" : "切换到深色模式"}>{theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}</Button><Link href="/explore" className="topbar-explore" aria-label="浏览全部模块"><LayoutGrid size={17} /></Link></div>
+        <div className="topbar-actions"><AccountStatus /><Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="切换主题" title={theme === "dark" ? "切换到浅色模式" : "切换到深色模式"}>{theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}</Button><Link href="/explore" className="topbar-explore" aria-label="浏览全部模块"><LayoutGrid size={17} /></Link></div>
       </header>
       <motion.main key={pathname} id="main-content" className="main-content" tabIndex={-1} initial={reducedMotion ? false : { opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: reducedMotion ? 0 : .22 }}>{children}</motion.main>
-      <footer className="app-footer"><span>FITNESS OS <span className="muted">/</span> 为长期进步而设计</span><span>PHASE 1.1 <span className="footer-divider">·</span> 品牌与界面进化</span></footer>
+      <footer className="app-footer"><span>FITNESS OS <span className="muted">/</span> 为长期进步而设计</span><span>PHASE 2 <span className="footer-divider">·</span> 账户与同步基础</span></footer>
     </div>
     <nav className="mobile-bottom-nav" aria-label="手机导航">
       {[{ href: "/", label: "总览", icon: House }, { href: "/sports", label: "运动", icon: Dumbbell }, { href: "/nutrition", label: "营养", icon: Utensils }, { href: "/ai", label: "AI 教练", icon: Sparkles }, { href: "/explore", label: "全部", icon: LayoutGrid }].map(({ href, label, icon: Icon }) => <Link key={href} href={href} className={isActive(href) ? "is-active" : ""} aria-current={isActive(href) ? "page" : undefined}><Icon size={20} /><span>{label}</span></Link>)}
