@@ -1,0 +1,213 @@
+# PHASE 1实施报告
+
+日期：2026-11-03（Asia/Shanghai）。本报告记录实际工程、界面与最终验证结果。未进入PHASE 2。
+
+## 1. 范围与正式决定
+
+用户明确授权执行PHASE 1，确认Cloud开发、PHASE 0–10、响应式Web/PWA、Next/React/TS/Tailwind及P2 Supabase路线；华为H1–H5作为候选保留。详情及旧编号映射见PROJECT_DECISIONS.md。原17份需求档案不改，工作MASTER只更新正式阶段块及当前授权说明。
+
+当前目录 `/workspace/fitness-os-2.0` 原为独立文档根，不是Git仓库。已初始化本地main，未设置远程；未推送GitHub。原gpt项目保持分离，不建立worktree，不覆盖其文件。
+
+## 2. 实际实现
+
+- Next.js App Router模块化工程、pnpm唯一锁文件和精确版本。
+- 原创品牌、深浅主题token、桌面侧栏、手机底部导航、键盘焦点与减少动效。
+- Dashboard欢迎、运动/营养/身体概览空态、运动入口、最近活动空态、AI/设备说明及快捷入口；没有假健康数值、图表或AI建议。
+- 运动、营养、AI、数据、设备、导入、社区、设置和管理入口及阶段说明；自主计划和各运动专属路线保留。
+- 主题切换保存到当前浏览器，存储不可用时保留本页切换；不称为用户云同步。
+- 原创图标和装饰SVG，不使用版权不明照片；SVG不承载伪造训练测量。
+- PWA Manifest、生产Service Worker、公开静态资源缓存、通用离线外壳、网络状态、安装能力说明、等待更新与用户确认刷新。
+- 404、加载和错误恢复界面。
+
+## 3. PWA与隐私边界
+
+Service Worker仅在生产模式且浏览器具备安全上下文和支持时注册；开发模式显示对应状态。不缓存业务页面、私人健康数据、鉴权API、POST或跨域内容。离线刷新显示通用公共外壳，不代表离线业务记录完成。浏览器安装提示依实际beforeinstallprompt/安装状态；Safari说明不代表真机安装已验证。首次安装不自动skipWaiting，更新等待用户确认。
+
+## 4. 实际文件
+
+以下为记录时的主要新增源码、资产、测试和配置，生成文件不纳入源码清单：
+
+- `.env.example`
+- `.gitignore`
+- `.node-version`
+- `.npmrc`
+- `components.json`
+- `eslint.config.mjs`
+- `next-env.d.ts`
+- `next.config.ts`
+- `scripts/check-docs.mjs`
+- `package.json`
+- `playwright.config.ts`
+- `pnpm-lock.yaml`
+- `pnpm-workspace.yaml`
+- `postcss.config.mjs`
+- `public/icons/apple-touch-icon.png`
+- `public/icons/icon-192.png`
+- `public/icons/icon-512.png`
+- `public/icons/mark.svg`
+- `public/icons/maskable-512.png`
+- `public/manifest.json`
+- `public/offline.html`
+- `public/sw.js`
+- `src/app/[...slug]/page.tsx`
+- `src/app/error.tsx`
+- `src/app/globals.css`
+- `src/app/layout.tsx`
+- `src/app/loading.tsx`
+- `src/app/not-found.tsx`
+- `src/app/page.tsx`
+- `src/components/common/phase-badge.tsx`
+- `src/components/common/theme-choice.tsx`
+- `src/components/layout/app-shell.tsx`
+- `src/components/layout/theme-provider.tsx`
+- `src/components/pwa/pwa-controls.tsx`
+- `src/components/ui/button.tsx`
+- `src/components/ui/utils.ts`
+- `src/features/dashboard/dashboard.tsx`
+- `src/features/dashboard/movement-art.tsx`
+- `src/lib/navigation.ts`
+- `src/lib/utils.ts`
+- `tests/e2e/phase1.spec.ts`
+- `tests/unit/navigation.test.ts`
+- `tests/unit/service-worker.test.ts`
+- `tsconfig.json`
+- `vitest.config.mts`
+
+工作文档新增/更新：根README、FEATURES、FEATURES_STATUS、CHANGELOG；docs/PROJECT_DECISIONS、MASTER_PROMPT、INDEX及本报告。完整最终文件状态可由Git列出；所有原始档案保留。
+
+## 5. 依赖版本
+
+先核对Node engine与React peer要求，再安装精确版本；当前Node24.19.0、pnpm11.25.0。下表是记录时package.json中的实际声明，最终以锁文件与检查输出为准：
+
+| 依赖 | 固定版本 | 类型 |
+| --- | --- | --- |
+| @radix-ui/react-slot | 1.5.0 | dependencies |
+| class-variance-authority | 0.7.1 | dependencies |
+| clsx | 2.1.1 | dependencies |
+| lucide-react | 1.67.0 | dependencies |
+| motion | 12.23.24 | dependencies |
+| next | 16.4.4 | dependencies |
+| react | 19.3.1 | dependencies |
+| react-dom | 19.3.1 | dependencies |
+| tailwind-merge | 3.7.0 | dependencies |
+| @playwright/test | 1.64.1 | devDependencies |
+| @tailwindcss/postcss | 4.3.4 | devDependencies |
+| @types/node | 24.10.1 | devDependencies |
+| @types/react | 19.2.2 | devDependencies |
+| @types/react-dom | 19.2.2 | devDependencies |
+| eslint | 9.39.1 | devDependencies |
+| eslint-config-next | 16.4.4 | devDependencies |
+| tailwindcss | 4.3.4 | devDependencies |
+| typescript | 5.9.3 | devDependencies |
+| vitest | 5.1.0 | devDependencies |
+
+shadcn/ui采用本地可维护组件源码与Radix Slot/CVA、components.json配置；不是安装一个不存在的统一shadcn运行时包。Motion只用于必要渐入并遵循减少动效。Next构建选择webpack模式、worker数2，以当前云资源执行完整生产构建。
+
+## 6. 执行命令与验证结果
+
+已执行的准备工作：检查当前目录与Git边界、17份原始hash/工作副本、Node/pnpm版本、官方npm依赖engine/peer查询、`git init -b main`、`pnpm install`。
+
+下列结果来自本次实际执行。浏览器本次最终完整运行9项全部通过，不用此前选择器失败替代最终结果：
+
+| 命令/检查 | 本文记录时状态 |
+| --- | --- |
+| pnpm install / pnpm install --frozen-lockfile | 首次安装及冻结锁文件重复安装均通过 |
+| pnpm lint | 首次发现命名/Effect规则问题，修复后整工程通过 |
+| pnpm typecheck | 整工程通过 |
+| pnpm test | 12项单元测试通过；浏览器测试另列 |
+| pnpm check:docs | 通过；17原始hash、工作文档、唯一pnpm锁文件及本地文档链接 |
+| pnpm build | webpack生产构建通过；含框架内部页面共生成46个静态页面 |
+| pnpm test:e2e 对应Playwright CLI | 本次最终完整9/9通过，56.0秒；实际调用 node node_modules/@playwright/test/cli.js test |
+| 桌面/移动截图与交互 | Chromium桌面深/浅主题、390/320移动布局通过；已目视检查桌面深浅及手机截图 |
+| Service Worker注册/离线/更新 | 通过；真实注册、缓存、断网刷新、等待更新、确认刷新及旧缓存清理 |
+| iPhone Safari真实安装、真实设备 | 未执行；待人工真机验证 |
+
+整工程最终lint、typecheck与单元测试均已执行。首轮E2E有1项离线标题选择器因换行空格不匹配失败，修正断言后首次交付完整7项通过；本次扩展复验9项通过；未改变应用行为来绕过断言。沙箱普通pnpm曾因全局store SQLite权限失败；使用平台批准权限完成安装/检查，未关闭TLS或依赖完整性验证。运行时错误恢复页面若没有实际触发，不记为异常恢复测试通过。
+
+## 7. 启动方式
+
+项目根执行 `pnpm install --frozen-lockfile`、`pnpm dev`。生产验证执行 `pnpm build` 后 `pnpm start`。端口3000，当前工具没有提供可验证的公网预览入口；监听端口并通过内部请求不等于浏览器端已经可访问。没有正式公网部署或公开网址。PWA应在生产模式验证。
+
+测试入口：`pnpm lint`、`pnpm typecheck`、`pnpm test`、`pnpm check:docs`、`pnpm test:e2e`。E2E前需build；有系统Chromium时使用它，也可指定PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH。
+
+## 8. 未实现、限制与费用
+
+工具维护风险：ESLint9.39.1安装时收到上游deprecated警告。目前为兼容Next lint插件而固定，最终lint通过，但不将其称为长期受支持最新版；后续应在插件兼容时升级并回归。
+
+未实现认证、RLS、正式数据库、云同步、离线业务队列、训练/营养CRUD、真实AI、OCR、GPS、手表同步、复杂3D或社区业务。导航和阶段说明不冒充这些功能。设备具体能力和资质仍待验证，候选路径接受不改变证据等级。
+
+没有购买服务、付费套餐或API额度；没有调用收费AI。只安装本阶段需要的开源依赖。当前Cloud平台本身的已有费用不由本次命令确认，不能声称整个平台永久免费。
+
+Git仓库本地无远程，未推送；这是当前交付限制，不影响本地运行。尚未正式部署。Windows本地与iPhone/Android真机未测；移动视口只说明浏览器布局检查。
+
+## 9. 下一阶段准备
+
+PHASE 2需要Supabase项目/地区、Auth回调、公开URL/publishable或anon key、受控迁移凭据、RLS/Storage测试及数据同步设计；必要时再配置生产邮件。密钥仅通过安全环境设置，不在聊天发送。原生/AI账号不作为P2基础开发前提。
+
+交付本报告与实际测试结果后停止，等待用户验收，不自动开始PHASE 2。
+
+## 10. 浏览器证据与发布步骤
+
+- 43个模块路由加首页；404另测。逐个模块HTTP状态200并含正确标题；首页实际链接也逐个校验。
+- 12单元测试：4导航与阶段边界、8Service Worker缓存/隐私/更新契约。
+- 首次交付7浏览器场景；本次增加全页控制台/实际导航审核及七张截图采集，共9场景：全路由与404、桌面真实空态/链接/无外部API、主题与设置持久化、手机导航/320及390无横溢、Manifest图标与注册/安装说明、离线外壳与私人请求不缓存、真实worker更新确认与缓存清理。
+- E2E通过的是安装检测/说明，并非系统安装或iPhone Safari真机安装。运行时Error Boundary恢复界面已实现，但未通过人工制造生产异常触发验证；404恢复已测。
+- 截图在test-results/对应测试目录；HTML报告在playwright-report/index.html。深浅桌面与手机截图已目视检查。
+- 更新测试finally已恢复sw.js为phase1-v1。每次发布需递增该VERSION再build；只改应用代码不改worker字节，不会触发等待更新提示。
+- 用户正式授权原文完整保存于docs/PHASE1_EXECUTION_PROMPT.txt；原17份档案不受影响。
+
+已保存UTF-8文本版PHASE_1_IMPLEMENTATION_REPORT.txt，便于网页端复制与后续取用；不承诺工作区文件路径能被当前网页客户端当作下载附件。
+
+## 11. 首次PHASE 1交付时运行状态（历史记录）
+
+已实际启动构建产物，监听3000；启动后对首页、运动、华为说明、Manifest、图标、sw.js和离线页共7个内部HTTP请求均返回200。sw.js版本已恢复且响应为no-store。这是当前云实例内部验证，不是公网部署或用户网页预览验证；环境重启后需重新启动进程。机器记录见PHASE_1_CHECK_RESULTS.json。
+
+## 12. 最终交付准备（2026-11-03）
+
+### Git版本与待确认推送
+
+- 原独立项目本地main是有效的未出生分支（尚无HEAD提交），所有工程源文件未提交，未配置remote。未重置或覆盖文件。若直接关联远端，命令是 `git remote add origin https://github.com/123kai453/gpt.git`，但独立项目根与远端仓库嵌套结构不同，不应盲目pull合并。
+- 已只读确认GitHub仓库存在；main为4e8efdbc6cb2ef5cfd06c4bfffeadc9dd137dc35，含此前上传的两份报告。
+- 在临时独立克隆中建立delivery/fitness-os-phase1，复用origin，所有代码放到fitness-os-2.0/下。没有创建worktree，没有修改旧gpt工作目录。
+- 为满足“不覆盖GitHub现有文档”，远端原两份报告在交付分支仍按原字节保留；本次更新报告另存delivery/phase1/PHASE1_IMPLEMENTATION_REPORT.md和同目录TXT。当前本地docs/PHASE1_IMPLEMENTATION_REPORT.md及根TXT也已更新。
+- 仅准备本地分支/暂存；不提交、不推送，等待用户对具体变更确认。绝不force-push，不更新main。拟提交说明见delivery/phase1/COMMIT_MESSAGE.txt；完整文件清单见同目录的STAGED_FILES.txt。
+
+### 本次最终验证
+
+重新执行lint、typecheck、12单元测试、check:docs和生产构建均通过。Playwright最终9/9通过，56.0秒；逐页真实打开首页+43模块共44页，检查44个独立导航目标，全为200；pageerror/console.error均0，失败资源响应0。此前404恢复、主题、320/390布局、PWA注册/离线/确认更新仍通过。
+
+缓存观测只包含7项预缓存公开资源与Next静态脚本/CSS，没有业务页面、私人路径或鉴权API缓存；另外8项SW单元测试覆盖拒绝缓存边界。当前没有真实健康数据库，测试不冒充已验证真实健康数据同步。
+
+17份原始文件SHA-256全通过；原gpt仍为work分支、e55ff9175bcc82e7c4c2934d089c26118dfcba71，工作区干净。更新测试后sw.js仍恢复phase1-v1。
+
+### 网站预览与Windows方案
+
+当前Cloud状态正常，但声明capabilities为空，当前工具无预览/端口发布接口，没有可验证的用户网页入口。不能凭内部localhost通过就给用户公网链接。本次浏览器测试启动了临时生产实例，运行后由测试框架关闭。
+
+完整Windows安装、启动、同Wi-Fi手机访问、防火墙和故障排查见docs/WINDOWS_LOCAL_RUN.md。待确认推送后可clone交付分支；使用Node24、pnpm11.25.0、冻结锁安装。开发或生产服务器都监听0.0.0.0。电脑localhost可访问，手机用电脑实际IPv4:3000。真实Windows/手机网络尚未实测；普通LAN HTTP不保证手机PWA安装/Service Worker，需要可信HTTPS。
+
+### 七张实际页面截图
+
+截图不是设计稿，来自本次生产浏览器：
+
+1. delivery/phase1/screenshots/01-dashboard-desktop-dark.png
+2. delivery/phase1/screenshots/02-dashboard-desktop-light.png
+3. delivery/phase1/screenshots/03-dashboard-mobile.png
+4. delivery/phase1/screenshots/04-sports-center.png
+5. delivery/phase1/screenshots/05-nutrition-center.png
+6. delivery/phase1/screenshots/06-ai-coach.png
+7. delivery/phase1/screenshots/07-device-center.png
+
+已目视检查并在聊天中直接展示。截图元数据、尺寸、hash、完整导航/控制台/缓存证据和最终结果保存在delivery/phase1/。正式业务仍显示对应后续阶段，不伪造已开放。
+
+本次只修改测试/交付说明和报告，没有新增业务功能。没有连接Supabase、调用AI或购买服务，不进入PHASE 2。等待最终验收与分支推送确认。
+
+## 13. 本地暂存集与等待确认
+
+暂存集：123个新增文件，0个已有文件修改，0删除；约13,423行新增（包括源码、锁文件、文档和审计记录，截图为二进制文件）。本地分支delivery/fitness-os-phase1仍基于main的4e8efdb，未创建提交、未推送。
+
+新增构成：src 18，public 8，tests 4，scripts 1，docs 21，17份documentation-originals，delivery证据/报告/截图20，review-history 2，项目根配置及资料32。旧有两份报告不计新增，保持原内容；最新内容在delivery目录。
+
+本轮新增的重要文件：.gitattributes（固定文本行尾并保护原始文档字节）、tests/e2e/final-delivery.spec.ts、docs/WINDOWS_LOCAL_RUN.md及delivery/phase1/证据。Git whitespace检查已按保留CRLF的原请求/CSV及Markdown合法换行配置属性，不删改原文来消除提示。
+
+拟提交：feat: prepare complete FITNESS OS phase 1 delivery。提交正文、完整123文件列表、逐文件统计和审阅说明均已保存；推送前必须获得用户确认。不会更新main或强制推送。
