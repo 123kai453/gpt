@@ -1,0 +1,635 @@
+{
+  "baseline": "/workspace/fitness-os-backups/phase1-before-visual/source.zip",
+  "phase": "PHASE 1.1",
+  "status_counts": {
+    "M": 27,
+    "A": 74
+  },
+  "groups": {
+    ".gitattributes": 1,
+    "CHANGELOG.md": 1,
+    "DOCUMENT_MANIFEST.json": 1,
+    "FEATURES.md": 1,
+    "FEATURES_STATUS.md": 1,
+    "PHASE1_1_VISUAL_REPORT.txt": 1,
+    "PHASE_1_IMPLEMENTATION_REPORT.txt": 1,
+    "README.md": 1,
+    "TEST_REPORT.md": 1,
+    "delivery": 30,
+    "docs": 8,
+    "public": 38,
+    "src": 11,
+    "tests": 5
+  },
+  "original_documents_unchanged": 17,
+  "dependencies_and_lockfile_unchanged": true,
+  "note": "Self hashes for these change inventory files are omitted to avoid recursion.",
+  "changes": [
+    {
+      "status": "M",
+      "path": ".gitattributes",
+      "bytes": 415,
+      "sha256": "8d96967dc5feab17b506140abeab94338fca5d22ae84efa81289fc11005fa045"
+    },
+    {
+      "status": "M",
+      "path": "CHANGELOG.md",
+      "bytes": 3711,
+      "sha256": "9a7f37a935d39fac0a64a6dc59679aaf3861fdcefc5e3de4d0a78fa7feb8431c"
+    },
+    {
+      "status": "M",
+      "path": "DOCUMENT_MANIFEST.json",
+      "bytes": 11177,
+      "sha256": "5dacc105905fa863999b8c3837c2e53d43c2cb5b8e55d79c6e0cdd490500c0ad"
+    },
+    {
+      "status": "M",
+      "path": "FEATURES.md",
+      "bytes": 8526,
+      "sha256": "525455006f692dd153bfc6c7079028c91cf141c48d273ed85d26b9f51bcf7ea9"
+    },
+    {
+      "status": "M",
+      "path": "FEATURES_STATUS.md",
+      "bytes": 1795,
+      "sha256": "eaeef8973e2e9ed8d4f180a1c022cde320232579dc654944aaa9e4aff6821474"
+    },
+    {
+      "status": "A",
+      "path": "PHASE1_1_VISUAL_REPORT.txt",
+      "bytes": 9365,
+      "sha256": "ccadadeab87e2f30582043b4e5e42e872f073b8edb71f30c1e33f653a0328c83"
+    },
+    {
+      "status": "M",
+      "path": "PHASE_1_IMPLEMENTATION_REPORT.txt",
+      "bytes": 16022,
+      "sha256": "d8b17d83a18f611c0703638814747002a1f87293cd5d09276d7cdb4fe9775c6e"
+    },
+    {
+      "status": "M",
+      "path": "README.md",
+      "bytes": 4693,
+      "sha256": "9c6e65a6a67f9ebd6a4c6e958d38c9b3cfbe45d145b01ec51299e025ba4e6e6c"
+    },
+    {
+      "status": "M",
+      "path": "TEST_REPORT.md",
+      "bytes": 2761,
+      "sha256": "19f93214ef3d84e851f5bacf198a8a3c7c54a5217e45ed4d668cc4a6717fae0d"
+    },
+    {
+      "status": "A",
+      "path": "delivery/phase1-1/BROWSER_TEST_SUMMARY.json",
+      "bytes": 162,
+      "sha256": "b474c9246a059e519566307ad69965ad95e8cfa2d06fadf1ea242edc95034d5b"
+    },
+    {
+      "status": "A",
+      "path": "delivery/phase1-1/CHANGES.json",
+      "bytes": 30,
+      "sha256": null
+    },
+    {
+      "status": "A",
+      "path": "delivery/phase1-1/CHANGES.txt",
+      "bytes": 30,
+      "sha256": null
+    },
+    {
+      "status": "A",
+      "path": "delivery/phase1-1/CHECK_RESULTS.json",
+      "bytes": 1090,
+      "sha256": "59ea418488d3ca7626c348c73eca5d18c04705a365a2c7f882327109ccde15c1"
+    },
+    {
+      "status": "A",
+      "path": "delivery/phase1-1/SCREENSHOT_COMPARISONS.json",
+      "bytes": 2770,
+      "sha256": "0227eefb59c0fb90702b72c22c7c56545bc8a9c6af37469b74b07279a362d539"
+    },
+    {
+      "status": "A",
+      "path": "delivery/phase1-1/after/01-dashboard-desktop-dark.png",
+      "bytes": 1202133,
+      "sha256": "ef00358698a7a6f37accefe1178e57a4455e3ec1947f1681fdc7301e733aed5b"
+    },
+    {
+      "status": "A",
+      "path": "delivery/phase1-1/after/02-dashboard-desktop-light.png",
+      "bytes": 1206357,
+      "sha256": "273b2d21f80dfdd8025f9bb0cf44412d03257d9d8813f5f1d116668d14498bad"
+    },
+    {
+      "status": "A",
+      "path": "delivery/phase1-1/after/03-dashboard-mobile.png",
+      "bytes": 744881,
+      "sha256": "8388ccff54c69d867aea66a6ebcac9e89e4346f6d6f97bd029e7fb6340a82e85"
+    },
+    {
+      "status": "A",
+      "path": "delivery/phase1-1/after/04-sports-center.png",
+      "bytes": 1594416,
+      "sha256": "3b613f3909e88412768ff9f2cd082a84446c74a44dbe9f86d3ced451d831a26f"
+    },
+    {
+      "status": "A",
+      "path": "delivery/phase1-1/after/05-nutrition-center.png",
+      "bytes": 344935,
+      "sha256": "1ccbe4d3c5d8844288dc8d13ea656493346176e7f29fcf202eb1bbccf1ae6128"
+    },
+    {
+      "status": "A",
+      "path": "delivery/phase1-1/after/06-ai-coach.png",
+      "bytes": 194763,
+      "sha256": "5c28851036507fc40ac6eabc300fd06e226fc5f69e54f7d9f82b1f4d655647ae"
+    },
+    {
+      "status": "A",
+      "path": "delivery/phase1-1/after/07-device-center.png",
+      "bytes": 206066,
+      "sha256": "6fb9a9902e7af7015d0e73aa114b696133de233204e1c54d9748122ebd0de7fd"
+    },
+    {
+      "status": "A",
+      "path": "delivery/phase1-1/before/01-dashboard-desktop-dark.png",
+      "bytes": 281355,
+      "sha256": "3a7d2a6be3dafb960a23003402211933a8943d08ddeeec8eaf2c0fdb8278c3f2"
+    },
+    {
+      "status": "A",
+      "path": "delivery/phase1-1/before/02-dashboard-desktop-light.png",
+      "bytes": 282219,
+      "sha256": "95f28ca206bd78ccb6b6bb4a6b10d52f429c21518c57e93dde4d807220a125fc"
+    },
+    {
+      "status": "A",
+      "path": "delivery/phase1-1/before/03-dashboard-mobile.png",
+      "bytes": 148736,
+      "sha256": "7bb7e7b449c84b4fda6c819f534f982816dc8e6663e05f6e3d44c99fcae1ddd6"
+    },
+    {
+      "status": "A",
+      "path": "delivery/phase1-1/before/04-sports-center.png",
+      "bytes": 166581,
+      "sha256": "bc7f2d0e89b9e91466ed0d8c1246931e4c6565250293971467eba73aee9e9a69"
+    },
+    {
+      "status": "A",
+      "path": "delivery/phase1-1/before/05-nutrition-center.png",
+      "bytes": 124645,
+      "sha256": "01232f8806625d3bf047fd949ed3114005c8b73ff820a9ea5dc164e7fc83db86"
+    },
+    {
+      "status": "A",
+      "path": "delivery/phase1-1/before/06-ai-coach.png",
+      "bytes": 120678,
+      "sha256": "411bfc91e4f858ab390697b5d2a1544898fed378810c5b53af617ee2b5ef4820"
+    },
+    {
+      "status": "A",
+      "path": "delivery/phase1-1/before/07-device-center.png",
+      "bytes": 129227,
+      "sha256": "b831d9a4b2f77bc7b76a129da45cf34a8d10650650374d437efedbfc73389d90"
+    },
+    {
+      "status": "A",
+      "path": "delivery/phase1-1/comparisons/01-comparison.png",
+      "bytes": 240907,
+      "sha256": "223fadd73822f0c729f0be2eb12b63c9f194f71f2b09f56bc1eb51cb2d9f70a5"
+    },
+    {
+      "status": "A",
+      "path": "delivery/phase1-1/comparisons/02-comparison.png",
+      "bytes": 243877,
+      "sha256": "b32968955d5d9307dec47bac6c56409d2cd6872f08a5db4fc7626675ed74888d"
+    },
+    {
+      "status": "A",
+      "path": "delivery/phase1-1/comparisons/03-comparison.png",
+      "bytes": 355800,
+      "sha256": "400db6b49ce08178d3e28d5f48b92d841a12fb10d57ab0946ce7860698cf6b91"
+    },
+    {
+      "status": "A",
+      "path": "delivery/phase1-1/comparisons/04-comparison.png",
+      "bytes": 290563,
+      "sha256": "b7747e3efc11eed6c49ab03ddbc9ee2e1cca98b65ba9fb10f55a5819d1f98afc"
+    },
+    {
+      "status": "A",
+      "path": "delivery/phase1-1/comparisons/05-comparison.png",
+      "bytes": 167048,
+      "sha256": "6eac1f2e7b427223725ffcd6595d052a5a279f2152bd2f7264ff820ce5f8fd7a"
+    },
+    {
+      "status": "A",
+      "path": "delivery/phase1-1/comparisons/06-comparison.png",
+      "bytes": 125871,
+      "sha256": "301b4896de696a59ed496798f045663465a181bc0aab47ba97d45e72a95612c0"
+    },
+    {
+      "status": "A",
+      "path": "delivery/phase1-1/comparisons/07-comparison.png",
+      "bytes": 133361,
+      "sha256": "cc14220200e6d296ef9c2341b3364d368c2418f8e563088dfb2418bbd30de812"
+    },
+    {
+      "status": "A",
+      "path": "delivery/phase1-1/decoded-local-images.json",
+      "bytes": 2794,
+      "sha256": "411f3fb4d5d8af78670afb8526b6b54f0154b6ba9a35f89d37551cbff4ba79d4"
+    },
+    {
+      "status": "A",
+      "path": "delivery/phase1-1/desktop-motion-sample.json",
+      "bytes": 124,
+      "sha256": "486448f248638259e206e8f1fd64408518768db97da19b2993396e4d8b6cdcc2"
+    },
+    {
+      "status": "A",
+      "path": "delivery/phase1-1/index.html",
+      "bytes": 2403,
+      "sha256": "4af9e0c8d8257e169c23d4319fc7157badac3133fccd8357d9e68fa264c9018e"
+    },
+    {
+      "status": "A",
+      "path": "delivery/phase1-1/navigation-and-console-audit.json",
+      "bytes": 6256,
+      "sha256": "f5110c934a6179eb04a2c9ebfcf094901c9340c4a60af61a06ef3c3d8be01a03"
+    },
+    {
+      "status": "M",
+      "path": "docs/INDEX.md",
+      "bytes": 4213,
+      "sha256": "5193a05085460b5f1fba6c07c8ce0bb5e00165dfda1d8528b63e532bf3a57602"
+    },
+    {
+      "status": "A",
+      "path": "docs/MOTION_DESIGN.md",
+      "bytes": 1155,
+      "sha256": "6f50bf11fda41a26a41d1ef74df580afb9a14ebcc6e2e726d2b4b150614b69bc"
+    },
+    {
+      "status": "A",
+      "path": "docs/PHASE1_1_EXECUTION_PROMPT.txt",
+      "bytes": 13027,
+      "sha256": "2fd76192b459b520a79ef6057cb80911014d8652076c41d377aeb97d1a6cd880"
+    },
+    {
+      "status": "A",
+      "path": "docs/PHASE1_1_VISUAL_REPORT.md",
+      "bytes": 9362,
+      "sha256": "8354f215714700dff3717bd7f71eaca70e79611b3055d944ef2e879768e357e7"
+    },
+    {
+      "status": "M",
+      "path": "docs/PHASE1_IMPLEMENTATION_REPORT.md",
+      "bytes": 16019,
+      "sha256": "ee0c6f9b247c8a7446d9f1ffe85bc7615ea489730ed397892eb69eb15d49fc3b"
+    },
+    {
+      "status": "M",
+      "path": "docs/PROJECT_DECISIONS.md",
+      "bytes": 2790,
+      "sha256": "89080d377ffc9ff72100d3e1193d325f7b159c4f02ac38ccc1a23f4ce3b76e62"
+    },
+    {
+      "status": "A",
+      "path": "docs/VISUAL_ASSETS.json",
+      "bytes": 23172,
+      "sha256": "d7956498b3d22f38868b8bd83821b17762df42134c997b396974dac576f9cbde"
+    },
+    {
+      "status": "A",
+      "path": "docs/VISUAL_ASSETS.md",
+      "bytes": 6261,
+      "sha256": "c9eb7a7eca6012e702752e3adab771cc322a5f76eac7321f08457b4fddac1947"
+    },
+    {
+      "status": "M",
+      "path": "public/icons/apple-touch-icon.png",
+      "bytes": 5936,
+      "sha256": "191ec609ce16dbd200d8659f0b1a5e9e05daca75bb55a1cc5b6e1123924275d6"
+    },
+    {
+      "status": "M",
+      "path": "public/icons/icon-192.png",
+      "bytes": 6426,
+      "sha256": "d5776b614e68b1c6ac680d3c710c158fc72f4c23bedc227210f4b0fdea4d1b8b"
+    },
+    {
+      "status": "M",
+      "path": "public/icons/icon-512.png",
+      "bytes": 17351,
+      "sha256": "011fcca52d79d56556abe32f710dfa191848fb3aae26456f739b011629248344"
+    },
+    {
+      "status": "M",
+      "path": "public/icons/mark.svg",
+      "bytes": 356,
+      "sha256": "ee280ea3fa94a6f772583b9c2fb24e76bd30b84128362a3a8104e68576be7edf"
+    },
+    {
+      "status": "M",
+      "path": "public/icons/maskable-512.png",
+      "bytes": 15911,
+      "sha256": "3f31db39e02b0da2abf01b8bb834b5ee107dd6f6531f30abb5068eb710c77814"
+    },
+    {
+      "status": "A",
+      "path": "public/images/hero/athlete-desktop-960.webp",
+      "bytes": 21020,
+      "sha256": "9a878081dbc4600dd87c05e5132916d11273142933b8361ae462ad292449c9b3"
+    },
+    {
+      "status": "A",
+      "path": "public/images/hero/athlete-desktop.webp",
+      "bytes": 50680,
+      "sha256": "a261e1c7d8e4c24ac550378b3612e0f4755e6198f640c02a845eb27378088721"
+    },
+    {
+      "status": "A",
+      "path": "public/images/hero/athlete-mobile-390.webp",
+      "bytes": 15952,
+      "sha256": "10248d6cd4684285a0d5acc524525fb4e7f6b896dfdbdeb33792c1e4bbd8e3e2"
+    },
+    {
+      "status": "A",
+      "path": "public/images/hero/athlete-mobile.webp",
+      "bytes": 54664,
+      "sha256": "0c4f4cb78c0902832f0220ebfdfb54978b235ff48c3f347cb45737cf1f19dabb"
+    },
+    {
+      "status": "A",
+      "path": "public/images/nutrition/balanced-plate-480.webp",
+      "bytes": 42638,
+      "sha256": "79399458a7ca507921f89f2510b90d96ea41946fb6b3ecc954b94e33e45a7c7f"
+    },
+    {
+      "status": "A",
+      "path": "public/images/nutrition/balanced-plate.webp",
+      "bytes": 81392,
+      "sha256": "70181b125e0599714b3b2234df90e331e56ff10b71e52b698da9775794a63517"
+    },
+    {
+      "status": "A",
+      "path": "public/images/sports/elliptical-480.webp",
+      "bytes": 18826,
+      "sha256": "df1a41d79d6e5f565011bb4158a935a49281479237ca098d417af783fac20202"
+    },
+    {
+      "status": "A",
+      "path": "public/images/sports/elliptical.webp",
+      "bytes": 35968,
+      "sha256": "5af8d9889fb8979981d44bfd8cb078a04b27b4799bb71357d0de0553264a79d6"
+    },
+    {
+      "status": "A",
+      "path": "public/images/sports/hike-480.webp",
+      "bytes": 23814,
+      "sha256": "ddec2e9dbfc358719f8c17283eb146b3866013d47ad655fe2916a972fc2b1e2c"
+    },
+    {
+      "status": "A",
+      "path": "public/images/sports/hike.webp",
+      "bytes": 47368,
+      "sha256": "f1002bfa20babc5359fce72d3de94194696bd3c6cb25bc9c5e25433bc57d467a"
+    },
+    {
+      "status": "A",
+      "path": "public/images/sports/indoor-cycle-480.webp",
+      "bytes": 15894,
+      "sha256": "18495958988af8b4a5fe59d25c985533255a642e90a870e64819987ac6679b19"
+    },
+    {
+      "status": "A",
+      "path": "public/images/sports/indoor-cycle.webp",
+      "bytes": 29338,
+      "sha256": "f5507da93e2aab4c88ea0228e6fb4844fb5496b851619e8679018a40402bcfa6"
+    },
+    {
+      "status": "A",
+      "path": "public/images/sports/jump-rope-480.webp",
+      "bytes": 15074,
+      "sha256": "e8ff0287782412ac21f563e693df94bd16e03db50945ed2f15e0bbe1634cffcb"
+    },
+    {
+      "status": "A",
+      "path": "public/images/sports/jump-rope.webp",
+      "bytes": 26320,
+      "sha256": "9c85e350565671944218e82c7897a597504d194aac02ee219f4c25f20b6458fc"
+    },
+    {
+      "status": "A",
+      "path": "public/images/sports/other-480.webp",
+      "bytes": 15686,
+      "sha256": "67eccef3e4fba202e497746c4959109e001588c352df6a5cb54c807184c2a60d"
+    },
+    {
+      "status": "A",
+      "path": "public/images/sports/other.webp",
+      "bytes": 27548,
+      "sha256": "9f20c09903c9706214c3ca2d56bb3fcf4d3ba0d46fe7edc78bde8645eea32ad3"
+    },
+    {
+      "status": "A",
+      "path": "public/images/sports/outdoor-run-480.webp",
+      "bytes": 21440,
+      "sha256": "2deba25541e84bc322ff8550114770e2f826ed00387abe0946505082c2faf8de"
+    },
+    {
+      "status": "A",
+      "path": "public/images/sports/outdoor-run.webp",
+      "bytes": 46478,
+      "sha256": "d95f63658a2afdb13df550153c1aababef0f3bb80c80c027e1bd8a8a2622fee4"
+    },
+    {
+      "status": "A",
+      "path": "public/images/sports/rowing-480.webp",
+      "bytes": 17864,
+      "sha256": "faae5e8afa3bb984fea5a7ed76bedbe52c8308fd0ebed26eb25419392cdf2664"
+    },
+    {
+      "status": "A",
+      "path": "public/images/sports/rowing.webp",
+      "bytes": 35252,
+      "sha256": "5ac934b4c8533ae8265b785b0d5e7e3417add093f27b08969f5afa90d542d1d3"
+    },
+    {
+      "status": "A",
+      "path": "public/images/sports/stair-climber-480.webp",
+      "bytes": 23774,
+      "sha256": "815e966b65df0d7c7fb05c78f7f1e4a20e5ba0c142a60f106f70abb1980c4800"
+    },
+    {
+      "status": "A",
+      "path": "public/images/sports/stair-climber.webp",
+      "bytes": 39912,
+      "sha256": "f986f317bd3224ee3a762b0a7ada9bbe4b95ac99fbd753ed29117e54ee2848dd"
+    },
+    {
+      "status": "A",
+      "path": "public/images/sports/strength-480.webp",
+      "bytes": 20164,
+      "sha256": "c393d3ab49d0f89c4fd8d39fcb19473cdce501c7a43f24bd896bacb9f04c406c"
+    },
+    {
+      "status": "A",
+      "path": "public/images/sports/strength.webp",
+      "bytes": 43134,
+      "sha256": "35b7df28ba9d920c97cec144f2e8f3f4b642b0421e45c605656e14c47f4852f2"
+    },
+    {
+      "status": "A",
+      "path": "public/images/sports/swimming-480.webp",
+      "bytes": 28236,
+      "sha256": "e1f1bccbbb63db9b7305a0e984ce0949488cbb1a20bcd6508bd8665c71996fb3"
+    },
+    {
+      "status": "A",
+      "path": "public/images/sports/swimming.webp",
+      "bytes": 58796,
+      "sha256": "eed84ee71185412c488d7cbaa47a36f6e83cdb7f618e4530d95c7caa25212618"
+    },
+    {
+      "status": "A",
+      "path": "public/images/sports/treadmill-480.webp",
+      "bytes": 26710,
+      "sha256": "4c9eb6ae1e4dbdad372884599f6e8e985a3c5a7f453ba2d0d9b99b0e475596be"
+    },
+    {
+      "status": "A",
+      "path": "public/images/sports/treadmill.webp",
+      "bytes": 50850,
+      "sha256": "fb13bff4b4510c35722788cb78b75c1b22c01ee50f2330d1d3e3b2a27a29f6f7"
+    },
+    {
+      "status": "A",
+      "path": "public/images/swimming/pool-detail.webp",
+      "bytes": 58796,
+      "sha256": "eed84ee71185412c488d7cbaa47a36f6e83cdb7f618e4530d95c7caa25212618"
+    },
+    {
+      "status": "A",
+      "path": "public/images/training/strength-detail.webp",
+      "bytes": 43134,
+      "sha256": "35b7df28ba9d920c97cec144f2e8f3f4b642b0421e45c605656e14c47f4852f2"
+    },
+    {
+      "status": "M",
+      "path": "public/manifest.json",
+      "bytes": 772,
+      "sha256": "a162de5f50455a4c02f0aebd471b72a3aec545170a27ff4baa6d0c11ef18f09a"
+    },
+    {
+      "status": "M",
+      "path": "public/offline.html",
+      "bytes": 2103,
+      "sha256": "7149340f676b8f5f4843854cbd3cc46aced3ed1d80f533cf7b549d2f4486b2bf"
+    },
+    {
+      "status": "M",
+      "path": "public/sw.js",
+      "bytes": 2737,
+      "sha256": "fe7c0b436a74787e5bb812649056a454eb6c2bf4d100493ae3c5a1791520c6ee"
+    },
+    {
+      "status": "M",
+      "path": "src/app/[...slug]/page.tsx",
+      "bytes": 3156,
+      "sha256": "d47a6b4ff5e2810dcb9b3b4e8096f9b52842515887bc7dd31df21feafb4051fc"
+    },
+    {
+      "status": "M",
+      "path": "src/app/layout.tsx",
+      "bytes": 1593,
+      "sha256": "9ae02da644c9860423aa190dc33de9f2ade2aa845f95b83e2588266c65b685b4"
+    },
+    {
+      "status": "A",
+      "path": "src/app/premium.css",
+      "bytes": 19891,
+      "sha256": "ce03106d193b49679a317dd9aec9f4cea4fa027fdaf8fd35c9fa65b1eb4bfc7e"
+    },
+    {
+      "status": "M",
+      "path": "src/components/layout/app-shell.tsx",
+      "bytes": 5390,
+      "sha256": "bf397e9bfee73b6ecf29a13cdcc1cda7497e0dbf1a8d61041e05ef08abc5e523"
+    },
+    {
+      "status": "A",
+      "path": "src/components/media/editorial-image.tsx",
+      "bytes": 2321,
+      "sha256": "422f263e251f18eab703014d2545979c2c6f4a511982c2cc5d6f21c632a069c8"
+    },
+    {
+      "status": "M",
+      "path": "src/components/pwa/pwa-controls.tsx",
+      "bytes": 11080,
+      "sha256": "87e95ade1a782c6fc99ee65c3e819e2d83da124266591ba8e7085fa017b1ea20"
+    },
+    {
+      "status": "M",
+      "path": "src/features/dashboard/dashboard.tsx",
+      "bytes": 5178,
+      "sha256": "d23e25105dfa5555330c636e495832065173e2bb3b39b85d4610ae4a44434f13"
+    },
+    {
+      "status": "A",
+      "path": "src/features/dashboard/premium-hero.tsx",
+      "bytes": 4451,
+      "sha256": "a7c96badc4b8e1d01e567291bf2b90f0d02f8f38467e55a0b16585ff4597fb4f"
+    },
+    {
+      "status": "A",
+      "path": "src/features/visual/section-visual.tsx",
+      "bytes": 1906,
+      "sha256": "5bd925b88d2ef1eeb6f56f9cc82a0bab9500ca5ffe01777e79583d53e160c2be"
+    },
+    {
+      "status": "A",
+      "path": "src/features/visual/sport-card.tsx",
+      "bytes": 1140,
+      "sha256": "bf7fdcc79e0b6d5cd8af94db08072ebc003ad180cbb7a8aef8f9cd8c77c09e94"
+    },
+    {
+      "status": "A",
+      "path": "src/features/visual/sports-art.ts",
+      "bytes": 2841,
+      "sha256": "698b6841b8a5c663c10a78b32de6749fed2388f69e4e0529525339a5e46643ea"
+    },
+    {
+      "status": "M",
+      "path": "tests/e2e/final-delivery.spec.ts",
+      "bytes": 3872,
+      "sha256": "6d1fe884490b0851e99ea38ea91eca9b378e15b53f0125cdb9a562723a5131d1"
+    },
+    {
+      "status": "M",
+      "path": "tests/e2e/phase1.spec.ts",
+      "bytes": 10536,
+      "sha256": "3b042956dbd872e46dc2f5d993907bb66c68c859c9fe116d1e66194f36cd1a5d"
+    },
+    {
+      "status": "A",
+      "path": "tests/e2e/visual.spec.ts",
+      "bytes": 4920,
+      "sha256": "293aef71565634bcfb2d72cb96fdf20368f38a1c9cf2c315e4b81f141b33e1b5"
+    },
+    {
+      "status": "M",
+      "path": "tests/unit/service-worker.test.ts",
+      "bytes": 7150,
+      "sha256": "9b8d77b38ed8eb57245d1d9de041167a96fdd748e748313e89d974500c79b879"
+    },
+    {
+      "status": "A",
+      "path": "tests/unit/visual-assets.test.ts",
+      "bytes": 2248,
+      "sha256": "5163f1fb5386c4d7d59ed80517fb2090bb00917cd664396fd08bdcd902f6256e"
+    }
+  ]
+}

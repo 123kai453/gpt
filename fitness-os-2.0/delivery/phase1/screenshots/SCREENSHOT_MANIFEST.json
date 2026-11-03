@@ -1,0 +1,65 @@
+[
+  {
+    "filename": "01-dashboard-desktop-dark.png",
+    "route": "/",
+    "theme": "dark",
+    "width": 1440,
+    "height": 1000,
+    "sha256": "3a7d2a6be3dafb960a23003402211933a8943d08ddeeec8eaf2c0fdb8278c3f2",
+    "bytes": 281355
+  },
+  {
+    "filename": "02-dashboard-desktop-light.png",
+    "route": "/",
+    "theme": "light",
+    "width": 1440,
+    "height": 1000,
+    "sha256": "95f28ca206bd78ccb6b6bb4a6b10d52f429c21518c57e93dde4d807220a125fc",
+    "bytes": 282219
+  },
+  {
+    "filename": "03-dashboard-mobile.png",
+    "route": "/",
+    "theme": "dark",
+    "width": 390,
+    "height": 844,
+    "sha256": "7bb7e7b449c84b4fda6c819f534f982816dc8e6663e05f6e3d44c99fcae1ddd6",
+    "bytes": 148736
+  },
+  {
+    "filename": "04-sports-center.png",
+    "route": "/sports",
+    "theme": "dark",
+    "width": 1440,
+    "height": 1000,
+    "sha256": "bc7f2d0e89b9e91466ed0d8c1246931e4c6565250293971467eba73aee9e9a69",
+    "bytes": 166581
+  },
+  {
+    "filename": "05-nutrition-center.png",
+    "route": "/nutrition",
+    "theme": "dark",
+    "width": 1440,
+    "height": 1000,
+    "sha256": "01232f8806625d3bf047fd949ed3114005c8b73ff820a9ea5dc164e7fc83db86",
+    "bytes": 124645
+  },
+  {
+    "filename": "06-ai-coach.png",
+    "route": "/ai",
+    "theme": "dark",
+    "width": 1440,
+    "height": 1000,
+    "sha256": "411bfc91e4f858ab390697b5d2a1544898fed378810c5b53af617ee2b5ef4820",
+    "bytes": 120678
+  },
+  {
+    "filename": "07-device-center.png",
+    "route": "/devices",
+    "theme": "dark",
+    "width": 1440,
+    "height": 1000,
+    "sha256": "b831d9a4b2f77bc7b76a129da45cf34a8d10650650374d437efedbfc73389d90",
+    "bytes": 129227
+  }
+]

@@ -1,0 +1,56 @@
+{
+  "date": "2026-11-03",
+  "phase": "PHASE 1 final delivery preparation",
+  "lint": "passed",
+  "typecheck": "passed",
+  "unit_tests": {
+    "passed": 12,
+    "failed": 0
+  },
+  "browser_tests": {
+    "passed": 9,
+    "failed": 0,
+    "duration_seconds": 56.0
+  },
+  "rendered_routes": 44,
+  "module_routes": 43,
+  "unique_navigation_targets": 44,
+  "console_errors": [],
+  "failed_responses": [],
+  "pwa_cache_paths": [
+    "/offline.html",
+    "/manifest.json",
+    "/icons/mark.svg",
+    "/icons/icon-192.png",
+    "/icons/icon-512.png",
+    "/icons/maskable-512.png",
+    "/icons/apple-touch-icon.png",
+    "/_next/static/css/701f7420a7296f0e.css",
+    "/_next/static/chunks/webpack-9f17be4aab85d9f9.js",
+    "/_next/static/chunks/3e0fce1b-500a7dcbeac0a76a.js",
+    "/_next/static/chunks/main-app-5e10ded2824e5af8.js",
+    "/_next/static/chunks/197-271a244dc73738bf.js",
+    "/_next/static/chunks/687-8f3972c8625b6d81.js",
+    "/_next/static/chunks/973-281fa11d8efad493.js",
+    "/_next/static/chunks/387-43333c850fda1aa6.js",
+    "/_next/static/chunks/app/layout-9b8b5273de922244.js",
+    "/_next/static/chunks/app/error-4aab6a678da67cf1.js",
+    "/_next/static/chunks/app/%5B...slug%5D/page-9f05a75f2d640894.js",
+    "/_next/static/chunks/901-88781fa05f5ee572.js",
+    "/_next/static/chunks/app/page-129b1607b1728477.js"
+  ],
+  "screenshots": 7,
+  "original_documents_sha256_verified": 17,
+  "old_gpt_worktree_clean": true,
+  "cloud_preview": {
+    "verified_public_entry": false,
+    "declared_capabilities": [],
+    "preview_tools_available": false
+  },
+  "windows_and_phone_actual_hardware_tested": false,
+  "supabase_connected": false,
+  "services_purchased": false,
+  "local_delivery_branch": "delivery/fitness-os-phase1",
+  "github_base_commit": "4e8efdbc6cb2ef5cfd06c4bfffeadc9dd137dc35",
+  "pushed": false
+}

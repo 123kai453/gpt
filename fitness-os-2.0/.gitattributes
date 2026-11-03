@@ -1,0 +1,9 @@
+* text=auto eol=lf
+# Original requirement documents must remain byte-identical on Windows, too.
+documentation-originals/** -text
+docs/PHASE1_EXECUTION_PROMPT.txt -text whitespace=cr-at-eol
+*.png binary
+# Markdown hard line breaks intentionally use trailing spaces.
+*.md whitespace=-blank-at-eol
+WEARABLE_CAPABILITY_MATRIX.csv -text whitespace=cr-at-eol
+docs/PHASE1_1_EXECUTION_PROMPT.txt -text whitespace=cr-at-eol

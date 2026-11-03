@@ -1,0 +1,727 @@
+{
+  "base_commit": "4e8efdbc6cb2ef5cfd06c4bfffeadc9dd137dc35",
+  "branch": "delivery/fitness-os-phase1",
+  "preserved_existing_reports": [
+    {
+      "remote_path": "fitness-os-2.0/PHASE_1_IMPLEMENTATION_REPORT.txt",
+      "action": "preserved; current version available in delivery/phase1/",
+      "remote_sha256": "bbc057d707f7d1a02c383719807e3515f1ef5f9e22624a93d03b80841a5f6189"
+    },
+    {
+      "remote_path": "fitness-os-2.0/docs/PHASE1_IMPLEMENTATION_REPORT.md",
+      "action": "preserved; current version available in delivery/phase1/",
+      "remote_sha256": "ba1aa68d2642f5cac18f1efbec3448e93d38205d72e3a6c4f08c6a50e1562adf"
+    }
+  ],
+  "files": [
+    {
+      "source_path": ".env.example",
+      "repository_path": "fitness-os-2.0/.env.example",
+      "bytes": 214,
+      "sha256": "3cda6ff276acc88ab7f18209659ee1b7877c9597c822caa931dd21f13b3e6b3b"
+    },
+    {
+      "source_path": ".gitattributes",
+      "repository_path": "fitness-os-2.0/.gitattributes",
+      "bytes": 353,
+      "sha256": "5037a434b833845338b3f930ebd2ec6c8b485d810238a42b6d32ed08e9441a98"
+    },
+    {
+      "source_path": ".gitignore",
+      "repository_path": "fitness-os-2.0/.gitignore",
+      "bytes": 173,
+      "sha256": "3b978a3554974f6eecb5388f5bc2de85e0fe1b564f89ed46d18318fb53f01524"
+    },
+    {
+      "source_path": ".node-version",
+      "repository_path": "fitness-os-2.0/.node-version",
+      "bytes": 8,
+      "sha256": "7e8a2fa94951112b894a3dbe3d05efef5e9263741fa49125f0a70f40fedab4cc"
+    },
+    {
+      "source_path": ".npmrc",
+      "repository_path": "fitness-os-2.0/.npmrc",
+      "bytes": 46,
+      "sha256": "47181b7836b053c3a4f3c4452337fba021c04477c256efc739350bcc11e3e10b"
+    },
+    {
+      "source_path": "CHANGELOG.md",
+      "repository_path": "fitness-os-2.0/CHANGELOG.md",
+      "bytes": 2650,
+      "sha256": "e9dafd9c76f970b2c5121612f20d298362da085fd9f34e9273bddb1884574475"
+    },
+    {
+      "source_path": "DOCUMENT_MANIFEST.json",
+      "repository_path": "fitness-os-2.0/DOCUMENT_MANIFEST.json",
+      "bytes": 11175,
+      "sha256": "a0472b69f4f0066d178a40e832ecc19faf1c5c7dc2fb01bbc167243088935c6c"
+    },
+    {
+      "source_path": "FEATURES.md",
+      "repository_path": "fitness-os-2.0/FEATURES.md",
+      "bytes": 8035,
+      "sha256": "df9106e9d56b7dead45fd9d5d37cfea4a0b5e15b23f00d3abdff63645642062b"
+    },
+    {
+      "source_path": "FEATURES_STATUS.md",
+      "repository_path": "fitness-os-2.0/FEATURES_STATUS.md",
+      "bytes": 1417,
+      "sha256": "a7c9f8d6302ef8e12d1b882d71ea9b7685362795f949cac90d9eea0a8b599244"
+    },
+    {
+      "source_path": "FITNESS_OS_2.0_PHASE_0_ALL_REVIEW_TEXT.txt",
+      "repository_path": "fitness-os-2.0/FITNESS_OS_2.0_PHASE_0_ALL_REVIEW_TEXT.txt",
+      "bytes": 150323,
+      "sha256": "f73968b5f565e4eb5c68d563e93239c8f9a38786d1c07e5f27b545986095f6e8"
+    },
+    {
+      "source_path": "FITNESS_OS_2.0_PHASE_0_REPORT.txt",
+      "repository_path": "fitness-os-2.0/FITNESS_OS_2.0_PHASE_0_REPORT.txt",
+      "bytes": 33547,
+      "sha256": "40d7291aef7e5d44005f117e0670dfec2346dac62b82d24b32bfecb05cdcafe2"
+    },
+    {
+      "source_path": "OFFICIAL_SOURCE_CHECKS.json",
+      "repository_path": "fitness-os-2.0/OFFICIAL_SOURCE_CHECKS.json",
+      "bytes": 988,
+      "sha256": "bca4fd29a757d8169356f75c2d6bfb09af4231dc6b762458563062aa004f56ed"
+    },
+    {
+      "source_path": "PHASE_0_CHECK_RESULTS.json",
+      "repository_path": "fitness-os-2.0/PHASE_0_CHECK_RESULTS.json",
+      "bytes": 550,
+      "sha256": "0b957fd71ae5d0ca55a0fc6baf1418d5be3155350f362c4ac2f062b9f0b018a7"
+    },
+    {
+      "source_path": "PHASE_0_TECHNICAL_REPORT.md",
+      "repository_path": "fitness-os-2.0/PHASE_0_TECHNICAL_REPORT.md",
+      "bytes": 33275,
+      "sha256": "fbcfca31b71da5d2bb8f9aa724998ac449f2fa35078c0d20f4bb8c55600cca48"
+    },
+    {
+      "source_path": "PHASE_1_CHECK_RESULTS.json",
+      "repository_path": "fitness-os-2.0/PHASE_1_CHECK_RESULTS.json",
+      "bytes": 920,
+      "sha256": "7fcff6f11724efb2461f538d2cbadb91a7e699a4cf8d506c569f1802d0dfb175"
+    },
+    {
+      "source_path": "README.md",
+      "repository_path": "fitness-os-2.0/README.md",
+      "bytes": 4196,
+      "sha256": "4a5634ebf8da561815a7dd9f38ca9781fcd39da41ca9204bdb27ddb2dfec9d8f"
+    },
+    {
+      "source_path": "REPORT_UPDATE_RECORD.json",
+      "repository_path": "fitness-os-2.0/REPORT_UPDATE_RECORD.json",
+      "bytes": 492,
+      "sha256": "92155db02be8dd04d04ea4de5d607ab77914ffe6c4500099f07d1ab0b6fa4e5b"
+    },
+    {
+      "source_path": "REQUIREMENTS_COVERAGE.md",
+      "repository_path": "fitness-os-2.0/REQUIREMENTS_COVERAGE.md",
+      "bytes": 34557,
+      "sha256": "f09f1bf7c64b1023e898f19f94fec8fb98d9cde03d5e7c39759c38c48f330512"
+    },
+    {
+      "source_path": "TEST_REPORT.md",
+      "repository_path": "fitness-os-2.0/TEST_REPORT.md",
+      "bytes": 2260,
+      "sha256": "c852db3f9d3e575055e76ca823db2ecd40ce1b1146c44daca19adf54404acf95"
+    },
+    {
+      "source_path": "WEARABLE_CAPABILITY_MATRIX.csv",
+      "repository_path": "fitness-os-2.0/WEARABLE_CAPABILITY_MATRIX.csv",
+      "bytes": 66965,
+      "sha256": "869082703487ac47ae7b6cb558fc7bcc8d039394aff78c1ce748b8cc1ee272c0"
+    },
+    {
+      "source_path": "WEARABLE_RESEARCH.md",
+      "repository_path": "fitness-os-2.0/WEARABLE_RESEARCH.md",
+      "bytes": 7980,
+      "sha256": "70344a57b48dd7ab37cdab86f289b0a93664af4409b36463e815e091251435c6"
+    },
+    {
+      "source_path": "components.json",
+      "repository_path": "fitness-os-2.0/components.json",
+      "bytes": 373,
+      "sha256": "185120067a8fae66cf1950ac5f289d81b479a23027673461078fe8d425d33d49"
+    },
+    {
+      "source_path": "delivery/phase1/COMMIT_MESSAGE.txt",
+      "repository_path": "fitness-os-2.0/delivery/phase1/COMMIT_MESSAGE.txt",
+      "bytes": 453,
+      "sha256": "b64557259744e15a846344549563271cb4b089f5d6600d525e1649079242a3fa"
+    },
+    {
+      "source_path": "delivery/phase1/FINAL_CHECK_RESULTS.json",
+      "repository_path": "fitness-os-2.0/delivery/phase1/FINAL_CHECK_RESULTS.json",
+      "bytes": 1823,
+      "sha256": "102a4e6e05bc86acbf9c51045130e88c59734033766d81532c7da72b667e3a3b"
+    },
+    {
+      "source_path": "delivery/phase1/GIT_STATE_BEFORE.json",
+      "repository_path": "fitness-os-2.0/delivery/phase1/GIT_STATE_BEFORE.json",
+      "bytes": 737,
+      "sha256": "766e6e5d3ee7caa37198b2cafcb8c4358f8821ca7219535cdafee7a9cc4e6d78"
+    },
+    {
+      "source_path": "delivery/phase1/LOCAL_GIT_STATUS_BEFORE.txt",
+      "repository_path": "fitness-os-2.0/delivery/phase1/LOCAL_GIT_STATUS_BEFORE.txt",
+      "bytes": 4349,
+      "sha256": "fc8b817d8a76e81d390f2329a35ecaf5e5410a661b814336339850d70e46af38"
+    },
+    {
+      "source_path": "delivery/phase1/PHASE1_IMPLEMENTATION_REPORT.md",
+      "repository_path": "fitness-os-2.0/delivery/phase1/PHASE1_IMPLEMENTATION_REPORT.md",
+      "bytes": 15364,
+      "sha256": "481c2d981f8268508adb308141d051b4a0f57e53609a89fa624918ad8ebd2377"
+    },
+    {
+      "source_path": "delivery/phase1/PHASE_1_IMPLEMENTATION_REPORT.txt",
+      "repository_path": "fitness-os-2.0/delivery/phase1/PHASE_1_IMPLEMENTATION_REPORT.txt",
+      "bytes": 15367,
+      "sha256": "bfa33ea13ee5812a3dd0af7d57ebe9b7aae70fc7e8b1b68495f0ddb5d89209b4"
+    },
+    {
+      "source_path": "delivery/phase1/navigation-and-console-audit.json",
+      "repository_path": "fitness-os-2.0/delivery/phase1/navigation-and-console-audit.json",
+      "bytes": 6238,
+      "sha256": "0f48d59d5f707ee512e69c05d8abfaee1e4d15dc69c5da527eeccc3caeb5f33a"
+    },
+    {
+      "source_path": "delivery/phase1/screenshots/01-dashboard-desktop-dark.png",
+      "repository_path": "fitness-os-2.0/delivery/phase1/screenshots/01-dashboard-desktop-dark.png",
+      "bytes": 281355,
+      "sha256": "3a7d2a6be3dafb960a23003402211933a8943d08ddeeec8eaf2c0fdb8278c3f2"
+    },
+    {
+      "source_path": "delivery/phase1/screenshots/02-dashboard-desktop-light.png",
+      "repository_path": "fitness-os-2.0/delivery/phase1/screenshots/02-dashboard-desktop-light.png",
+      "bytes": 282219,
+      "sha256": "95f28ca206bd78ccb6b6bb4a6b10d52f429c21518c57e93dde4d807220a125fc"
+    },
+    {
+      "source_path": "delivery/phase1/screenshots/03-dashboard-mobile.png",
+      "repository_path": "fitness-os-2.0/delivery/phase1/screenshots/03-dashboard-mobile.png",
+      "bytes": 148736,
+      "sha256": "7bb7e7b449c84b4fda6c819f534f982816dc8e6663e05f6e3d44c99fcae1ddd6"
+    },
+    {
+      "source_path": "delivery/phase1/screenshots/04-sports-center.png",
+      "repository_path": "fitness-os-2.0/delivery/phase1/screenshots/04-sports-center.png",
+      "bytes": 166581,
+      "sha256": "bc7f2d0e89b9e91466ed0d8c1246931e4c6565250293971467eba73aee9e9a69"
+    },
+    {
+      "source_path": "delivery/phase1/screenshots/05-nutrition-center.png",
+      "repository_path": "fitness-os-2.0/delivery/phase1/screenshots/05-nutrition-center.png",
+      "bytes": 124645,
+      "sha256": "01232f8806625d3bf047fd949ed3114005c8b73ff820a9ea5dc164e7fc83db86"
+    },
+    {
+      "source_path": "delivery/phase1/screenshots/06-ai-coach.png",
+      "repository_path": "fitness-os-2.0/delivery/phase1/screenshots/06-ai-coach.png",
+      "bytes": 120678,
+      "sha256": "411bfc91e4f858ab390697b5d2a1544898fed378810c5b53af617ee2b5ef4820"
+    },
+    {
+      "source_path": "delivery/phase1/screenshots/07-device-center.png",
+      "repository_path": "fitness-os-2.0/delivery/phase1/screenshots/07-device-center.png",
+      "bytes": 129227,
+      "sha256": "b831d9a4b2f77bc7b76a129da45cf34a8d10650650374d437efedbfc73389d90"
+    },
+    {
+      "source_path": "delivery/phase1/screenshots/SCREENSHOT_MANIFEST.json",
+      "repository_path": "fitness-os-2.0/delivery/phase1/screenshots/SCREENSHOT_MANIFEST.json",
+      "bytes": 1649,
+      "sha256": "314d53bfd3c99fd47fb3a6f2e9770dec1f12f2420d6989a42c5816deee3d8c45"
+    },
+    {
+      "source_path": "docs/.env.example",
+      "repository_path": "fitness-os-2.0/docs/.env.example",
+      "bytes": 345,
+      "sha256": "9fb8ff7220e668a0c7fb7e3037992cd077c8c9c567ef2788ddf1dac7e4509016"
+    },
+    {
+      "source_path": "docs/API.md",
+      "repository_path": "fitness-os-2.0/docs/API.md",
+      "bytes": 1386,
+      "sha256": "b3799930065d1a6996dd1e62d008890c433c112bb94c0d61f89487954c5d7c1b"
+    },
+    {
+      "source_path": "docs/ARCHITECTURE.md",
+      "repository_path": "fitness-os-2.0/docs/ARCHITECTURE.md",
+      "bytes": 3004,
+      "sha256": "7be0878187fa075542c7b897c7f910ba89106cf7f9edee9b3a132943dc08b3e9"
+    },
+    {
+      "source_path": "docs/BACKUP.md",
+      "repository_path": "fitness-os-2.0/docs/BACKUP.md",
+      "bytes": 492,
+      "sha256": "bc02800eea20ca1b319557c57f3d6ec79fc4957e679115b01aa96d8e96c81662"
+    },
+    {
+      "source_path": "docs/CHANGELOG.md",
+      "repository_path": "fitness-os-2.0/docs/CHANGELOG.md",
+      "bytes": 880,
+      "sha256": "4f23cf51f196f841a8f3aefc4a012995051accf425b40d2d2526f7dd1463ba42"
+    },
+    {
+      "source_path": "docs/CODING_RULES.md",
+      "repository_path": "fitness-os-2.0/docs/CODING_RULES.md",
+      "bytes": 923,
+      "sha256": "967b082518b6401155095242c1c509d9d68036721934928237605f72b92ca8cc"
+    },
+    {
+      "source_path": "docs/DATABASE.md",
+      "repository_path": "fitness-os-2.0/docs/DATABASE.md",
+      "bytes": 2461,
+      "sha256": "be44d83cd98a56e93ae2a5fa9ee94eebd1b42636569ae4620c0b0c1975b94b67"
+    },
+    {
+      "source_path": "docs/DEPLOYMENT.md",
+      "repository_path": "fitness-os-2.0/docs/DEPLOYMENT.md",
+      "bytes": 897,
+      "sha256": "c9db44bb0f40153502d5864da4ec37466fd56325424be506e384588f4748c082"
+    },
+    {
+      "source_path": "docs/DESIGN.md",
+      "repository_path": "fitness-os-2.0/docs/DESIGN.md",
+      "bytes": 990,
+      "sha256": "783f753b3eaaa6cef81902df0f015c0e58896597faf075173e4e519cabd9954a"
+    },
+    {
+      "source_path": "docs/FEATURES.md",
+      "repository_path": "fitness-os-2.0/docs/FEATURES.md",
+      "bytes": 2439,
+      "sha256": "41a02c59af2b1a84c1725d5b37142d6771a2bc1a4e4615ee2c2c90ae17b48140"
+    },
+    {
+      "source_path": "docs/INDEX.md",
+      "repository_path": "fitness-os-2.0/docs/INDEX.md",
+      "bytes": 3951,
+      "sha256": "81e434786fd8d2d00f1eab82667fc49741c82fb9d920c3377b4279bb4889855b"
+    },
+    {
+      "source_path": "docs/INITIAL_TRAINING_DATA.md",
+      "repository_path": "fitness-os-2.0/docs/INITIAL_TRAINING_DATA.md",
+      "bytes": 1162,
+      "sha256": "ed95aacab1b289fb964c64dae2537cc443a18c3590a16360534492ef0d5e9b6c"
+    },
+    {
+      "source_path": "docs/MASTER_PROMPT.txt",
+      "repository_path": "fitness-os-2.0/docs/MASTER_PROMPT.txt",
+      "bytes": 5434,
+      "sha256": "4b0e0198cc7fc0e63d74598bc470768b888369274d6f07d1523c5a64dda1ea8b"
+    },
+    {
+      "source_path": "docs/PHASE1_EXECUTION_PROMPT.txt",
+      "repository_path": "fitness-os-2.0/docs/PHASE1_EXECUTION_PROMPT.txt",
+      "bytes": 13168,
+      "sha256": "0f0ba215221b14020ce8ce84fdaeb521a86970a291ce68f1eb19f638d0cd8234"
+    },
+    {
+      "source_path": "docs/PHASES.md",
+      "repository_path": "fitness-os-2.0/docs/PHASES.md",
+      "bytes": 1321,
+      "sha256": "de401ad821bea5f88215fdd0a360dd3e964be522b1baf727e1d9816294b600f3"
+    },
+    {
+      "source_path": "docs/PRD.md",
+      "repository_path": "fitness-os-2.0/docs/PRD.md",
+      "bytes": 11305,
+      "sha256": "61ae1c949e6d0e5a1f131b1afa4725a50239ece1dbdecd565496815780791ac4"
+    },
+    {
+      "source_path": "docs/PROJECT_DECISIONS.md",
+      "repository_path": "fitness-os-2.0/docs/PROJECT_DECISIONS.md",
+      "bytes": 2432,
+      "sha256": "02c7036f0ec7cfb904d3181c28e9d1f8eab06eb7298e50272d7da0d7d37cf9f0"
+    },
+    {
+      "source_path": "docs/README.md",
+      "repository_path": "fitness-os-2.0/docs/README.md",
+      "bytes": 2312,
+      "sha256": "6ddefec1f14e9849ff2feab8f88c7b8c58cc6b2e1a1ce48aff6fc4000a363b62"
+    },
+    {
+      "source_path": "docs/TEST_CASES.md",
+      "repository_path": "fitness-os-2.0/docs/TEST_CASES.md",
+      "bytes": 2022,
+      "sha256": "f005398f12267aff42425f629d27c1b84bb2d185edb5aad278df10cae3b8d505"
+    },
+    {
+      "source_path": "docs/WEARABLE_INTEGRATION.md",
+      "repository_path": "fitness-os-2.0/docs/WEARABLE_INTEGRATION.md",
+      "bytes": 2249,
+      "sha256": "64e7c29b80176d3dd4b4626588ff23ab1836f8bf509e6ac06f2fcda3db4686cf"
+    },
+    {
+      "source_path": "docs/WINDOWS_LOCAL_RUN.md",
+      "repository_path": "fitness-os-2.0/docs/WINDOWS_LOCAL_RUN.md",
+      "bytes": 4347,
+      "sha256": "e503843807c6b435948238e90196e9fef7cdb78e3b180ceac168d8038f32c411"
+    },
+    {
+      "source_path": "documentation-originals/FITNESS-OS-2.0-PROJECT/01-产品需求/DESIGN.md",
+      "repository_path": "fitness-os-2.0/documentation-originals/FITNESS-OS-2.0-PROJECT/01-产品需求/DESIGN.md",
+      "bytes": 990,
+      "sha256": "783f753b3eaaa6cef81902df0f015c0e58896597faf075173e4e519cabd9954a"
+    },
+    {
+      "source_path": "documentation-originals/FITNESS-OS-2.0-PROJECT/01-产品需求/FEATURES.md",
+      "repository_path": "fitness-os-2.0/documentation-originals/FITNESS-OS-2.0-PROJECT/01-产品需求/FEATURES.md",
+      "bytes": 2439,
+      "sha256": "41a02c59af2b1a84c1725d5b37142d6771a2bc1a4e4615ee2c2c90ae17b48140"
+    },
+    {
+      "source_path": "documentation-originals/FITNESS-OS-2.0-PROJECT/01-产品需求/PRD.md",
+      "repository_path": "fitness-os-2.0/documentation-originals/FITNESS-OS-2.0-PROJECT/01-产品需求/PRD.md",
+      "bytes": 11305,
+      "sha256": "61ae1c949e6d0e5a1f131b1afa4725a50239ece1dbdecd565496815780791ac4"
+    },
+    {
+      "source_path": "documentation-originals/FITNESS-OS-2.0-PROJECT/02-技术架构/API.md",
+      "repository_path": "fitness-os-2.0/documentation-originals/FITNESS-OS-2.0-PROJECT/02-技术架构/API.md",
+      "bytes": 1386,
+      "sha256": "b3799930065d1a6996dd1e62d008890c433c112bb94c0d61f89487954c5d7c1b"
+    },
+    {
+      "source_path": "documentation-originals/FITNESS-OS-2.0-PROJECT/02-技术架构/ARCHITECTURE.md",
+      "repository_path": "fitness-os-2.0/documentation-originals/FITNESS-OS-2.0-PROJECT/02-技术架构/ARCHITECTURE.md",
+      "bytes": 3004,
+      "sha256": "7be0878187fa075542c7b897c7f910ba89106cf7f9edee9b3a132943dc08b3e9"
+    },
+    {
+      "source_path": "documentation-originals/FITNESS-OS-2.0-PROJECT/02-技术架构/DATABASE.md",
+      "repository_path": "fitness-os-2.0/documentation-originals/FITNESS-OS-2.0-PROJECT/02-技术架构/DATABASE.md",
+      "bytes": 2461,
+      "sha256": "be44d83cd98a56e93ae2a5fa9ee94eebd1b42636569ae4620c0b0c1975b94b67"
+    },
+    {
+      "source_path": "documentation-originals/FITNESS-OS-2.0-PROJECT/03-Codex开发指令/CODING_RULES.md",
+      "repository_path": "fitness-os-2.0/documentation-originals/FITNESS-OS-2.0-PROJECT/03-Codex开发指令/CODING_RULES.md",
+      "bytes": 923,
+      "sha256": "967b082518b6401155095242c1c509d9d68036721934928237605f72b92ca8cc"
+    },
+    {
+      "source_path": "documentation-originals/FITNESS-OS-2.0-PROJECT/03-Codex开发指令/MASTER_PROMPT.txt",
+      "repository_path": "fitness-os-2.0/documentation-originals/FITNESS-OS-2.0-PROJECT/03-Codex开发指令/MASTER_PROMPT.txt",
+      "bytes": 4123,
+      "sha256": "e5d42c370c697626a7695d4fb8443b5ad7f065b9cf67760da37cbbbc53b15689"
+    },
+    {
+      "source_path": "documentation-originals/FITNESS-OS-2.0-PROJECT/03-Codex开发指令/PHASES.md",
+      "repository_path": "fitness-os-2.0/documentation-originals/FITNESS-OS-2.0-PROJECT/03-Codex开发指令/PHASES.md",
+      "bytes": 1321,
+      "sha256": "de401ad821bea5f88215fdd0a360dd3e964be522b1baf727e1d9816294b600f3"
+    },
+    {
+      "source_path": "documentation-originals/FITNESS-OS-2.0-PROJECT/04-数据与测试/CHANGELOG.md",
+      "repository_path": "fitness-os-2.0/documentation-originals/FITNESS-OS-2.0-PROJECT/04-数据与测试/CHANGELOG.md",
+      "bytes": 880,
+      "sha256": "4f23cf51f196f841a8f3aefc4a012995051accf425b40d2d2526f7dd1463ba42"
+    },
+    {
+      "source_path": "documentation-originals/FITNESS-OS-2.0-PROJECT/04-数据与测试/INITIAL_TRAINING_DATA.md",
+      "repository_path": "fitness-os-2.0/documentation-originals/FITNESS-OS-2.0-PROJECT/04-数据与测试/INITIAL_TRAINING_DATA.md",
+      "bytes": 1162,
+      "sha256": "ed95aacab1b289fb964c64dae2537cc443a18c3590a16360534492ef0d5e9b6c"
+    },
+    {
+      "source_path": "documentation-originals/FITNESS-OS-2.0-PROJECT/04-数据与测试/TEST_CASES.md",
+      "repository_path": "fitness-os-2.0/documentation-originals/FITNESS-OS-2.0-PROJECT/04-数据与测试/TEST_CASES.md",
+      "bytes": 2022,
+      "sha256": "f005398f12267aff42425f629d27c1b84bb2d185edb5aad278df10cae3b8d505"
+    },
+    {
+      "source_path": "documentation-originals/FITNESS-OS-2.0-PROJECT/05-配置与部署/.env.example",
+      "repository_path": "fitness-os-2.0/documentation-originals/FITNESS-OS-2.0-PROJECT/05-配置与部署/.env.example",
+      "bytes": 345,
+      "sha256": "9fb8ff7220e668a0c7fb7e3037992cd077c8c9c567ef2788ddf1dac7e4509016"
+    },
+    {
+      "source_path": "documentation-originals/FITNESS-OS-2.0-PROJECT/05-配置与部署/BACKUP.md",
+      "repository_path": "fitness-os-2.0/documentation-originals/FITNESS-OS-2.0-PROJECT/05-配置与部署/BACKUP.md",
+      "bytes": 492,
+      "sha256": "bc02800eea20ca1b319557c57f3d6ec79fc4957e679115b01aa96d8e96c81662"
+    },
+    {
+      "source_path": "documentation-originals/FITNESS-OS-2.0-PROJECT/05-配置与部署/DEPLOYMENT.md",
+      "repository_path": "fitness-os-2.0/documentation-originals/FITNESS-OS-2.0-PROJECT/05-配置与部署/DEPLOYMENT.md",
+      "bytes": 897,
+      "sha256": "c9db44bb0f40153502d5864da4ec37466fd56325424be506e384588f4748c082"
+    },
+    {
+      "source_path": "documentation-originals/FITNESS-OS-2.0-PROJECT/05-配置与部署/WEARABLE_INTEGRATION.md",
+      "repository_path": "fitness-os-2.0/documentation-originals/FITNESS-OS-2.0-PROJECT/05-配置与部署/WEARABLE_INTEGRATION.md",
+      "bytes": 2249,
+      "sha256": "64e7c29b80176d3dd4b4626588ff23ab1836f8bf509e6ac06f2fcda3db4686cf"
+    },
+    {
+      "source_path": "documentation-originals/FITNESS-OS-2.0-PROJECT/README.md",
+      "repository_path": "fitness-os-2.0/documentation-originals/FITNESS-OS-2.0-PROJECT/README.md",
+      "bytes": 2118,
+      "sha256": "64adf55c78fce5c8569c4bbc35720ebd034579474d57b603801e11b6093ec7ef"
+    },
+    {
+      "source_path": "eslint.config.mjs",
+      "repository_path": "fitness-os-2.0/eslint.config.mjs",
+      "bytes": 343,
+      "sha256": "e6a475ececcac27450f06264825b544b01423e1eeef458270eb3b88dfe096eab"
+    },
+    {
+      "source_path": "next-env.d.ts",
+      "repository_path": "fitness-os-2.0/next-env.d.ts",
+      "bytes": 288,
+      "sha256": "1862ac4bbbc5192d4bf562161df66ea547ed3e67173100656ab606ae9797db2b"
+    },
+    {
+      "source_path": "next.config.ts",
+      "repository_path": "fitness-os-2.0/next.config.ts",
+      "bytes": 574,
+      "sha256": "e06ce863995f037d801e25a19501bc34a27c3de2460f90b492c550768847f069"
+    },
+    {
+      "source_path": "package.json",
+      "repository_path": "fitness-os-2.0/package.json",
+      "bytes": 1070,
+      "sha256": "25466dbe3c2203fd84b4187174b70174127fa4410281a1071de5dc896293072b"
+    },
+    {
+      "source_path": "playwright.config.ts",
+      "repository_path": "fitness-os-2.0/playwright.config.ts",
+      "bytes": 874,
+      "sha256": "7637f6e3fb22a6761a20e061d525e438af630efb5f16665bfd88481709d78835"
+    },
+    {
+      "source_path": "pnpm-lock.yaml",
+      "repository_path": "fitness-os-2.0/pnpm-lock.yaml",
+      "bytes": 157480,
+      "sha256": "e449d1d9e0b717c18ec2bbd8a4892f9ae8760a4369a079bc904d5b9abfbc08ae"
+    },
+    {
+      "source_path": "pnpm-workspace.yaml",
+      "repository_path": "fitness-os-2.0/pnpm-workspace.yaml",
+      "bytes": 1191,
+      "sha256": "914d9e72aaf358287baed1243ac9e33b96b4584b41a31f1b2c76aa3e433c17d9"
+    },
+    {
+      "source_path": "postcss.config.mjs",
+      "repository_path": "fitness-os-2.0/postcss.config.mjs",
+      "bytes": 83,
+      "sha256": "b783348d5618047d0f37e12acd15c5a2c5f02809d8711e0764c9cea52750346c"
+    },
+    {
+      "source_path": "public/icons/apple-touch-icon.png",
+      "repository_path": "fitness-os-2.0/public/icons/apple-touch-icon.png",
+      "bytes": 4321,
+      "sha256": "a3c0ff8ea52e503acf97a3a938e3e0e4ea70e66501d0235f9bbc044de8521d5d"
+    },
+    {
+      "source_path": "public/icons/icon-192.png",
+      "repository_path": "fitness-os-2.0/public/icons/icon-192.png",
+      "bytes": 4449,
+      "sha256": "53445141f71bf468a21a55cc430d25735f8b5cb7ad3cb17fe4d9ec35d69d6c3a"
+    },
+    {
+      "source_path": "public/icons/icon-512.png",
+      "repository_path": "fitness-os-2.0/public/icons/icon-512.png",
+      "bytes": 11799,
+      "sha256": "4a68739fe061f243e968f7ea45381a5b20904a8b4a5c66eeaaf7220955b8ca3d"
+    },
+    {
+      "source_path": "public/icons/mark.svg",
+      "repository_path": "fitness-os-2.0/public/icons/mark.svg",
+      "bytes": 235,
+      "sha256": "3547cd42b38c8f1a0686f851e4580cf1a639d93b07a594394a8d90d2893008db"
+    },
+    {
+      "source_path": "public/icons/maskable-512.png",
+      "repository_path": "fitness-os-2.0/public/icons/maskable-512.png",
+      "bytes": 9686,
+      "sha256": "e352d5cd33a4b2f44a93e0212f5a26826bf7903b539e42c62e65649cbccc7cfd"
+    },
+    {
+      "source_path": "public/manifest.json",
+      "repository_path": "fitness-os-2.0/public/manifest.json",
+      "bytes": 642,
+      "sha256": "3f3087a0aafe1b66e0ac041d21772b826717b561a24f2f96c62e715fb580be30"
+    },
+    {
+      "source_path": "public/offline.html",
+      "repository_path": "fitness-os-2.0/public/offline.html",
+      "bytes": 1902,
+      "sha256": "07afe65e5578b4a1aa0c7d14d3cde969fc0f3a2bb7069b9a41932abb8c0b44f3"
+    },
+    {
+      "source_path": "public/sw.js",
+      "repository_path": "fitness-os-2.0/public/sw.js",
+      "bytes": 2735,
+      "sha256": "62fbdbeeb26e4c96058b2b667e4cef7aa5f24aff149be70292fbcebbd5d4f8d9"
+    },
+    {
+      "source_path": "review-history/PHASE_0_TECHNICAL_REPORT.before_docs_review.md",
+      "repository_path": "fitness-os-2.0/review-history/PHASE_0_TECHNICAL_REPORT.before_docs_review.md",
+      "bytes": 31522,
+      "sha256": "a0d9e97226b391da849a4ec516ce82081bdc7016d59362abc103e40fc90e1ca9"
+    },
+    {
+      "source_path": "review-history/TEST_REPORT.before_phase1.md",
+      "repository_path": "fitness-os-2.0/review-history/TEST_REPORT.before_phase1.md",
+      "bytes": 1209,
+      "sha256": "be172ac6ad568e2a60d3e97fce3e6fa48c4f159a756338c45232d7f3b3e1e29e"
+    },
+    {
+      "source_path": "scripts/check-docs.mjs",
+      "repository_path": "fitness-os-2.0/scripts/check-docs.mjs",
+      "bytes": 1456,
+      "sha256": "05647b14e9143fbb286165fb6edfdfa52d84164751349e2817443be17522b96a"
+    },
+    {
+      "source_path": "src/app/[...slug]/page.tsx",
+      "repository_path": "fitness-os-2.0/src/app/[...slug]/page.tsx",
+      "bytes": 2687,
+      "sha256": "04e16438d98f072c3995d184b3fc12d42b5952b67eba032114001a4dacc85e37"
+    },
+    {
+      "source_path": "src/app/error.tsx",
+      "repository_path": "fitness-os-2.0/src/app/error.tsx",
+      "bytes": 587,
+      "sha256": "b7e2501be00ff310035cc6c609088738422bc00ad34a74cbaa789918da05fbf4"
+    },
+    {
+      "source_path": "src/app/globals.css",
+      "repository_path": "fitness-os-2.0/src/app/globals.css",
+      "bytes": 31562,
+      "sha256": "511dfbb17efc1bee3925b751a2f678f73f526e5f9184eb5bfae0110ae515461d"
+    },
+    {
+      "source_path": "src/app/layout.tsx",
+      "repository_path": "fitness-os-2.0/src/app/layout.tsx",
+      "bytes": 1573,
+      "sha256": "dfd6dca45dbd4443dba796fa5e711a88c64c9872a9a34e1ca5399f8fb60593c6"
+    },
+    {
+      "source_path": "src/app/loading.tsx",
+      "repository_path": "fitness-os-2.0/src/app/loading.tsx",
+      "bytes": 225,
+      "sha256": "ba7e2e2efa33f3b41c8cbce018da3f7e69ce3ec15ea7ff8e7e38085763d3997c"
+    },
+    {
+      "source_path": "src/app/not-found.tsx",
+      "repository_path": "fitness-os-2.0/src/app/not-found.tsx",
+      "bytes": 605,
+      "sha256": "2ef10b10e1cb77f47c887d139a13c4e44ef9a859ef935c7efe3433bda5504ebf"
+    },
+    {
+      "source_path": "src/app/page.tsx",
+      "repository_path": "fitness-os-2.0/src/app/page.tsx",
+      "bytes": 117,
+      "sha256": "18938a3ac265b83e6b1f1abcf146bcc9b4fca535645cbee95ecaa33e11755f7f"
+    },
+    {
+      "source_path": "src/components/common/phase-badge.tsx",
+      "repository_path": "fitness-os-2.0/src/components/common/phase-badge.tsx",
+      "bytes": 225,
+      "sha256": "b5f78b1213db63fa093d7088a9abb12cc32b9f250c1de8d0d1694ab00d7d9083"
+    },
+    {
+      "source_path": "src/components/common/theme-choice.tsx",
+      "repository_path": "fitness-os-2.0/src/components/common/theme-choice.tsx",
+      "bytes": 735,
+      "sha256": "24f24bc143e1f55a902f90ad9112604384f26f805278ce44a322524a7b3e7805"
+    },
+    {
+      "source_path": "src/components/layout/app-shell.tsx",
+      "repository_path": "fitness-os-2.0/src/components/layout/app-shell.tsx",
+      "bytes": 4936,
+      "sha256": "167db6697a7abec5a438432a47f8fb4da26cbc2c49ef19aec8c6d443726a9a17"
+    },
+    {
+      "source_path": "src/components/layout/theme-provider.tsx",
+      "repository_path": "fitness-os-2.0/src/components/layout/theme-provider.tsx",
+      "bytes": 1688,
+      "sha256": "7b5c5e306002533742c28b0393145b87013dc7ee094ce42221bd04cfba4dd4ae"
+    },
+    {
+      "source_path": "src/components/pwa/pwa-controls.tsx",
+      "repository_path": "fitness-os-2.0/src/components/pwa/pwa-controls.tsx",
+      "bytes": 10667,
+      "sha256": "9388554d3076ffef13171fa55573b0d8c65bb9ab5933a896527f403688d86f7c"
+    },
+    {
+      "source_path": "src/components/ui/button.tsx",
+      "repository_path": "fitness-os-2.0/src/components/ui/button.tsx",
+      "bytes": 908,
+      "sha256": "9729a646dc8f2843e7efdb9c6ed067690d787cddc91a3caa4a4807c0a47a189e"
+    },
+    {
+      "source_path": "src/components/ui/utils.ts",
+      "repository_path": "fitness-os-2.0/src/components/ui/utils.ts",
+      "bytes": 169,
+      "sha256": "d1f1e0d62cb8d8d1e04c26e14de842d8a151f75812d81b046c65b5d1fe8e4b27"
+    },
+    {
+      "source_path": "src/features/dashboard/dashboard.tsx",
+      "repository_path": "fitness-os-2.0/src/features/dashboard/dashboard.tsx",
+      "bytes": 7116,
+      "sha256": "02a7183a8c849c6185507264a9e3207f255eaab2195c45300e2643fd75444ab7"
+    },
+    {
+      "source_path": "src/features/dashboard/movement-art.tsx",
+      "repository_path": "fitness-os-2.0/src/features/dashboard/movement-art.tsx",
+      "bytes": 2312,
+      "sha256": "c0bc9f18c330658c370013e4450a574a4d64fba6419f568398f8b496ac229c84"
+    },
+    {
+      "source_path": "src/lib/navigation.ts",
+      "repository_path": "fitness-os-2.0/src/lib/navigation.ts",
+      "bytes": 13132,
+      "sha256": "1100a9600d526d5f6e93a34ad348f65c6b5c466e36e59a6d06c09f504946350d"
+    },
+    {
+      "source_path": "src/lib/utils.ts",
+      "repository_path": "fitness-os-2.0/src/lib/utils.ts",
+      "bytes": 166,
+      "sha256": "64fc84c1be627f0d586fb4ba64d824a1604f44282381f5bae68cdf86e10bb6ec"
+    },
+    {
+      "source_path": "tests/e2e/final-delivery.spec.ts",
+      "repository_path": "fitness-os-2.0/tests/e2e/final-delivery.spec.ts",
+      "bytes": 3854,
+      "sha256": "5561b5fee79c28767ed16c5c05385a2f3f63bff5c02f1527aa598ecdecce3c7a"
+    },
+    {
+      "source_path": "tests/e2e/phase1.spec.ts",
+      "repository_path": "fitness-os-2.0/tests/e2e/phase1.spec.ts",
+      "bytes": 10508,
+      "sha256": "e7a41cd8f3a9134e16f46c4f78194413b945b078a4f567035de1a6ca4cb4b636"
+    },
+    {
+      "source_path": "tests/unit/navigation.test.ts",
+      "repository_path": "fitness-os-2.0/tests/unit/navigation.test.ts",
+      "bytes": 2981,
+      "sha256": "347e2bca021bdeaceca04bb0b774286db3d208e3276b9731aff0191033efb46c"
+    },
+    {
+      "source_path": "tests/unit/service-worker.test.ts",
+      "repository_path": "fitness-os-2.0/tests/unit/service-worker.test.ts",
+      "bytes": 7077,
+      "sha256": "6e562dc3a5c714b8a51210c054c66e3d985182a2c943f5d067477d2256b88280"
+    },
+    {
+      "source_path": "tsconfig.json",
+      "repository_path": "fitness-os-2.0/tsconfig.json",
+      "bytes": 559,
+      "sha256": "cafef55e23a8f38f6b61515bf2670c4c19c212d3761306ab66a5acad1801a1ed"
+    },
+    {
+      "source_path": "vitest.config.mts",
+      "repository_path": "fitness-os-2.0/vitest.config.mts",
+      "bytes": 274,
+      "sha256": "608f6d34f5c09d812b52b8c3854a5ddf917e8c99f84992686c8229143a420c5f"
+    }
+  ],
+  "note": "Snapshot list excludes this manifest and later staging summary; original archive and application files are included."
+}

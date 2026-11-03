@@ -1,0 +1,50 @@
+{
+  "date": "2026-11-03",
+  "lint": "passed",
+  "typecheck": "passed",
+  "unit_tests_passed": 12,
+  "e2e_tests_passed": 7,
+  "module_routes": 43,
+  "original_documents": 17,
+  "frozen_install": "passed",
+  "build": "passed",
+  "internal_runtime_checks": [
+    {
+      "route": "/",
+      "status": 200,
+      "bytes": 44142
+    },
+    {
+      "route": "/sports",
+      "status": 200,
+      "bytes": 44448
+    },
+    {
+      "route": "/devices/huawei",
+      "status": 200,
+      "bytes": 29909
+    },
+    {
+      "route": "/manifest.json",
+      "status": 200,
+      "bytes": 642
+    },
+    {
+      "route": "/icons/icon-192.png",
+      "status": 200,
+      "bytes": 4449
+    },
+    {
+      "route": "/sw.js",
+      "status": 200,
+      "bytes": 2735
+    },
+    {
+      "route": "/offline.html",
+      "status": 200,
+      "bytes": 1902
+    }
+  ],
+  "public_preview": "not_available",
+  "production_deployment": false
+}

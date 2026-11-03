@@ -1,0 +1,21 @@
+{
+  "zip_crc": "passed",
+  "originals_byte_identical": 17,
+  "working_unchanged": 15,
+  "working_navigation_only": [
+    "docs/README.md",
+    "docs/MASTER_PROMPT.txt"
+  ],
+  "navigation_edits_preserve_requirements": "passed",
+  "zip_master_matches_previous_upload": true,
+  "local_navigation_links_checked": 27,
+  "capability_rows": 90,
+  "all_capabilities_unverified": true,
+  "coverage_source_items": {
+    "PRD.md": 98,
+    "FEATURES.md": 64,
+    "TEST_CASES.md": 43
+  },
+  "business_project_not_initialized": true,
+  "old_project_clean": true
+}

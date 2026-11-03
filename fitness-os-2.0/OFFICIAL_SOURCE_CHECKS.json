@@ -1,0 +1,29 @@
+{
+  "date": "2026-11-03",
+  "observations": [
+    {
+      "url": "https://developer.apple.com/documentation/healthkit/",
+      "error": "<urlopen error Tunnel connection failed: 403 Forbidden>"
+    },
+    {
+      "url": "https://developer.apple.com/documentation/healthkit/authorizing-access-to-health-data",
+      "error": "<urlopen error Tunnel connection failed: 403 Forbidden>"
+    },
+    {
+      "url": "https://developer.huawei.com/consumer/en/hms/huaweihealth/",
+      "error": "<urlopen error Tunnel connection failed: 403 Forbidden>"
+    },
+    {
+      "url": "https://developer.android.com/health-and-fitness/guides/health-connect",
+      "error": "<urlopen error Tunnel connection failed: 403 Forbidden>"
+    },
+    {
+      "url": "https://supabase.com/pricing",
+      "error": "<urlopen error Tunnel connection failed: 403 Forbidden>"
+    },
+    {
+      "url": "https://vercel.com/pricing",
+      "error": "<urlopen error Tunnel connection failed: 403 Forbidden>"
+    }
+  ]
+}

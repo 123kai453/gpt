@@ -1,0 +1,286 @@
+{
+  "archive_sha256": "6ea8df69e52830d66fac405f62e5bf5f5db2b3b553b5849cdb805b338c1d8920",
+  "documents": [
+    {
+      "archive_path": "FITNESS-OS-2.0-PROJECT/README.md",
+      "docs_path": "docs/README.md",
+      "bytes": 2118,
+      "original_sha256": "64adf55c78fce5c8569c4bbc35720ebd034579474d57b603801e11b6093ec7ef",
+      "working_sha256": "6ddefec1f14e9849ff2feab8f88c7b8c58cc6b2e1a1ce48aff6fc4000a363b62",
+      "working_change": "navigation_only"
+    },
+    {
+      "archive_path": "FITNESS-OS-2.0-PROJECT/05-配置与部署/BACKUP.md",
+      "docs_path": "docs/BACKUP.md",
+      "bytes": 492,
+      "original_sha256": "bc02800eea20ca1b319557c57f3d6ec79fc4957e679115b01aa96d8e96c81662",
+      "working_sha256": "bc02800eea20ca1b319557c57f3d6ec79fc4957e679115b01aa96d8e96c81662",
+      "working_change": "unchanged"
+    },
+    {
+      "archive_path": "FITNESS-OS-2.0-PROJECT/05-配置与部署/DEPLOYMENT.md",
+      "docs_path": "docs/DEPLOYMENT.md",
+      "bytes": 897,
+      "original_sha256": "c9db44bb0f40153502d5864da4ec37466fd56325424be506e384588f4748c082",
+      "working_sha256": "c9db44bb0f40153502d5864da4ec37466fd56325424be506e384588f4748c082",
+      "working_change": "unchanged"
+    },
+    {
+      "archive_path": "FITNESS-OS-2.0-PROJECT/05-配置与部署/.env.example",
+      "docs_path": "docs/.env.example",
+      "bytes": 345,
+      "original_sha256": "9fb8ff7220e668a0c7fb7e3037992cd077c8c9c567ef2788ddf1dac7e4509016",
+      "working_sha256": "9fb8ff7220e668a0c7fb7e3037992cd077c8c9c567ef2788ddf1dac7e4509016",
+      "working_change": "unchanged"
+    },
+    {
+      "archive_path": "FITNESS-OS-2.0-PROJECT/05-配置与部署/WEARABLE_INTEGRATION.md",
+      "docs_path": "docs/WEARABLE_INTEGRATION.md",
+      "bytes": 2249,
+      "original_sha256": "64e7c29b80176d3dd4b4626588ff23ab1836f8bf509e6ac06f2fcda3db4686cf",
+      "working_sha256": "64e7c29b80176d3dd4b4626588ff23ab1836f8bf509e6ac06f2fcda3db4686cf",
+      "working_change": "unchanged"
+    },
+    {
+      "archive_path": "FITNESS-OS-2.0-PROJECT/04-数据与测试/INITIAL_TRAINING_DATA.md",
+      "docs_path": "docs/INITIAL_TRAINING_DATA.md",
+      "bytes": 1162,
+      "original_sha256": "ed95aacab1b289fb964c64dae2537cc443a18c3590a16360534492ef0d5e9b6c",
+      "working_sha256": "ed95aacab1b289fb964c64dae2537cc443a18c3590a16360534492ef0d5e9b6c",
+      "working_change": "unchanged"
+    },
+    {
+      "archive_path": "FITNESS-OS-2.0-PROJECT/04-数据与测试/TEST_CASES.md",
+      "docs_path": "docs/TEST_CASES.md",
+      "bytes": 2022,
+      "original_sha256": "f005398f12267aff42425f629d27c1b84bb2d185edb5aad278df10cae3b8d505",
+      "working_sha256": "f005398f12267aff42425f629d27c1b84bb2d185edb5aad278df10cae3b8d505",
+      "working_change": "unchanged"
+    },
+    {
+      "archive_path": "FITNESS-OS-2.0-PROJECT/04-数据与测试/CHANGELOG.md",
+      "docs_path": "docs/CHANGELOG.md",
+      "bytes": 880,
+      "original_sha256": "4f23cf51f196f841a8f3aefc4a012995051accf425b40d2d2526f7dd1463ba42",
+      "working_sha256": "4f23cf51f196f841a8f3aefc4a012995051accf425b40d2d2526f7dd1463ba42",
+      "working_change": "unchanged"
+    },
+    {
+      "archive_path": "FITNESS-OS-2.0-PROJECT/02-技术架构/API.md",
+      "docs_path": "docs/API.md",
+      "bytes": 1386,
+      "original_sha256": "b3799930065d1a6996dd1e62d008890c433c112bb94c0d61f89487954c5d7c1b",
+      "working_sha256": "b3799930065d1a6996dd1e62d008890c433c112bb94c0d61f89487954c5d7c1b",
+      "working_change": "unchanged"
+    },
+    {
+      "archive_path": "FITNESS-OS-2.0-PROJECT/02-技术架构/DATABASE.md",
+      "docs_path": "docs/DATABASE.md",
+      "bytes": 2461,
+      "original_sha256": "be44d83cd98a56e93ae2a5fa9ee94eebd1b42636569ae4620c0b0c1975b94b67",
+      "working_sha256": "be44d83cd98a56e93ae2a5fa9ee94eebd1b42636569ae4620c0b0c1975b94b67",
+      "working_change": "unchanged"
+    },
+    {
+      "archive_path": "FITNESS-OS-2.0-PROJECT/02-技术架构/ARCHITECTURE.md",
+      "docs_path": "docs/ARCHITECTURE.md",
+      "bytes": 3004,
+      "original_sha256": "7be0878187fa075542c7b897c7f910ba89106cf7f9edee9b3a132943dc08b3e9",
+      "working_sha256": "7be0878187fa075542c7b897c7f910ba89106cf7f9edee9b3a132943dc08b3e9",
+      "working_change": "unchanged"
+    },
+    {
+      "archive_path": "FITNESS-OS-2.0-PROJECT/03-Codex开发指令/PHASES.md",
+      "docs_path": "docs/PHASES.md",
+      "bytes": 1321,
+      "original_sha256": "de401ad821bea5f88215fdd0a360dd3e964be522b1baf727e1d9816294b600f3",
+      "working_sha256": "de401ad821bea5f88215fdd0a360dd3e964be522b1baf727e1d9816294b600f3",
+      "working_change": "unchanged"
+    },
+    {
+      "archive_path": "FITNESS-OS-2.0-PROJECT/03-Codex开发指令/MASTER_PROMPT.txt",
+      "docs_path": "docs/MASTER_PROMPT.txt",
+      "bytes": 4123,
+      "original_sha256": "e5d42c370c697626a7695d4fb8443b5ad7f065b9cf67760da37cbbbc53b15689",
+      "working_sha256": "4b0e0198cc7fc0e63d74598bc470768b888369274d6f07d1523c5a64dda1ea8b",
+      "working_change": "phase1_formal_stage_decision",
+      "phase0_working_sha256": "0d47e04a1158a6c5e542637edf7ab84c74ce3b882c18231c508c9e8757cceffd"
+    },
+    {
+      "archive_path": "FITNESS-OS-2.0-PROJECT/03-Codex开发指令/CODING_RULES.md",
+      "docs_path": "docs/CODING_RULES.md",
+      "bytes": 923,
+      "original_sha256": "967b082518b6401155095242c1c509d9d68036721934928237605f72b92ca8cc",
+      "working_sha256": "967b082518b6401155095242c1c509d9d68036721934928237605f72b92ca8cc",
+      "working_change": "unchanged"
+    },
+    {
+      "archive_path": "FITNESS-OS-2.0-PROJECT/01-产品需求/FEATURES.md",
+      "docs_path": "docs/FEATURES.md",
+      "bytes": 2439,
+      "original_sha256": "41a02c59af2b1a84c1725d5b37142d6771a2bc1a4e4615ee2c2c90ae17b48140",
+      "working_sha256": "41a02c59af2b1a84c1725d5b37142d6771a2bc1a4e4615ee2c2c90ae17b48140",
+      "working_change": "unchanged"
+    },
+    {
+      "archive_path": "FITNESS-OS-2.0-PROJECT/01-产品需求/DESIGN.md",
+      "docs_path": "docs/DESIGN.md",
+      "bytes": 990,
+      "original_sha256": "783f753b3eaaa6cef81902df0f015c0e58896597faf075173e4e519cabd9954a",
+      "working_sha256": "783f753b3eaaa6cef81902df0f015c0e58896597faf075173e4e519cabd9954a",
+      "working_change": "unchanged"
+    },
+    {
+      "archive_path": "FITNESS-OS-2.0-PROJECT/01-产品需求/PRD.md",
+      "docs_path": "docs/PRD.md",
+      "bytes": 11305,
+      "original_sha256": "61ae1c949e6d0e5a1f131b1afa4725a50239ece1dbdecd565496815780791ac4",
+      "working_sha256": "61ae1c949e6d0e5a1f131b1afa4725a50239ece1dbdecd565496815780791ac4",
+      "working_change": "unchanged"
+    }
+  ],
+  "pre_copy_comparison": [
+    {
+      "target": "/workspace/fitness-os-2.0/documentation-originals/FITNESS-OS-2.0-PROJECT/README.md",
+      "state": "absent"
+    },
+    {
+      "target": "/workspace/fitness-os-2.0/docs/README.md",
+      "state": "absent"
+    },
+    {
+      "target": "/workspace/fitness-os-2.0/documentation-originals/FITNESS-OS-2.0-PROJECT/05-配置与部署/BACKUP.md",
+      "state": "absent"
+    },
+    {
+      "target": "/workspace/fitness-os-2.0/docs/BACKUP.md",
+      "state": "absent"
+    },
+    {
+      "target": "/workspace/fitness-os-2.0/documentation-originals/FITNESS-OS-2.0-PROJECT/05-配置与部署/DEPLOYMENT.md",
+      "state": "absent"
+    },
+    {
+      "target": "/workspace/fitness-os-2.0/docs/DEPLOYMENT.md",
+      "state": "absent"
+    },
+    {
+      "target": "/workspace/fitness-os-2.0/documentation-originals/FITNESS-OS-2.0-PROJECT/05-配置与部署/.env.example",
+      "state": "absent"
+    },
+    {
+      "target": "/workspace/fitness-os-2.0/docs/.env.example",
+      "state": "absent"
+    },
+    {
+      "target": "/workspace/fitness-os-2.0/documentation-originals/FITNESS-OS-2.0-PROJECT/05-配置与部署/WEARABLE_INTEGRATION.md",
+      "state": "absent"
+    },
+    {
+      "target": "/workspace/fitness-os-2.0/docs/WEARABLE_INTEGRATION.md",
+      "state": "absent"
+    },
+    {
+      "target": "/workspace/fitness-os-2.0/documentation-originals/FITNESS-OS-2.0-PROJECT/04-数据与测试/INITIAL_TRAINING_DATA.md",
+      "state": "absent"
+    },
+    {
+      "target": "/workspace/fitness-os-2.0/docs/INITIAL_TRAINING_DATA.md",
+      "state": "absent"
+    },
+    {
+      "target": "/workspace/fitness-os-2.0/documentation-originals/FITNESS-OS-2.0-PROJECT/04-数据与测试/TEST_CASES.md",
+      "state": "absent"
+    },
+    {
+      "target": "/workspace/fitness-os-2.0/docs/TEST_CASES.md",
+      "state": "absent"
+    },
+    {
+      "target": "/workspace/fitness-os-2.0/documentation-originals/FITNESS-OS-2.0-PROJECT/04-数据与测试/CHANGELOG.md",
+      "state": "absent"
+    },
+    {
+      "target": "/workspace/fitness-os-2.0/docs/CHANGELOG.md",
+      "state": "absent"
+    },
+    {
+      "target": "/workspace/fitness-os-2.0/documentation-originals/FITNESS-OS-2.0-PROJECT/02-技术架构/API.md",
+      "state": "absent"
+    },
+    {
+      "target": "/workspace/fitness-os-2.0/docs/API.md",
+      "state": "absent"
+    },
+    {
+      "target": "/workspace/fitness-os-2.0/documentation-originals/FITNESS-OS-2.0-PROJECT/02-技术架构/DATABASE.md",
+      "state": "absent"
+    },
+    {
+      "target": "/workspace/fitness-os-2.0/docs/DATABASE.md",
+      "state": "absent"
+    },
+    {
+      "target": "/workspace/fitness-os-2.0/documentation-originals/FITNESS-OS-2.0-PROJECT/02-技术架构/ARCHITECTURE.md",
+      "state": "absent"
+    },
+    {
+      "target": "/workspace/fitness-os-2.0/docs/ARCHITECTURE.md",
+      "state": "absent"
+    },
+    {
+      "target": "/workspace/fitness-os-2.0/documentation-originals/FITNESS-OS-2.0-PROJECT/03-Codex开发指令/PHASES.md",
+      "state": "absent"
+    },
+    {
+      "target": "/workspace/fitness-os-2.0/docs/PHASES.md",
+      "state": "absent"
+    },
+    {
+      "target": "/workspace/fitness-os-2.0/documentation-originals/FITNESS-OS-2.0-PROJECT/03-Codex开发指令/MASTER_PROMPT.txt",
+      "state": "absent"
+    },
+    {
+      "target": "/workspace/fitness-os-2.0/docs/MASTER_PROMPT.txt",
+      "state": "absent"
+    },
+    {
+      "target": "/workspace/fitness-os-2.0/documentation-originals/FITNESS-OS-2.0-PROJECT/03-Codex开发指令/CODING_RULES.md",
+      "state": "absent"
+    },
+    {
+      "target": "/workspace/fitness-os-2.0/docs/CODING_RULES.md",
+      "state": "absent"
+    },
+    {
+      "target": "/workspace/fitness-os-2.0/documentation-originals/FITNESS-OS-2.0-PROJECT/01-产品需求/FEATURES.md",
+      "state": "absent"
+    },
+    {
+      "target": "/workspace/fitness-os-2.0/docs/FEATURES.md",
+      "state": "absent"
+    },
+    {
+      "target": "/workspace/fitness-os-2.0/documentation-originals/FITNESS-OS-2.0-PROJECT/01-产品需求/DESIGN.md",
+      "state": "absent"
+    },
+    {
+      "target": "/workspace/fitness-os-2.0/docs/DESIGN.md",
+      "state": "absent"
+    },
+    {
+      "target": "/workspace/fitness-os-2.0/documentation-originals/FITNESS-OS-2.0-PROJECT/01-产品需求/PRD.md",
+      "state": "absent"
+    },
+    {
+      "target": "/workspace/fitness-os-2.0/docs/PRD.md",
+      "state": "absent"
+    }
+  ],
+  "coverage_counts": {
+    "PRD.md": 98,
+    "FEATURES.md": 64,
+    "TEST_CASES.md": 43
+  },
+  "current_phase": "PHASE 1.1"
+}

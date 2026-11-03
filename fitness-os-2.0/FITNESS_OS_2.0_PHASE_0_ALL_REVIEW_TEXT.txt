@@ -1,0 +1,828 @@
+﻿FITNESS OS 2.0 — PHASE 0 技术实施报告（网页端文本交付版）
+
+交付说明：此前 /workspace/ 文件引用不保证网页端可下载；文件经检查仍存在。本文件是可复制文本，不代表已修复网页客户端的附件下载功能。
+
+
+========================================================================
+PHASE_0_TECHNICAL_REPORT.md
+========================================================================
+
+# FITNESS OS 2.0 — PHASE 0 技术实施报告（完整文档复审版）
+
+日期：2026-11-03（Asia/Shanghai）。项目根：`/workspace/fitness-os-2.0`。本阶段仅文档整理、设计和可行性审核，未进入 PHASE 1。
+
+## 1. 文档整理、完整阅读与覆盖率
+
+已取得 `FITNESS-OS-2.0-PROJECT-DOCS.zip`（25,038 bytes），验证压缩包条目路径和无符号链接后，完整读取17份文件，包括隐藏的 `.env.example`。所有工作文档直接放入 `docs/`，不再嵌套 `FITNESS-OS-2.0-PROJECT`。未改动旧项目 `/workspace/gpt`。
+
+复制前逐个比较同名目标：新项目目标均不存在，无覆盖冲突。17份原始文件按 ZIP 层级逐字节保存在 `documentation-originals/FITNESS-OS-2.0-PROJECT/`，由 `DOCUMENT_MANIFEST.json` 记录原始和工作副本 SHA-256。工作副本仅 `docs/README.md` 与 `docs/MASTER_PROMPT.txt` 修正导航引用并添加路径说明，其余15份字节不变；原始需求及阶段文字不删改。
+
+`docs/INDEX.md` 是新的完整索引。逐文件审阅结论、逐条来源行号与设计映射见 `REQUIREMENTS_COVERAGE.md`。
+
+| 覆盖口径 | 本次结果 | 含义 |
+| --- | --- | --- |
+| 原始文件阅读与保留 | 17/17，100% | 原始副本逐字节保留，含配置示例 |
+| PRD 的项目符号条目 | 98/98 已映射 | 设计/路线覆盖；不等于严格统计全部自然语言中的原子需求 |
+| FEATURES 勾选功能 | 64/64 已映射 | 原勾选状态保持未完成；包含OpenAI和Gemini两种指定适配器 |
+| TEST_CASES 验收条目 | 43/43 已映射 | 尚未执行业务测试，不能称43项通过 |
+| 数据库基线、编号流程和章节正文 | 已逐节审核 | 关系和缺口在下文单列，不只依靠勾选清单 |
+| 应用实现/设备能力验证 | 未开发/未验证 | 本次不创建业务实现 |
+
+### 与上一版报告相比的重要修正
+
+- 文档缺失已解决；原数据库命名以 `DATABASE.md` 的 `user_id` 为准，上一版 `owner_id` 是建议别名，不在同一项目混用。
+- 管理员管理公共素材、模型配置、系统用量和审计，默认不得任意读取私人健康数据；不以 admin 角色绕过全部 RLS。
+- 完整保留社区搜索、公开计划收藏/复制、用户通知、身体数据、合法动作媒体、RIR/RPE、PR/肌群量/渐进超负荷、中文简写和AI计划确认。
+- 补足游泳出发间隔/休息/游进时间、全部运动专属指标、GPS漂移与来源、液体 ml/g 密度限制、每份/整包营养及食物估重。
+- 补足指定 OpenAI/Gemini、AI成本面板、记忆导出、人体肌群3D、粒子效果、缓存生成模型和移动降级。
+- 历史年龄/体重/力量/游泳及疼痛资料不得变成当前事实；需用户确认日期、现状与计划版本后才能导入，当前未seed。
+- `PHASES.md` 为0–10细分路线，MASTER原文为0–9；下一步工作方案暂按更细的 PHASES 展开，保留映射而非删除任一范围。
+
+## 2. 环境检查、产品与架构决策
+
+当前可访问的是 Debian 13 x86_64 云环境，不是用户的 Windows 电脑。前次实测：Node 24.19.0、npm 11.9.0、pnpm 11.25.0、Git 2.52.0、Python 3.12.14；约33 GiB内存与60 GiB可用磁盘。Docker/Java命令存在，未验证daemon或原生构建。未发现Xcode/Swift/adb/psql。环境版本证据来自此前 PHASE 0 检查，并非用户电脑检查结果。
+
+前次官方 npm registry 返回 Next 16.4.4（Node≥20.9）、Supabase JS 2.118.0（Node≥22）、React 19.3.1、Tailwind 4.3.4；这些只是当时 registry 元数据，不是已安装或锁定的组合。PHASE 1 再验证兼容并精确锁定，不能将 engine 满足解释为构建测试通过。
+
+本机待检：Windows版本、Node/包管理器/Git版本、内存/磁盘、工作目录；若本机只作浏览器客户端可不安装整个工具链。Windows + Node/Git可做Web开发，WSL2/Docker仅在本地Supabase等需要时加入。iOS真机桥接另需Mac/Xcode及签名环境，不能由Linux云机替代。
+
+### 架构选择
+
+遵循 `ARCHITECTURE.md`，初期采用 Next.js/React/TypeScript 模块化单体、Tailwind + shadcn/ui、Motion、Supabase PostgreSQL/Auth/私有Storage、Zod、Vitest/Playwright、PWA/IndexedDB。按需引入Three.js/React Three Fiber。相较此前建议的多包monorepo，先用文档推荐的 `src/features` 结构减少运维与构建成本，未来再抽共享包及原生伴侣，不改变领域边界。
+
+```text
+fitness-os-2.0/
+  docs/                         # 17份工作文档 + 新索引
+  documentation-originals/      # 不可变原始档案
+  src/app/                      # 后续阶段创建，路由/BFF
+  src/features/                 # dashboard/auth/training/sports/swimming/
+                                # nutrition/import-center/wearable/ai-coach/
+                                # memory/community/admin
+  src/lib/                      # ai/database/calculations/validation/storage/sync/geo
+  src/types/
+  supabase/migrations/
+  public/                       # 仅公开静态素材；不放私人上传或备份
+  tests/
+```
+
+上面 `src/` 等为未来结构，当前并未创建业务工程。AuthService、TrainingService、SportsService、SwimmingService、NutritionService、ImportService、WearableService、MemoryService、AIService、MediaService、SyncService 为模块服务边界，不要求分别部署为微服务。
+
+Web/PWA负责手动记录、计划、营养、导入、前台GPS及同步；原生伴侣负责平台健康API及需要可靠后台能力的任务。AI/OCR/大文档解析走作业接口，数据库任务表可作为低成本队列，达到需要时加入独立worker，不在短时HTTP请求中等待所有步骤。作业采用原子领取、租约、退避、最大重试和死信状态。
+
+## 3. 多用户、跨设备和数据生命周期
+
+- PostgreSQL是已确认数据的权威源，IndexedDB缓存必要用户数据与离线outbox；登出清缓存，避免共享设备泄露。私人页面、API响应和签名文件链接不进入公共PWA/CDN缓存。
+- 写入包含UUID、idempotency_key、base_version。数据库乐观锁检查冲突；已确认计划不能静默最后写入覆盖。合并或选择冲突版本必须可追踪。
+- Realtime仅作通知，断线重连按游标补拉；不能仅依赖在线WebSocket保持一致。删除带tombstone及清理周期。
+- UTC `timestamptz` + 原始时区/IANA timezone/必要原偏移 + 业务local_date，避免午夜和夏令时归组错误。原始单位和值与规范值并存。
+- 同一来源重复同步幂等；跨平台镜像可能有不同source ID，保留provenance并候选匹配，不把所有设备值直接累计。
+- 所有私人导出、备份、原文件、派生记忆/向量有保留和删除策略；撤权立即停调度，断开不等同于删除。用户需可单独删除导入记录。
+
+## 4. 各运动类型的数据模型
+
+共享 `activity_sessions`：id UUID、user_id UUID、type_id、start_at/end_at timestamptz、timezone text、local_date date、elapsed_s/moving_s/paused_s、distance_m nullable、active_energy_kcal nullable、平均/最大心率 nullable、RPE nullable、notes、capture_mode、source_id、device引用、estimated flag、created_at/imported_at、version。缺失值用NULL，不用0冒充真实数据。会话是否进行中决定end_at是否必填；结束后检查时间顺序。
+
+`activity_types` 注册类型、必填字段、允许指标、单位、表单/校验Schema版本。`activity_metrics`保存受控指标代码/数值或专属结构、单位、来源、measured/manual/derived/estimated；不能用无约束JSON替代关系模型。每次写入验证运动类型与指标一致性，默认单位仅用于展示，不替代来源记录。
+
+| 类型代码 | 专属字段/关系 | 校验与计算 |
+| --- | --- | --- |
+| strength（力量） | workout_sessions/exercises/sets；重量、组数、次数、RIR/RPE、休息、肌群 | 训练快照与计划版本关联；自重/辅助/单侧计量明确；PR公式/训练量算法版本化 |
+| swimming | swimming_sessions、intervals、drills、records、styles；池长、泳姿、组/趟、出发间隔、休息 | swim_time、rest_time、sendoff_interval分开，不能把出发间隔当实际游进；池长25/50米或自定义 |
+| outdoor_run | distance、laps、pace、cadence、HR、route、elevation | 配速s/km；时长/距离可计算，零距离不除零；路线/爬升有质量门槛 |
+| treadmill | duration、speed、incline_percent、distance、HR | 普通跑步机可坡度0；坡度百分比与角度不可混用；能量估算注明 |
+| indoor_cycle | duration、device_distance/speed、resistance、power_W、cadence_rpm、HR | 无设备值为NULL；不能用虚拟距离冒充GPS距离；阻力标明设备刻度 |
+| hike | duration、distance、route、altitude、ascent、HR | GPS/手动来源区分；海拔质量不足不自动生成可信爬升 |
+| elliptical | duration、resistance、steps/cadence、device_distance、HR | 不默认机器阻力跨型号可比；缺失指标不可推算成实测 |
+| rowing_machine | duration、distance、pace_s_per_500m、stroke_rate、power_W、HR | 配速单位500m与跑步的km分开；记录设备来源 |
+| jump_rope | duration、jump_count、sets、intervals、HR | 有效跳数与估算次数区分；组间休息单列 |
+| stair_climber | duration、level/speed、floors/steps、HR | 楼层换算高度需设备依据；等级不是统一SI速度 |
+| other | custom_name、category、duration、可选distance/intensity/notes、自定义指标 | 自定义指标绑定可校验定义和单位，不允许任意无效字段 |
+
+分段统一 `activity_laps`，游泳专属分组保留独立表；GPS `activity_routes` → `activity_route_points`，点包含时间、lat/lon、accuracy、可选altitude/speed/heading、来源与过滤结果。保留采样缺口，不用插值点冒充实测；暂停段不累计训练路线距离，清理操作可追溯。路线默认私人，公开需主动选择并支持隐私模糊。
+
+力量计划必须支持手动创建/编辑/复制/删除及日/周/周期安排。`training_plan_versions`确认后不可变；训练执行使用版本和动作/组次快照。删除计划不级联删除已执行训练。历史PR和肌群量按算法版本重算，合法动作媒体保留license/source。
+
+## 5. 数据库实体关系与RLS
+
+### 基线实体逐组保留
+
+| 领域 | 文档中的实体及关系设计 |
+| --- | --- |
+| 用户 | auth.users 1:1 profiles；1:N user_preferences/user_settings（可设计为每用户单行并unique） |
+| 身体 | 用户1:N body_metrics/body_measurements/body_composition；测量日期/来源/单位/历史待确认 |
+| 力量 | exercises 1:N exercise_media；training_plans 1:N training_plan_versions → training_plan_days → training_plan_exercises；workout_sessions → workout_exercises → workout_sets；personal_records引用实际记录 |
+| 通用运动 | activity_types 1:N activity_sessions；session 1:N activity_metrics/activity_laps/activity_notes；activity_sources记录来源；session 1:N activity_routes → activity_route_points |
+| 游泳 | swimming_sessions 1:1 activity_sessions；swimming_intervals/swimming_drills/swimming_records引用会话；swimming_styles字典 |
+| 食品 | foods通用食物；food_products商品；food_product_images/food_labels/food_ingredients/food_nutrition/food_barcodes为商品子表；meals → meal_items；nutrition_records为显式快照/汇总；user_food_favorites |
+| 导入 | import_jobs → import_sources/import_assets/import_parsed_records/import_confirmations；正式记录反向引用job/parsed_record |
+| 设备 | wearable_connections → wearable_permissions/wearable_devices/wearable_sync_jobs；wearable_records及wearable_source_links保留来源/标准记录关系 |
+| AI | ai_conversations → ai_messages；ai_memories → ai_memory_summaries（来源关系需补表）；ai_model_configs、ai_usage_logs |
+| 社区/系统 | shared_plans为发布快照；user_favorites、notifications、audit_logs；补充发布版本条目与搜索索引，不读取私人计划做公开搜索 |
+
+最小补充：nutrition_plans/nutrition_plan_versions/nutrition_plan_items（或通用plan类型）；user_food_tags及关联；field_candidates/field_evidence（食品与导入字段证据）；memory_sources/memory_embeddings（仅需要时）；mutation_receipts/sync_changes；job预算预占/结算表；受限schema的connection_secrets。这些是待确认的设计补充，不是已经运行的数据库。身体三类表和 nutrition_records 的重复语义需在 PHASE 2 明确唯一事实源，避免多表同时写入同一事实。
+
+```mermaid
+erDiagram
+  PROFILES ||--o{ TRAINING_PLANS : owns
+  TRAINING_PLANS ||--o{ TRAINING_PLAN_VERSIONS : versions
+  TRAINING_PLAN_VERSIONS ||--o{ TRAINING_PLAN_DAYS : schedules
+  TRAINING_PLAN_DAYS ||--o{ TRAINING_PLAN_EXERCISES : contains
+  TRAINING_PLAN_VERSIONS o|--o{ WORKOUT_SESSIONS : snapshot_source
+  ACTIVITY_SESSIONS ||--o| WORKOUT_SESSIONS : strength_extension
+  WORKOUT_SESSIONS ||--o{ WORKOUT_EXERCISES : contains
+  WORKOUT_EXERCISES ||--o{ WORKOUT_SETS : logs
+  PROFILES ||--o{ ACTIVITY_SESSIONS : owns
+  ACTIVITY_TYPES ||--o{ ACTIVITY_SESSIONS : classifies
+  ACTIVITY_SESSIONS ||--o{ ACTIVITY_METRICS : measures
+  ACTIVITY_SESSIONS ||--o{ ACTIVITY_LAPS : splits
+  ACTIVITY_SESSIONS ||--o| SWIMMING_SESSIONS : extends
+  SWIMMING_SESSIONS ||--o{ SWIMMING_INTERVALS : intervals
+  ACTIVITY_SESSIONS ||--o{ ACTIVITY_ROUTES : routes
+  ACTIVITY_ROUTES ||--o{ ACTIVITY_ROUTE_POINTS : samples
+  PROFILES ||--o{ IMPORT_JOBS : requests
+  IMPORT_JOBS ||--o{ IMPORT_ASSETS : uploads
+  IMPORT_JOBS ||--o{ IMPORT_PARSED_RECORDS : previews
+  IMPORT_JOBS ||--o{ IMPORT_CONFIRMATIONS : confirms
+  IMPORT_PARSED_RECORDS ||--o{ FIELD_EVIDENCE : traces
+  FOOD_PRODUCTS ||--o{ FOOD_PRODUCT_IMAGES : images
+  FOOD_PRODUCTS ||--o{ FOOD_NUTRITION : nutrients
+  MEALS ||--o{ MEAL_ITEMS : contains
+  FOOD_PRODUCTS o|--o{ MEAL_ITEMS : optional_product
+  PROFILES ||--o{ WEARABLE_CONNECTIONS : authorizes
+  WEARABLE_CONNECTIONS ||--o{ WEARABLE_PERMISSIONS : scopes
+  WEARABLE_CONNECTIONS ||--o{ WEARABLE_SYNC_JOBS : synchronizes
+  WEARABLE_CONNECTIONS ||--o{ WEARABLE_RECORDS : reads
+  WEARABLE_RECORDS ||--o{ WEARABLE_SOURCE_LINKS : provenance
+  PROFILES ||--o{ AI_MEMORIES : owns
+  AI_MEMORIES ||--o{ MEMORY_SOURCES : supported_by
+  TRAINING_PLAN_VERSIONS ||--o{ SHARED_PLANS : publishes_snapshot
+```
+
+所有私人表使用 `user_id UUID`，主键UUID；父表添加unique(id,user_id)，子表复合FK(parent_id,user_id)确保不能把自己的子行挂到别人父行。金额用整数最小单位/明确币种，营养用numeric、时间用timestamptz；经纬度检查范围；计数和距离非负、RPE/RIR范围显式、结束时间不早于开始。高频采样按需求分区或压缩原文件，不一开始无限堆JSON。
+
+索引：每个私人表覆盖(user_id,业务时间)、外键；计划unique(plan_id,version_no)；设备unique(user_id,provider,record_type,source_record_id)与dedup_key；导入确认/幂等键unique；公开计划按发布状态/标题搜索。按EXPLAIN与实际查询优化，不盲目给所有JSONB建GIN。
+
+### 权限矩阵
+
+| 数据 | 匿名 | 本人 | 其他登录用户 | 产品管理员 | 特权worker |
+| --- | --- | --- | --- | --- | --- |
+| 私人身体/运动/营养/记忆/轨迹/上传 | 无 | 受业务规则CRUD | 无 | 默认无 | 仅授权任务最小范围 |
+| 已发布计划快照 | 仅读公开字段 | 读；发布/撤回经服务端确认 | 仅读；收藏/复制入自己空间 | 公共内容审核 | 发布/审核任务 |
+| 公共动作与合法媒体 | 经许可的只读 | 只读；自建动作用私人表 | 同左 | 公共内容管理 | 素材任务 |
+| 个人收藏/通知 | 无 | 本人读写；系统字段只读 | 无 | 默认无 | 指定发送任务 |
+| 模型公共配置 | 仅必要公开展示字段 | 同左 | 同左 | 受审计管理 | 限定读取 |
+| 密钥/设备token/内部审计 | 无 | 无直接读；只返回安全状态 | 无 | 不默认看原始密钥 | 受限schema与用途 |
+
+```sql
+-- 设计示例，不是已执行迁移；所有私人表需分别审计。
+alter table public.activity_sessions enable row level security;
+create policy session_select on public.activity_sessions
+  for select to authenticated using ((select auth.uid()) = user_id);
+create policy session_insert on public.activity_sessions
+  for insert to authenticated with check ((select auth.uid()) = user_id);
+create policy session_update on public.activity_sessions
+  for update to authenticated
+  using ((select auth.uid()) = user_id)
+  with check ((select auth.uid()) = user_id);
+create policy session_delete on public.activity_sessions
+  for delete to authenticated using ((select auth.uid()) = user_id);
+```
+
+此策略还需配合grants、复合外键、业务状态检查。已确认计划版本不可任意update；AI提案确认用事务/RPC及版本检查。公开行不可通过修改user_id、role或visibility绕过发布流程。
+
+Storage使用私有bucket，storage.objects策略检查bucket与用户目录；下载发短时签名URL并验证归属。令牌放受限schema/安全密钥存储，不在客户端可查询表；`service_role`不返回前端。普通服务端请求使用用户会话验证身份与RLS，后台管理员凭证不能替代业务授权。SECURITY DEFINER固定search_path并收紧execute；审查视图安全和Realtime订阅。
+
+必须在P2执行匿名/A/B/管理员/worker测试，覆盖REST/RPC/Storage/Realtime、跨用户外键、猜ID、owner变更、公开快照、批量导出和记忆检索。当前均为待执行设计，未宣称RLS已安全运行。
+
+## 6. 食品多图导入模型
+
+`import_jobs(kind=food_product)`聚合一件商品；`import_assets`存每张图片及角色(front/back/ingredients/nutrition/barcode/other)、hash、私有对象路径、排序、MIME/大小。`import_parsed_records`存候选商品，字段证据指向asset、页码/图像区域、原文、置信度、解析版本、明确/推导/缺失/不确定标志与用户修正。置信度无法量化时用待确认状态，不伪造精确概率。
+
+确认后创建/更新 `food_products`（brand、name、variant、net_amount/unit）、`food_product_images`、`food_labels`、`food_ingredients`、`food_nutrition`、`food_barcodes`，记录import确认和版本。食品默认私人；条码不是全球配方的唯一真相，同品牌不同规格和地区仍可独立档案。图片疑似不同商品时提示拆分。
+
+营养字段包含nutrient_code、amount、unit、basis_amount/unit（100g/100ml/每份/整包）、serving_size、来源及确认状态。能量1 kcal=4.184 kJ；钠/盐、mg/g、糖与总碳水区分；标签未提供的营养素为unknown而不是0。液体ml转g必须有密度依据，否则只保留原计量或明确估算。照片估重也必须标为estimated并由用户确认。
+
+`meal_items`保存用量与当时营养快照，不因食品库后来改标签而改历史。早餐/午餐/晚餐/加餐、日/周/月统计、目标完成度、最近/收藏/自定义标签/一键复用完整保留。计算由程序执行；视觉/OCR只辅助提取，不决定未授权的正式写入。
+
+## 7. 智能导入、AI多模型与长期记忆
+
+流程：接收原文/文件 → 类型/语言检测与安全限制 → 本地文本提取或按需OCR/视觉 → 规则/AI分块解析 → 结构化中间格式 → 单位/日期/动作/运动类型/组次校验 → 合并跨块并标来源 → 可编辑预览/歧义提示 → 用户确认 → 基于版本和幂等键事务写入 → 保留原文、确认者、解析版本及审计。
+
+作业状态：uploaded/parsing/needs_review/confirmed/committed/failed/cancelled。确认后不得替换预览内容再静默提交，应核对preview_version/hash；失败保留原文和错误，支持重新解析但不重复正式记录。跨类型大导入需明确全量事务或分批确认边界，不能部分成功却报全部完成。
+
+格式：长文本（单日/整周/多周期）、饮食计划、运动记录；图片/截图；TXT/MD；文本PDF本地抽取、扫描PDF按需OCR；DOCX提取文本和表格。MIME/魔数、大小/页数/像素/解压体积限制、损坏/加密文件错误；不执行宏或文件中的指令。文件文本作为不可信数据，不能驱动工具执行或获取更多用户数据。CSV/JSON后续按schema支持导入/导出。
+
+AI明确实现 OpenAI Adapter、Gemini Adapter 的统一接口（generateText、generateStructuredOutput、analyzeImage、parseDocument、usageMetadata），按任务路由而非默认同时调用。缺少某能力时返回unsupported，不假装每个供应商都能原生解析DOCX或生成3D。输出Zod/schema校验；文本、图像、长任务超时/重试和用量统一。
+
+长期记忆包括偏好、食品标签、习惯、摘要、计划版本和纠正；记录来源、时间、有效期、确认状态、敏感级别。用户可查看/修改/删除/导出；派生摘要和向量同步失效。检索必须限定当前用户，embedding不能成为跨用户搜索旁路。
+
+无key时仍可手动创建/编辑计划、手动记录、程序计算和人工结构化导入。AI方案仅提案，修改确认计划必须用户确认。速率/日/月/平台总预算、任务前预占及结算、重试幂等；成本面板显示真实usage与估计差异，收费AI/OCR/3D按DESIGN执行二次确认。
+
+## 8. Apple与华为设备可行性
+
+完整研究在 `WEARABLE_RESEARCH.md`，逐项矩阵在 `WEARABLE_CAPABILITY_MATRIX.csv`。
+
+Apple：原生iPhone HealthKit桥接是路线，Web/PWA不能直接调用；后台同步不保证实时。要在Watch独立开始训练/实时交互须另评watchOS app，不算当前PWA已支持。具体授权、历史范围、可读写类型、路线和游泳指标待官方和真机核验。
+
+华为：文档未给出明确编号的五条方式，因此暂分H1 Android Health Kit、H2 iOS Health Kit候选、H3官方云/Web候选、H4 Android Health Connect、H5 HarmonyOS原生候选。后两条不是HMS同义词；H2/H3的SDK/API存在性本身也待确认。这五条分别设计适配器，不能将它们显示为已连接；独立保留FileImport与Manual回退。
+
+每种数据类型记录可读/可写、实时/历史、采样粒度、地区、permission scope、审核状态、合成内部字段例、单位、时区、证据等级。A1+H1–H5各15类共90条，具体能力一律待验证。未有官方scope的地方不编造字符串，合成样例不是SDK样本。
+
+需核实：具体手表/手机/OS/账号地区/发布地区、个人或企业资格、SDK版本、签名、权限申请、审核与商用条款；测试部分授权、无数据、历史、去重、撤销和删除。Health Connect只读取实际写入且获授权的数据，不能假设华为所有数据都经过它。HarmonyOS按系统代际单独评估。
+
+再次请求官方页面仍403（网络策略拒绝，不是服务本身不可用）。当前没有官方正文研究或真机验证证据，不能说已完成具体厂商可用性确认。没有购买/注册/抓取/绕权或索要用户账号密码。
+
+## 9. 成本、账号API与备份恢复
+
+### 预算情景（估算，不是当前报价）
+
+本次Supabase/Vercel官网也被403拒绝。历史常见套餐价格仅供规划；当前价格、免费配额、商用限制、税/汇率、地区和成员计费需购买前核实。不重复假定免费服务具备生产备份或SLA。
+
+| 阶段/项目 | 初期方案 | 后续费用风险 |
+| --- | --- | --- |
+| 开发Web/PWA/数据库 | 免费开发层或本地；无AI也可用 | 小量验证约US$0–10/月，取决于免费额度可用性 |
+| 数据库/Auth/Storage | Supabase开发项目 | 历史常见Pro约US$25/月起；compute、存储、出站、项目数、Realtime、PITR另查 |
+| Web部署 | 本地/兼容平台免费层 | 历史常见Vercel Pro约US$20/成员/月起；商用资格、函数时长/CPU、带宽超额另查 |
+| AI/OCR | 单任务显式触发、压缩缓存、本地提取优先 | 轻量预留US$0–10/月，图片/长文密集远高于此；没有保证赠送额度 |
+| 邮件/备份/监控 | 开发限额；独立加密备份 | 预留US$0–30+/月，邮件投递/出站/恢复工具成本待算 |
+| 域名 | 初期不买 | 常见US$10–30/年；续费与地区不同 |
+| Apple原生 | 初期不买开发者服务 | 历史常见分发计划US$99/年，资格/豁免/地区待核实；Mac/iPhone/Watch硬件另计 |
+| Huawei/Android/HarmonyOS | 先资格与SDK研究 | 资格/申请/分发/服务收费未知，不报价为0；真机与原生开发另估 |
+| 3D/地图/媒体 | 本地合法素材、按需加载 | 生成费用、模型存储、地图瓦片和版权授权另查；3D生成默认关闭 |
+
+小规模正式在线服务可先预留US$50–100/月起，不含人工、硬件、域名、税及当前云环境平台费用；不是固定上限。模型/图片密集场景可能超过US$100/月。每月账单=固定套餐+compute/存储/出站+AI token/图片/embedding+OCR页数+邮件/地图/备份。应用额度不保证供应商发票硬封顶，需要配合服务商告警/停用及基础设施监控。
+
+免费方案核对：暂停、数据库/文件容量、出站、项目数、连接数、认证邮件、函数时长、最大上传、日志、备份/PITR和商用条款。多图、GPS/传感器高频和多设备Realtime是主要变量。初期不买独立向量库/GPU/设备聚合API，不因省钱删RLS或备份。
+
+### 需注册或配置的账号/API
+
+- P1：复用GitHub；先在独立目录创建工程，不需要索要新token。无需AI和设备账号即可做本地基础工作。
+- P2：Supabase项目、地区、Auth回调、公开URL和publishable/anon key；迁移/后台凭证仅服务端。生产邮件随后配置SMTP、域名/DNS与SPF/DKIM/DMARC。
+- P5/P7：OpenAI/Gemini账号按需启用，文本/视觉模型、API key、预算；OCR可独立替换，不要求同时付费启用全部供应商。
+- P8后：Apple开发者/签名/HealthKit、华为开发者与实际获批能力、Android/HarmonyOS原生工具链；不假设一个通用华为API key能读取所有数据。
+- P10：部署账号、HTTPS、备份位置、监控与回滚。开发/测试/生产隔离。
+
+保留 `docs/.env.example` 原模板，不填真实值、不生成含密钥配置、不要求聊天发送密钥。当前云平台若保留OPENAI_等变量名，应使用平台允许的机密绑定和服务端映射；原始模板不因环境限制删改。
+
+### 导出、备份与恢复
+
+P2先交付用户JSON/CSV导出（含单位、时间/时区、来源、运动类型/数据类型）；P3–P9扩展schema，P10全量恢复演练。原始媒体另附受控导出清单/文件，不能把只有数据库行称为完整备份。
+
+建议生产初始目标：每日数据库和对象文件独立加密备份、保留周期可配置，RPO≤24小时、RTO≤1个工作日作为待演练目标，不是已达成SLA。先恢复到隔离环境，校验迁移版本、行数/FK、文件hash及随机业务记录；验证权限、计划历史、记忆和设备来源。备份不放public目录，权限最小化，不把真实设备token导出给普通用户；恢复后令牌有效性另验。支持用户删除、撤权、关联文件和记忆清理，备份过期删除有明确说明。
+
+## 10. 完整路线与PHASE 1具体方案
+
+阶段依据：按 `PHASES.md` 细分执行建议，MASTER保持原文。旧报告与新路线对应如下：
+
+| 新阶段 | 交付范围 | 与MASTER/旧报告对应及验收 |
+| --- | --- | --- |
+| 0 | 本报告、17文档覆盖、模型/RLS/平台研究 | 仍待用户确认；部分官方/真机可行性未闭合 |
+| 1 | 基础工程、设计系统、响应式、Dashboard、PWA骨架 | MASTER P1；生产构建、交互和PWA检查 |
+| 2 | Auth、迁移、RLS、资料、同步、导出 | MASTER P2；匿名/A/B隔离、跨设备/离线/冲突 |
+| 3 | 自主力量计划/版本、训练、游泳、全部手动运动 | MASTER P3；数据持久化、专属指标、无AI完整手动流程 |
+| 4 | 前台GPS/隐私/漂移/暂停 | MASTER P7中的GPS提前独立；不承诺后台 |
+| 5 | 营养/多图食品/标签/食物记忆 | MASTER P4；来源预览、单位/密度/估重、确认 |
+| 6 | 长文本/图片/文档导入 | MASTER P5；整周/周期、歧义、防覆盖与失败保留 |
+| 7 | OpenAI/Gemini、长期记忆、分析/预算 | MASTER P6；真实Provider测试和无key回退 |
+| 8 | 连接器/模拟器/文件回退、Apple/Huawei可行性 | MASTER P7设备部分；真实连接是后续独立交付，不自动算完成 |
+| 9 | 3D肌群、粒子、按需食品3D | MASTER P8；低端机降级、模型缓存、费用确认 |
+| 10 | 全面测试、部署、备份恢复 | MASTER P9；43项基线及新增测试，真实生产检查 |
+
+社区搜索/发布/收藏/复制在P3交付基础并在P10回归；管理员在P2定义权限、P7补模型/成本界面、P10做完整审计和公共内容管理；身体趋势和通知随P2/P3逐步交付。安全、备份和测试从相应阶段开始，不全部拖到P10。
+
+单人全职粗估Web完整范围18–35开发周，需求/第三方资格变化会延长；正式原生桥接另估每平台数周至数月。原文只要求设备架构与可行性后续启用，不能把原生正式连接默认为本路线已交付。
+
+### PHASE 1执行计划（待确认，不执行）
+
+1. **范围与安全基线**：使用当前新项目根，不覆盖docs或其他项目；检查未提交文件；保留现有检出，不自行建立worktree。建立README、.gitignore、无密钥配置样例、编码/需求追踪与脚本约定。
+2. **可复现工具链**：核对稳定Next/React/TS/Tailwind/shadcn/Motion组合，固定Node/包管理器及锁文件。脚手架先在临时空目录生成，逐文件比较后合并入本项目，避免初始化命令覆盖已有docs。安装成功后即跑类型检查和生产构建，记录实际版本。
+3. **模块结构**：建立src/app、features和lib；页面/领域/数据层分离，定义标准错误及输入schema。仅基础共享类型，不实现全部业务或大量空CRUD。
+4. **设计系统**：tokens、深色默认/浅色、桌面侧栏与手机导航、单位/来源显示、加载/空/错误/成功状态；键盘可用、对比度、prefers-reduced-motion。采用原创设计，不复制受保护界面。
+5. **首批页面**：Dashboard和各域导航入口；Dashboard无业务数据时显示真实空态、未连接/未配置状态，不填假运动/手表/AI结果。仅给已实现流程提供可操作按钮；尚未上线模块显示阶段说明，不制造空按钮或死链接。
+6. **PWA骨架**：manifest、合法图标、Service Worker、离线壳/更新提示；仅缓存公开静态资产。不在P1假称已实现P2的云同步与离线记录，不把PWA安装等同于后台GPS。
+7. **验收**：lint/typecheck/unit（必要基础规则）、生产build、start后本地HTTP功能请求；Playwright核对手机/桌面导航、主题、真实空态、离线壳和更新行为。iPhone Safari安装体验需真机或明确标记未测，模拟视口不等于实机验证。
+8. **阶段交付**：更新FEATURES状态/CHANGELOG/测试报告与费用；提供文件结构、已实现/未实现清单和下一阶段所需账号。停在阶段边界，不以通过build宣称后续功能已完成。
+
+P1不要求开通付费服务；无AI key可完成。P2开始前选择部署/数据地区与Supabase测试项目；不在P1抢先调用设备或写入历史健康资料。
+
+## 11. 未解决事项与本阶段结论
+
+1. Windows本机环境未检，只验证了当前云环境；需要本机只读结果或明确云开发为主。
+2. 五条华为候选拆分未获原列表验证；请确认或提供明确五项。API存在性/资格/数据范围均未证实。
+3. 未提供手表、配对手机/OS、账号地区及上线地区；这决定SDK和数据可行性。
+4. 官方页面被代理403拒绝，审核/费用/scope/历史窗口不能实证。已有访问记录，不重复用未经证实的信息补齐结论。
+5. 阶段编号冲突已映射但两份原文未擅改；建议确认采用PHASES的0–10路线，所有原功能均保留。
+6. DATABASE只是实体基线，没有现成SQL；身体三表、营养快照、计划跨域复用、运动/力量统一关系需P2字段级设计后写迁移和执行RLS测试。当前ER图与策略是设计，非运行结果。
+7. 供应商价格/免费额度及中国大陆访问、邮件/存储和跨境条件待确认；部署地区先于套餐购买决定。
+8. 历史训练资料的日期、当前身体状况和疼痛状态未知；不得自动导入或当作AI当前依据。
+
+本阶段完成了文档整理、全部阅读、需求追踪和技术设计更新。平台官方核实/真机、Windows检查仍有明确未验证项，不能宣称全项目或设备已就绪。本次不创建业务代码、不部署、不购买、不修改旧项目，等待用户确认后才进入PHASE 1。
+
+
+========================================================================
+REQUIREMENTS_COVERAGE.md
+========================================================================
+
+# 需求覆盖与验收追踪
+
+覆盖口径：完整读取17/17份文件；下表穷举 PRD、FEATURES、TEST_CASES 的全部 `- ` 条目，按来源行号追踪。覆盖指已纳入设计/路线，不代表已实现或已验证。章节正文、编号列表和数据库实体另见逐文件审阅及报告，不把条目计数宣称为全部自然语言需求的严格数学覆盖率。
+
+| 来源 | 条目数 | 设计映射 | 实现/业务验证 |
+| --- | ---: | ---: | --- |
+| PRD.md | 98 | 98/98 | 0；未开发/未执行 |
+| FEATURES.md | 64 | 64/64 | 0；未开发/未执行 |
+| TEST_CASES.md | 43 | 43/43 | 0；未开发/未执行 |
+
+## 17份文档审阅
+
+- **docs/README.md**：交付物为文档包而非网站源码；低成本和授权边界明确。
+- **docs/PRD.md**：覆盖13个需求章节；发现管理员权限、收藏搜索、食物估重、液体密度和历史身体信息等须补入此前报告。
+- **docs/FEATURES.md**：每个勾选条目独立建立覆盖记录；原状态保持未开始。
+- **docs/DESIGN.md**：深浅主题、减少动态、手机降级、付费/公开/删除二次确认与真实状态。
+- **docs/ARCHITECTURE.md**：采用src/features模块化单体；运动注册表、专属扩展与统一连接器。
+- **docs/DATABASE.md**：逐项实体保留并映射关系；补充类型、索引、复合归属外键与RLS方案，尚未执行迁移。
+- **docs/API.md**：11个服务边界；导入确认、设备增量/撤权、AI结构化校验与服务端预算。
+- **docs/MASTER_PROMPT.txt**：全部原则保留，仅补全路径；0–9与PHASES的0–10冲突显式记录。
+- **docs/PHASES.md**：0–10独立GPS阶段；报告逐阶段映射，不丢弃旧路线能力。
+- **docs/CODING_RULES.md**：16项规范作为后续验收门槛；不因文档中的开发指令越过当前PHASE 0授权。
+- **docs/INITIAL_TRAINING_DATA.md**：历史身体/力量/游泳/疼痛数据只读审查；日期和现状不明，不自动seed到真实账户。
+- **docs/TEST_CASES.md**：逐条建立验收映射，全部未执行；不将文档检查作为应用测试通过。
+- **docs/CHANGELOG.md**：原始需求基线保留，本阶段变更另写项目根CHANGELOG。
+- **docs/.env.example**：模板无真实值；OPENAI_等变量名可能受当前云平台限制，后续使用受支持映射；未创建.env.local。
+- **docs/DEPLOYMENT.md**：测试/生产隔离、GPS/原生边界、发布检查保留；未部署。
+- **docs/BACKUP.md**：数据库与对象存储分开备份；用户导出/删除、恢复演练需实体覆盖。
+- **docs/WEARABLE_INTEGRATION.md**：官方链接是研究入口而非验证证据；具体SDK/范围待核实；禁止非官方抓取。
+
+## 逐条来源映射
+
+| ID/源行 | 原始条目 | 领域/设计位置 | 状态 |
+| --- | --- | --- | --- |
+| R001 PRD.md:9 | 任何人可注册，拥有独立私人空间。 | 权限；报告§5 RLS；§10 P2 | 已纳入设计；未实现/未验收 |
+| R002 PRD.md:10 | 用户可创建、编辑、复制、版本化自己的计划。 | 权限；报告§5 RLS；§10 P2 | 已纳入设计；未实现/未验收 |
+| R003 PRD.md:11 | 训练计划可设为私人或公开；公开计划可被查看、收藏和复制。 | 权限；报告§5 RLS；§10 P2 | 已纳入设计；未实现/未验收 |
+| R004 PRD.md:12 | 私人饮食、训练、身体、手表和AI记忆数据不可被其他用户访问。 | 权限；报告§5 RLS；§10 P2 | 已纳入设计；未实现/未验收 |
+| R005 PRD.md:13 | 管理员管理公共素材、模型配置、系统用量和审计；默认不得随意查看私人健康数据。 | 权限；报告§5 RLS；§10 P2 | 已纳入设计；未实现/未验收 |
+| R006 PRD.md:14 | 所有数据访问必须服务端鉴权并实施数据库RLS。 | 权限；报告§5 RLS；§10 P2 | 已纳入设计；未实现/未验收 |
+| R007 PRD.md:15 | 分享内容必须由用户主动选择公开，默认私人。 | 权限；报告§5 RLS；§10 P2 | 已纳入设计；未实现/未验收 |
+| R008 PRD.md:33 | 商品名称、品牌、规格、净含量、口味/型号。 | 食品营养；报告§6；§10 P5 | 已纳入设计；未实现/未验收 |
+| R009 PRD.md:34 | 配料表原文及结构化成分。 | 食品营养；报告§6；§10 P5 | 已纳入设计；未实现/未验收 |
+| R010 PRD.md:35 | 营养成分表：能量、蛋白质、脂肪、碳水、糖（如标注）、钠、钙及其他实际列出的项目。 | 食品营养；报告§6；§10 P5 | 已纳入设计；未实现/未验收 |
+| R011 PRD.md:36 | 标示基准：每100g、每100ml、每份或整包装。 | 食品营养；报告§6；§10 P5 | 已纳入设计；未实现/未验收 |
+| R012 PRD.md:37 | 单位、条形码（可识别时）、过敏原提示（仅在标签有明确依据时）。 | 食品营养；报告§6；§10 P5 | 已纳入设计；未实现/未验收 |
+| R013 PRD.md:38 | 图片来源和识别置信度/待确认字段。 | 食品营养；报告§6；§10 P5 | 已纳入设计；未实现/未验收 |
+| R014 PRD.md:43 | 支持拍照识别食物、手动录入、条码入口。 | 食品营养；报告§6；§10 P5 | 已纳入设计；未实现/未验收 |
+| R015 PRD.md:44 | 食物照片识别重量属于估算，必须明确标注并让用户确认。 | 食品营养；报告§6；§10 P5 | 已纳入设计；未实现/未验收 |
+| R016 PRD.md:45 | 保存食物名称、品牌、规格、每100g/100ml营养、每份营养、配料表、商品图、来源和确认状态。 | 食品营养；报告§6；§10 P5 | 已纳入设计；未实现/未验收 |
+| R017 PRD.md:46 | 记录早餐、午餐、晚餐、加餐。 | 食品营养；报告§6；§10 P5 | 已纳入设计；未实现/未验收 |
+| R018 PRD.md:47 | 计算热量、蛋白质、碳水、脂肪、纤维、糖、钠及有数据来源的微量营养素。 | 食品营养；报告§6；§10 P5 | 已纳入设计；未实现/未验收 |
+| R019 PRD.md:48 | 每日/每周/每月汇总与目标完成度。 | 食品营养；报告§6；§10 P5 | 已纳入设计；未实现/未验收 |
+| R020 PRD.md:49 | 支持用户常用食物、最近使用、收藏、自定义标签、一键复用。 | 食品营养；报告§6；§10 P5 | 已纳入设计；未实现/未验收 |
+| R021 PRD.md:50 | 计算由程序负责；AI负责识别辅助和解释。 | 食品营养；报告§6；§10 P5 | 已纳入设计；未实现/未验收 |
+| R022 PRD.md:53 | 动作库包含中英文名称、匹配图片、肌群、器械、步骤、常见错误、呼吸和注意事项。 | 力量；报告§4、§10 P3 | 已纳入设计；未实现/未验收 |
+| R023 PRD.md:54 | 素材必须有合法使用权；没有可靠演示素材时使用明确标注的原创示意图。 | 力量；报告§4、§10 P3 | 已纳入设计；未实现/未验收 |
+| R024 PRD.md:55 | 用户可以完全自主创建、编辑、删除、复制和版本化训练计划。 | 力量；报告§4、§10 P3 | 已纳入设计；未实现/未验收 |
+| R025 PRD.md:56 | 支持日/周/周期安排、训练日、休息日、动作、重量、组数、次数、休息、RIR、RPE、目标和备注。 | 力量；报告§4、§10 P3 | 已纳入设计；未实现/未验收 |
+| R026 PRD.md:57 | 训练记录不因计划修改而覆盖。 | 力量；报告§4、§10 P3 | 已纳入设计；未实现/未验收 |
+| R027 PRD.md:58 | 支持PR、训练量、肌群量、历史曲线和渐进超负荷建议。 | 力量；报告§4、§10 P3 | 已纳入设计；未实现/未验收 |
+| R028 PRD.md:59 | 支持中文简写和自然语言记录，例如“卧推35 3*10”。 | 力量；报告§4、§10 P3 | 已纳入设计；未实现/未验收 |
+| R029 PRD.md:60 | AI建议修改已确认计划前必须经用户确认。 | 力量；报告§4、§10 P3 | 已纳入设计；未实现/未验收 |
+| R030 PRD.md:66 | 游泳：泳姿、泳池长度、总距离、分组、分段时间、出发间隔、休息、配速、技术练习。 | 运动；报告§4；§10 P3/P4 | 已纳入设计；未实现/未验收 |
+| R031 PRD.md:67 | 户外跑步：距离、时长、平均/分段配速、步频、心率、路线、爬升。 | 运动；报告§4；§10 P3/P4 | 已纳入设计；未实现/未验收 |
+| R032 PRD.md:68 | 跑步机爬坡：时长、速度、坡度、距离、心率、估算消耗；允许普通跑步机模式。 | 运动；报告§4；§10 P3/P4 | 已纳入设计；未实现/未验收 |
+| R033 PRD.md:69 | 室内动感单车：时长、距离（设备提供时）、速度、阻力/功率（设备提供时）、踏频、心率。 | 运动；报告§4；§10 P3/P4 | 已纳入设计；未实现/未验收 |
+| R034 PRD.md:70 | 徒步/登山：距离、时长、累计爬升、海拔、路线、心率。 | 运动；报告§4；§10 P3/P4 | 已纳入设计；未实现/未验收 |
+| R035 PRD.md:71 | 椭圆机：时长、阻力、步数/步频（设备提供时）、距离（设备提供时）、心率。 | 运动；报告§4；§10 P3/P4 | 已纳入设计；未实现/未验收 |
+| R036 PRD.md:72 | 划船机：距离、时长、500m配速、桨频、功率（设备提供时）、心率。 | 运动；报告§4；§10 P3/P4 | 已纳入设计；未实现/未验收 |
+| R037 PRD.md:73 | 跳绳：时长、次数、组数、间歇、心率。 | 运动；报告§4；§10 P3/P4 | 已纳入设计；未实现/未验收 |
+| R038 PRD.md:74 | 登山机：时长、等级/速度、楼层或步数、心率。 | 运动；报告§4；§10 P3/P4 | 已纳入设计；未实现/未验收 |
+| R039 PRD.md:75 | 其他运动：用户自定义名称、分类、时长、距离（可选）、强度、备注和自定义指标。 | 运动；报告§4；§10 P3/P4 | 已纳入设计；未实现/未验收 |
+| R040 PRD.md:81 | 手动模式：用户输入距离、时间、坡度等。 | 运动；报告§4；§10 P3/P4 | 已纳入设计；未实现/未验收 |
+| R041 PRD.md:82 | GPS模式：在支持的设备/浏览器中经用户授权采集位置点，计算路线、距离、速度和爬升（数据质量允许时）。 | 运动；报告§4；§10 P3/P4 | 已纳入设计；未实现/未验收 |
+| R042 PRD.md:83 | 同一运动记录需注明数据来源和采集方式。 | 运动；报告§4；§10 P3/P4 | 已纳入设计；未实现/未验收 |
+| R043 PRD.md:84 | 防止GPS漂移，支持暂停/继续、结束确认和轨迹清理。 | 运动；报告§4；§10 P3/P4 | 已纳入设计；未实现/未验收 |
+| R044 PRD.md:85 | 浏览器GPS只承诺前台、授权和设备允许时工作；不承诺PWA锁屏后台持续追踪。 | 运动；报告§4；§10 P3/P4 | 已纳入设计；未实现/未验收 |
+| R045 PRD.md:86 | 后台可靠定位、Apple Watch原生运动会话等能力规划到后续原生伴侣应用。 | 运动；报告§4；§10 P3/P4 | 已纳入设计；未实现/未验收 |
+| R046 PRD.md:87 | 用户可关闭位置记录；位置数据默认私人，精确坐标不得公开分享，除非用户明确选择。 | 运动；报告§4；§10 P3/P4 | 已纳入设计；未实现/未验收 |
+| R047 PRD.md:93 | 设计 Apple Health/HealthKit Connector。 | 设备；报告§8；WEARABLE_RESEARCH.md；能力矩阵 | 已纳入设计；未实现/未验收 |
+| R048 PRD.md:94 | HealthKit数据通常需要原生iOS应用或伴侣应用请求权限、读取数据，再安全同步至FITNESS OS云端；普通Web/PWA不能直接调用HealthKit原生框架。 | 设备；报告§8；WEARABLE_RESEARCH.md；能力矩阵 | 已纳入设计；未实现/未验收 |
+| R049 PRD.md:95 | 通过细粒度权限请求读取用户允许的数据，如步数、心率、活动能量、训练、距离、睡眠（实际类型和授权为准）。 | 设备；报告§8；WEARABLE_RESEARCH.md；能力矩阵 | 已纳入设计；未实现/未验收 |
+| R050 PRD.md:96 | 用户可撤销权限；系统要处理缺失、有限历史窗口和重复导入。 | 设备；报告§8；WEARABLE_RESEARCH.md；能力矩阵 | 已纳入设计；未实现/未验收 |
+| R051 PRD.md:97 | 后续可用原生iOS companion app桥接；不能在当前纯Web阶段谎称已连接Apple Watch。 | 设备；报告§8；WEARABLE_RESEARCH.md；能力矩阵 | 已纳入设计；未实现/未验收 |
+| R052 PRD.md:100 | 设计 Huawei Health Kit / Health Connect / HarmonyOS相关适配层。 | 设备；报告§8；WEARABLE_RESEARCH.md；能力矩阵 | 已纳入设计；未实现/未验收 |
+| R053 PRD.md:101 | 接入前按设备型号、地区、操作系统、SDK、开发者资格、数据类型和审核要求逐项核实。 | 设备；报告§8；WEARABLE_RESEARCH.md；能力矩阵 | 已纳入设计；未实现/未验收 |
+| R054 PRD.md:102 | 不假设所有华为手表均可通过统一Web API读取所有数据。 | 设备；报告§8；WEARABLE_RESEARCH.md；能力矩阵 | 已纳入设计；未实现/未验收 |
+| R055 PRD.md:103 | 支持用户授权的数据读取；如官方授权/SDK暂不可用，保留健康平台同步、文件导入和手动录入等替代方案。 | 设备；报告§8；WEARABLE_RESEARCH.md；能力矩阵 | 已纳入设计；未实现/未验收 |
+| R056 PRD.md:104 | 不能使用非官方抓取或绕过授权方式读取。 | 设备；报告§8；WEARABLE_RESEARCH.md；能力矩阵 | 已纳入设计；未实现/未验收 |
+| R057 PRD.md:108 | provider、设备名称/型号（可获得时）、数据类型、时间、单位、数值、来源ID、授权状态、同步时间、原始来源引用。 | 设备；报告§8；WEARABLE_RESEARCH.md；能力矩阵 | 已纳入设计；未实现/未验收 |
+| R058 PRD.md:109 | 去重ID和幂等导入。 | 设备；报告§8；WEARABLE_RESEARCH.md；能力矩阵 | 已纳入设计；未实现/未验收 |
+| R059 PRD.md:110 | 同一指标来自多设备时保留来源，不可无规则重复累加。 | 设备；报告§8；WEARABLE_RESEARCH.md；能力矩阵 | 已纳入设计；未实现/未验收 |
+| R060 PRD.md:111 | 用户可查看、断开、撤销和删除导入数据。 | 设备；报告§8；WEARABLE_RESEARCH.md；能力矩阵 | 已纳入设计；未实现/未验收 |
+| R061 PRD.md:112 | 设备连接暂缓实施，但架构和数据表现在必须预留。 | 设备；报告§8；WEARABLE_RESEARCH.md；能力矩阵 | 已纳入设计；未实现/未验收 |
+| R062 PRD.md:116 | 粘贴长文本训练计划（单日、整周、多个周期）。 | 导入；报告§7；§10 P6 | 已纳入设计；未实现/未验收 |
+| R063 PRD.md:117 | 粘贴饮食计划。 | 导入；报告§7；§10 P6 | 已纳入设计；未实现/未验收 |
+| R064 PRD.md:118 | 粘贴运动记录。 | 导入；报告§7；§10 P6 | 已纳入设计；未实现/未验收 |
+| R065 PRD.md:119 | 图片/截图导入。 | 导入；报告§7；§10 P6 | 已纳入设计；未实现/未验收 |
+| R066 PRD.md:120 | 文档导入（TXT、MD、PDF、DOCX等，按实际解析库和安全限制实现）。 | 导入；报告§7；§10 P6 | 已纳入设计；未实现/未验收 |
+| R067 PRD.md:121 | 后续支持CSV/JSON导入导出。 | 导入；报告§7；§10 P6 | 已纳入设计；未实现/未验收 |
+| R068 PRD.md:138 | Multi-provider：OpenAI、Gemini及后续Provider Adapter。 | AI；报告§7/§9；§10 P7 | 已纳入设计；未实现/未验收 |
+| R069 PRD.md:139 | 按任务路由，不默认并行调用全部模型。 | AI；报告§7/§9；§10 P7 | 已纳入设计；未实现/未验收 |
+| R070 PRD.md:140 | 训练/运动/饮食分析、简写解析、计划建议、食品标签辅助识别。 | AI；报告§7/§9；§10 P7 | 已纳入设计；未实现/未验收 |
+| R071 PRD.md:141 | 程序计算营养合计、训练量、配速、GPS距离等可确定指标。 | AI；报告§7/§9；§10 P7 | 已纳入设计；未实现/未验收 |
+| R072 PRD.md:142 | 记忆包含用户偏好、食品标签、训练习惯、历史摘要、计划版本和用户纠正。 | AI；报告§7/§9；§10 P7 | 已纳入设计；未实现/未验收 |
+| R073 PRD.md:143 | 用户可查看、编辑、删除、导出记忆。 | AI；报告§7/§9；§10 P7 | 已纳入设计；未实现/未验收 |
+| R074 PRD.md:144 | AI只能访问当前用户授权数据。 | AI；报告§7/§9；§10 P7 | 已纳入设计；未实现/未验收 |
+| R075 PRD.md:145 | 未配置API时，普通记录、手动导入和程序计算照常可用。 | AI；报告§7/§9；§10 P7 | 已纳入设计；未实现/未验收 |
+| R076 PRD.md:146 | AI调用走服务端，设置每用户/每日/每月预算、用量日志、速率限制和熔断。 | AI；报告§7/§9；§10 P7 | 已纳入设计；未实现/未验收 |
+| R077 PRD.md:149 | Apple/Linear风格为主体，局部科幻粒子。 | 视觉；报告§10 P1/P9 | 已纳入设计；未实现/未验收 |
+| R078 PRD.md:150 | 深色默认并支持浅色。 | 视觉；报告§10 P1/P9 | 已纳入设计；未实现/未验收 |
+| R079 PRD.md:151 | 3D人体肌群模型和动作关联。 | 视觉；报告§10 P1/P9 | 已纳入设计；未实现/未验收 |
+| R080 PRD.md:152 | 食物普通识别默认使用图片和粒子特效；真正图片转3D必须用户主动触发并展示可能费用。 | 视觉；报告§10 P1/P9 | 已纳入设计；未实现/未验收 |
+| R081 PRD.md:153 | 缓存已生成模型，避免重复付费。 | 视觉；报告§10 P1/P9 | 已纳入设计；未实现/未验收 |
+| R082 PRD.md:154 | 移动端降低复杂度，支持减少动态效果。 | 视觉；报告§10 P1/P9 | 已纳入设计；未实现/未验收 |
+| R083 PRD.md:157 | 响应式Web App + PWA，支持Windows、iPhone Safari、Android。 | 同步；报告§3/§9；§10 P2/P10 | 已纳入设计；未实现/未验收 |
+| R084 PRD.md:158 | 云端数据库为正式数据源。 | 同步；报告§3/§9；§10 P2/P10 | 已纳入设计；未实现/未验收 |
+| R085 PRD.md:159 | 离线查看必要数据、离线记录队列、联网同步和冲突解决。 | 同步；报告§3/§9；§10 P2/P10 | 已纳入设计；未实现/未验收 |
+| R086 PRD.md:160 | 明确显示同步状态。 | 同步；报告§3/§9；§10 P2/P10 | 已纳入设计；未实现/未验收 |
+| R087 PRD.md:161 | 数据导出、删除、备份和迁移。 | 同步；报告§3/§9；§10 P2/P10 | 已纳入设计；未实现/未验收 |
+| R088 PRD.md:162 | 敏感健康、心率、睡眠、GPS数据默认私人；按最小必要原则收集。 | 同步；报告§3/§9；§10 P2/P10 | 已纳入设计；未实现/未验收 |
+| R089 PRD.md:163 | 用户明确授权后才读取设备数据。 | 同步；报告§3/§9；§10 P2/P10 | 已纳入设计；未实现/未验收 |
+| R090 PRD.md:164 | 公开分享不得默认包含GPS精确路线或健康指标。 | 同步；报告§3/§9；§10 P2/P10 | 已纳入设计；未实现/未验收 |
+| R091 PRD.md:167 | 第一阶段免费/低成本运行。 | 通用；报告§2–§11；本文件§17份文档审阅 | 已纳入设计；未实现/未验收 |
+| R092 PRD.md:168 | 设备接入先实现接口、数据模型、模拟器和文档，不先购买开发者服务。 | 通用；报告§2–§11；本文件§17份文档审阅 | 已纳入设计；未实现/未验收 |
+| R093 PRD.md:169 | AI未配置时不产生调用费用。 | 通用；报告§2–§11；本文件§17份文档审阅 | 已纳入设计；未实现/未验收 |
+| R094 PRD.md:170 | OCR优先评估本地/低成本方案，复杂识别再用视觉模型。 | 通用；报告§2–§11；本文件§17份文档审阅 | 已纳入设计；未实现/未验收 |
+| R095 PRD.md:171 | 3D按需调用。 | 通用；报告§2–§11；本文件§17份文档审阅 | 已纳入设计；未实现/未验收 |
+| R096 PRD.md:172 | 图片压缩和缓存。 | 通用；报告§2–§11；本文件§17份文档审阅 | 已纳入设计；未实现/未验收 |
+| R097 PRD.md:173 | 正式接入Apple/Huawei前核实开发者计划、审核、平台和地区限制。 | 通用；报告§2–§11；本文件§17份文档审阅 | 已纳入设计；未实现/未验收 |
+| R098 PRD.md:174 | 不为省钱牺牲RLS、安全和数据备份。 | 通用；报告§2–§11；本文件§17份文档审阅 | 已纳入设计；未实现/未验收 |
+| R099 FEATURES.md:6 | 注册、登录、私人空间 | 权限；报告§5 RLS；§10 P2 | 已纳入设计；未实现/未验收 |
+| R100 FEATURES.md:7 | 多用户RLS隔离 | 权限；报告§5 RLS；§10 P2 | 已纳入设计；未实现/未验收 |
+| R101 FEATURES.md:8 | 公开训练计划、收藏、复制 | 权限；报告§5 RLS；§10 P2 | 已纳入设计；未实现/未验收 |
+| R102 FEATURES.md:9 | 管理员后台与审计 | 权限；报告§5 RLS；§10 P2 | 已纳入设计；未实现/未验收 |
+| R103 FEATURES.md:10 | 响应式Web、PWA、云端同步 | 权限；报告§5 RLS；§10 P2 | 已纳入设计；未实现/未验收 |
+| R104 FEATURES.md:11 | 离线记录队列与冲突处理 | 权限；报告§5 RLS；§10 P2 | 已纳入设计；未实现/未验收 |
+| R105 FEATURES.md:14 | 动作库、动作图片/合法视频 | 力量；报告§4、§10 P3 | 已纳入设计；未实现/未验收 |
+| R106 FEATURES.md:15 | 自主创建/编辑/复制/删除训练计划 | 力量；报告§4、§10 P3 | 已纳入设计；未实现/未验收 |
+| R107 FEATURES.md:16 | 计划版本和历史快照 | 力量；报告§4、§10 P3 | 已纳入设计；未实现/未验收 |
+| R108 FEATURES.md:17 | 重量、组数、次数、RIR/RPE、休息时间 | 力量；报告§4、§10 P3 | 已纳入设计；未实现/未验收 |
+| R109 FEATURES.md:18 | PR、训练量、肌群量、趋势 | 力量；报告§4、§10 P3 | 已纳入设计；未实现/未验收 |
+| R110 FEATURES.md:19 | 简写记录解析 | 力量；报告§4、§10 P3 | 已纳入设计；未实现/未验收 |
+| R111 FEATURES.md:20 | AI建议修改确认流 | 力量；报告§4、§10 P3 | 已纳入设计；未实现/未验收 |
+| R112 FEATURES.md:23 | 游泳：泳姿、池长、分组、分段、配速 | 运动；报告§4；§10 P3/P4 | 已纳入设计；未实现/未验收 |
+| R113 FEATURES.md:24 | 户外跑步 | 运动；报告§4；§10 P3/P4 | 已纳入设计；未实现/未验收 |
+| R114 FEATURES.md:25 | 跑步机爬坡 | 运动；报告§4；§10 P3/P4 | 已纳入设计；未实现/未验收 |
+| R115 FEATURES.md:26 | 室内动感单车 | 运动；报告§4；§10 P3/P4 | 已纳入设计；未实现/未验收 |
+| R116 FEATURES.md:27 | 徒步/登山 | 运动；报告§4；§10 P3/P4 | 已纳入设计；未实现/未验收 |
+| R117 FEATURES.md:28 | 椭圆机 | 运动；报告§4；§10 P3/P4 | 已纳入设计；未实现/未验收 |
+| R118 FEATURES.md:29 | 划船机 | 运动；报告§4；§10 P3/P4 | 已纳入设计；未实现/未验收 |
+| R119 FEATURES.md:30 | 跳绳 | 运动；报告§4；§10 P3/P4 | 已纳入设计；未实现/未验收 |
+| R120 FEATURES.md:31 | 登山机 | 运动；报告§4；§10 P3/P4 | 已纳入设计；未实现/未验收 |
+| R121 FEATURES.md:32 | 其他运动自定义 | 运动；报告§4；§10 P3/P4 | 已纳入设计；未实现/未验收 |
+| R122 FEATURES.md:33 | 手动记录 | 运动；报告§4；§10 P3/P4 | 已纳入设计；未实现/未验收 |
+| R123 FEATURES.md:34 | 前台GPS路线记录 | 运动；报告§4；§10 P3/P4 | 已纳入设计；未实现/未验收 |
+| R124 FEATURES.md:35 | GPS暂停/继续/漂移处理 | 运动；报告§4；§10 P3/P4 | 已纳入设计；未实现/未验收 |
+| R125 FEATURES.md:36 | 心率、RPE、热量来源和运动趋势 | 运动；报告§4；§10 P3/P4 | 已纳入设计；未实现/未验收 |
+| R126 FEATURES.md:37 | 运动类型可扩展注册机制 | 运动；报告§4；§10 P3/P4 | 已纳入设计；未实现/未验收 |
+| R127 FEATURES.md:40 | 多张食品包装照片合并识别 | 食品营养；报告§6；§10 P5 | 已纳入设计；未实现/未验收 |
+| R128 FEATURES.md:41 | 正面/背面/配料表/营养表/条码关联同一商品 | 食品营养；报告§6；§10 P5 | 已纳入设计；未实现/未验收 |
+| R129 FEATURES.md:42 | OCR提取配料表 | 食品营养；报告§6；§10 P5 | 已纳入设计；未实现/未验收 |
+| R130 FEATURES.md:43 | 营养成分表单位和基准识别 | 食品营养；报告§6；§10 P5 | 已纳入设计；未实现/未验收 |
+| R131 FEATURES.md:44 | 人工校对和确认 | 食品营养；报告§6；§10 P5 | 已纳入设计；未实现/未验收 |
+| R132 FEATURES.md:45 | 食物图片识别和估重标注 | 食品营养；报告§6；§10 P5 | 已纳入设计；未实现/未验收 |
+| R133 FEATURES.md:46 | 私人食物库、品牌、规格和标签 | 食品营养；报告§6；§10 P5 | 已纳入设计；未实现/未验收 |
+| R134 FEATURES.md:47 | 餐次、营养统计和历史复用 | 食品营养；报告§6；§10 P5 | 已纳入设计；未实现/未验收 |
+| R135 FEATURES.md:50 | 长文本训练计划导入 | 导入；报告§7；§10 P6 | 已纳入设计；未实现/未验收 |
+| R136 FEATURES.md:51 | 整周/多周期计划识别 | 导入；报告§7；§10 P6 | 已纳入设计；未实现/未验收 |
+| R137 FEATURES.md:52 | 饮食计划导入 | 导入；报告§7；§10 P6 | 已纳入设计；未实现/未验收 |
+| R138 FEATURES.md:53 | 运动记录导入 | 导入；报告§7；§10 P6 | 已纳入设计；未实现/未验收 |
+| R139 FEATURES.md:54 | 图片/截图解析 | 导入；报告§7；§10 P6 | 已纳入设计；未实现/未验收 |
+| R140 FEATURES.md:55 | TXT/MD/PDF/DOCX解析 | 导入；报告§7；§10 P6 | 已纳入设计；未实现/未验收 |
+| R141 FEATURES.md:56 | 解析预览、纠错、确认导入 | 导入；报告§7；§10 P6 | 已纳入设计；未实现/未验收 |
+| R142 FEATURES.md:57 | 原文保留、来源追踪和防覆盖 | 导入；报告§7；§10 P6 | 已纳入设计；未实现/未验收 |
+| R143 FEATURES.md:60 | OpenAI Adapter | AI；报告§7/§9；§10 P7 | 已纳入设计；未实现/未验收 |
+| R144 FEATURES.md:61 | Gemini Adapter | AI；报告§7/§9；§10 P7 | 已纳入设计；未实现/未验收 |
+| R145 FEATURES.md:62 | Provider路由和预算熔断 | AI；报告§7/§9；§10 P7 | 已纳入设计；未实现/未验收 |
+| R146 FEATURES.md:63 | 训练/运动/营养分析 | AI；报告§7/§9；§10 P7 | 已纳入设计；未实现/未验收 |
+| R147 FEATURES.md:64 | AI计划生成建议 | AI；报告§7/§9；§10 P7 | 已纳入设计；未实现/未验收 |
+| R148 FEATURES.md:65 | 长期记忆CRUD | AI；报告§7/§9；§10 P7 | 已纳入设计；未实现/未验收 |
+| R149 FEATURES.md:66 | AI调用日志和成本面板 | AI；报告§7/§9；§10 P7 | 已纳入设计；未实现/未验收 |
+| R150 FEATURES.md:69 | 统一设备连接中心 | 设备；报告§8；WEARABLE_RESEARCH.md；能力矩阵 | 已纳入设计；未实现/未验收 |
+| R151 FEATURES.md:70 | Apple HealthKit原生桥接接口 | 设备；报告§8；WEARABLE_RESEARCH.md；能力矩阵 | 已纳入设计；未实现/未验收 |
+| R152 FEATURES.md:71 | Huawei Health Kit适配接口 | 设备；报告§8；WEARABLE_RESEARCH.md；能力矩阵 | 已纳入设计；未实现/未验收 |
+| R153 FEATURES.md:72 | Health Connect/文件导入替代路径评估 | 设备；报告§8；WEARABLE_RESEARCH.md；能力矩阵 | 已纳入设计；未实现/未验收 |
+| R154 FEATURES.md:73 | 步数、心率、活动能量、睡眠、运动数据（按授权与设备能力） | 设备；报告§8；WEARABLE_RESEARCH.md；能力矩阵 | 已纳入设计；未实现/未验收 |
+| R155 FEATURES.md:74 | 设备来源、授权状态、同步状态 | 设备；报告§8；WEARABLE_RESEARCH.md；能力矩阵 | 已纳入设计；未实现/未验收 |
+| R156 FEATURES.md:75 | 数据去重、撤销、删除和断连 | 设备；报告§8；WEARABLE_RESEARCH.md；能力矩阵 | 已纳入设计；未实现/未验收 |
+| R157 FEATURES.md:78 | Apple/Linear视觉 | 视觉；报告§10 P1/P9 | 已纳入设计；未实现/未验收 |
+| R158 FEATURES.md:79 | 深浅主题 | 视觉；报告§10 P1/P9 | 已纳入设计；未实现/未验收 |
+| R159 FEATURES.md:80 | 粒子效果 | 视觉；报告§10 P1/P9 | 已纳入设计；未实现/未验收 |
+| R160 FEATURES.md:81 | 3D人体肌群 | 视觉；报告§10 P1/P9 | 已纳入设计；未实现/未验收 |
+| R161 FEATURES.md:82 | 按需食物3D生成 | 视觉；报告§10 P1/P9 | 已纳入设计；未实现/未验收 |
+| R162 FEATURES.md:83 | 移动端降级 | 视觉；报告§10 P1/P9 | 已纳入设计；未实现/未验收 |
+| R163 TEST_CASES.md:4 | A/B用户私人数据隔离。 | 权限；报告§5 RLS；§10 P2 | 已纳入设计；未实现/未验收 |
+| R164 TEST_CASES.md:5 | GPS、睡眠、心率默认私人。 | 权限；报告§5 RLS；§10 P2 | 已纳入设计；未实现/未验收 |
+| R165 TEST_CASES.md:6 | 用户撤权后设备停止同步。 | 权限；报告§5 RLS；§10 P2 | 已纳入设计；未实现/未验收 |
+| R166 TEST_CASES.md:7 | 分享计划不泄露私人路线和健康指标。 | 权限；报告§5 RLS；§10 P2 | 已纳入设计；未实现/未验收 |
+| R167 TEST_CASES.md:10 | 用户可完全手动创建计划。 | 力量；报告§4、§10 P3 | 已纳入设计；未实现/未验收 |
+| R168 TEST_CASES.md:11 | 长文本“卧推35 3*10”解析正确。 | 力量；报告§4、§10 P3 | 已纳入设计；未实现/未验收 |
+| R169 TEST_CASES.md:12 | 解析预览允许编辑；未确认不导入。 | 力量；报告§4、§10 P3 | 已纳入设计；未实现/未验收 |
+| R170 TEST_CASES.md:13 | 修改计划不覆盖历史记录。 | 力量；报告§4、§10 P3 | 已纳入设计；未实现/未验收 |
+| R171 TEST_CASES.md:16 | 首批运动类型均可创建记录。 | 运动；报告§4；§10 P3/P4 | 已纳入设计；未实现/未验收 |
+| R172 TEST_CASES.md:17 | 不同运动显示对应指标。 | 运动；报告§4；§10 P3/P4 | 已纳入设计；未实现/未验收 |
+| R173 TEST_CASES.md:18 | 手动记录可用。 | 运动；报告§4；§10 P3/P4 | 已纳入设计；未实现/未验收 |
+| R174 TEST_CASES.md:19 | GPS需授权，前台路线记录正常。 | 运动；报告§4；§10 P3/P4 | 已纳入设计；未实现/未验收 |
+| R175 TEST_CASES.md:20 | GPS漂移点过滤；暂停/继续/结束正常。 | 运动；报告§4；§10 P3/P4 | 已纳入设计；未实现/未验收 |
+| R176 TEST_CASES.md:21 | 不宣称PWA锁屏后台GPS必然可用。 | 运动；报告§4；§10 P3/P4 | 已纳入设计；未实现/未验收 |
+| R177 TEST_CASES.md:22 | 游泳出发间隔、休息和游进时间区分。 | 运动；报告§4；§10 P3/P4 | 已纳入设计；未实现/未验收 |
+| R178 TEST_CASES.md:25 | 多张图片关联同一商品。 | 食品营养；报告§6；§10 P5 | 已纳入设计；未实现/未验收 |
+| R179 TEST_CASES.md:26 | 正面、配料表、营养表字段来源可追溯。 | 食品营养；报告§6；§10 P5 | 已纳入设计；未实现/未验收 |
+| R180 TEST_CASES.md:27 | 每100g/100ml/每份/整包装不混淆。 | 食品营养；报告§6；§10 P5 | 已纳入设计；未实现/未验收 |
+| R181 TEST_CASES.md:28 | kJ/kcal转换正确。 | 食品营养；报告§6；§10 P5 | 已纳入设计；未实现/未验收 |
+| R182 TEST_CASES.md:29 | 未标注营养素不自动编造。 | 食品营养；报告§6；§10 P5 | 已纳入设计；未实现/未验收 |
+| R183 TEST_CASES.md:30 | 用户确认前不写入正式食品库。 | 食品营养；报告§6；§10 P5 | 已纳入设计；未实现/未验收 |
+| R184 TEST_CASES.md:31 | 同名不同品牌/规格可区分。 | 食品营养；报告§6；§10 P5 | 已纳入设计；未实现/未验收 |
+| R185 TEST_CASES.md:34 | 整周训练计划识别。 | 导入；报告§7；§10 P6 | 已纳入设计；未实现/未验收 |
+| R186 TEST_CASES.md:35 | 饮食计划识别。 | 导入；报告§7；§10 P6 | 已纳入设计；未实现/未验收 |
+| R187 TEST_CASES.md:36 | 多运动记录识别。 | 导入；报告§7；§10 P6 | 已纳入设计；未实现/未验收 |
+| R188 TEST_CASES.md:37 | 图片/截图/支持的文档解析。 | 导入；报告§7；§10 P6 | 已纳入设计；未实现/未验收 |
+| R189 TEST_CASES.md:38 | 原文保留、字段置信度/待确认标记。 | 导入；报告§7；§10 P6 | 已纳入设计；未实现/未验收 |
+| R190 TEST_CASES.md:39 | 未确认不覆盖已有计划。 | 导入；报告§7；§10 P6 | 已纳入设计；未实现/未验收 |
+| R191 TEST_CASES.md:42 | 无Key时手动记录和程序计算可用。 | AI；报告§7/§9；§10 P7 | 已纳入设计；未实现/未验收 |
+| R192 TEST_CASES.md:43 | Provider调用真实可测。 | AI；报告§7/§9；§10 P7 | 已纳入设计；未实现/未验收 |
+| R193 TEST_CASES.md:44 | Key不进入前端。 | AI；报告§7/§9；§10 P7 | 已纳入设计；未实现/未验收 |
+| R194 TEST_CASES.md:45 | 预算熔断有效。 | AI；报告§7/§9；§10 P7 | 已纳入设计；未实现/未验收 |
+| R195 TEST_CASES.md:46 | AI计划修改需确认。 | AI；报告§7/§9；§10 P7 | 已纳入设计；未实现/未验收 |
+| R196 TEST_CASES.md:47 | 记忆可查改删。 | AI；报告§7/§9；§10 P7 | 已纳入设计；未实现/未验收 |
+| R197 TEST_CASES.md:50 | 未连接时显示真实未连接状态。 | 设备；报告§8；WEARABLE_RESEARCH.md；能力矩阵 | 已纳入设计；未实现/未验收 |
+| R198 TEST_CASES.md:51 | Apple HealthKit桥接被明确标记为需要原生iOS companion。 | 设备；报告§8；WEARABLE_RESEARCH.md；能力矩阵 | 已纳入设计；未实现/未验收 |
+| R199 TEST_CASES.md:52 | Huawei连接能力按官方权限和设备能力显示。 | 设备；报告§8；WEARABLE_RESEARCH.md；能力矩阵 | 已纳入设计；未实现/未验收 |
+| R200 TEST_CASES.md:53 | 重复同步不重复计数。 | 设备；报告§8；WEARABLE_RESEARCH.md；能力矩阵 | 已纳入设计；未实现/未验收 |
+| R201 TEST_CASES.md:54 | 设备数据来源和单位保留。 | 设备；报告§8；WEARABLE_RESEARCH.md；能力矩阵 | 已纳入设计；未实现/未验收 |
+| R202 TEST_CASES.md:55 | 无数据权限时不编造数据。 | 设备；报告§8；WEARABLE_RESEARCH.md；能力矩阵 | 已纳入设计；未实现/未验收 |
+| R203 TEST_CASES.md:58 | 手机/电脑同步。 | 同步；报告§3/§9；§10 P2/P10 | 已纳入设计；未实现/未验收 |
+| R204 TEST_CASES.md:59 | 离线队列和冲突处理。 | 同步；报告§3/§9；§10 P2/P10 | 已纳入设计；未实现/未验收 |
+| R205 TEST_CASES.md:60 | 数据导出、删除和备份恢复。 | 同步；报告§3/§9；§10 P2/P10 | 已纳入设计；未实现/未验收 |
+
+
+========================================================================
+WEARABLE_RESEARCH.md
+========================================================================
+
+# 设备研究与独立适配器设计（PHASE 0）
+
+## 证据等级与当前结论
+
+日期：2026-11-03。`docs/PRD.md` §8、`docs/ARCHITECTURE.md`、`docs/WEARABLE_INTEGRATION.md` 为产品需求依据，不等于官方证明。本次再次读取 Apple 两个入口、Huawei、Android 官方入口时均收到代理 403，详见 `OFFICIAL_SOURCE_CHECKS.json`。没有获得 SDK、开发者后台、真机或授权样本。所有具体数据读写能力、scope 和字段映射都保持待验证；不可根据产品目标把支持状态设为 true。
+
+稳定的平台边界：HealthKit 是原生能力，普通 Web/PWA 不能直接调用；PWA 不承诺锁屏后台 GPS。后续原生桥接需要平台权限、真机验证和用户授权，不等于云端已有通用手表 API。
+
+## 华为“五种路径”的可追溯性
+
+收到的17份文件没有明确编号列出五种华为接入方式。它们列出 Android/HarmonyOS/iOS/Web 的核实要求、Health Kit/Health Connect，以及文件/手动回退。因此以下五项是为推进独立适配器设计所作的**候选拆分**，不是声称这是用户已经确认的五项，也不是声称各项均存在可申请的官方接口。需要用户补充原五项列表或确认这份拆分；该不确定性不阻碍其他 PHASE 0 工作。
+
+| ID | 独立适配器设计名 | 所在端/边界 | 存在性及外部前提 | 当前状态 |
+| --- | --- | --- | --- | --- |
+| H1 | HuaweiHealthKitAndroidAdapter | Android 原生侧 → 安全云同步 | 目标 Health Kit Android SDK、版本、资格、地区、scope、签名和审核待官方确认 | 候选；未实现；未验证 |
+| H2 | HuaweiHealthKitiOSAdapter | iOS 原生侧（若目标官方 SDK 提供） | 不能由多平台宣传推断 iOS SDK 完整能力，需确认是否提供、范围和地区 | 候选；SDK可用性未确认 |
+| H3 | HuaweiOfficialCloudAdapter | 服务端或官方支持的 Web/OAuth 流程（若存在） | 不假设有通用健康云 REST API；应用资质、官方端点、授权流程、回调、历史范围均未知 | 候选；API存在性未确认 |
+| H4 | AndroidHealthConnectAdapter | Android 健康数据中转 → 后端 | Health Connect SDK/系统要求、权限和华为源应用实际写入需分别确认；不是直连华为手表 | 候选；华为数据覆盖未知 |
+| H5 | HarmonyOSNativeHealthAdapter | HarmonyOS 原生健康能力 → 后端 | 系统代际、设备/手机、SDK开放资格、分发地区待核实；不复用 Android HMS 能力假设 | 候选；原生能力范围未知 |
+
+另设 A1 `AppleHealthKitAdapter`（iPhone原生桥接）、F1 `FileImportAdapter`、M1 `ManualAdapter`。文件/手动回退独立于上述五个候选，不混称设备实连。若原五项实际包含这些回退，应调整文档 ID 映射，而不是虚构第五个厂商 API。
+
+只做接口文档和模型设计，未创建连接器业务代码，未购买或申请服务。
+
+## 统一连接器契约
+
+操作沿用 API 文档：connect、authorize、getCapabilities、syncIncremental、disconnect、revoke、normalizeRecords。文档层补充以下约束：
+
+- connect 只创建待授权连接；authorize 必须通过平台真实授权，不以“已保存设置”冒充“已授权”。原生平台授权无须强行建模为 OAuth。
+- getCapabilities 按 provider、SDK/OS版本、地区、设备与数据类型返回：`unverified / unsupported / documented / device_verified`，另记录授权观察状态；未验证不能显示“支持”。
+- capability 的读/写、实时/历史分别独立；UI 的展示由证据与当前授权共同决定。实现时默认禁用写回设备。
+- syncIncremental 包含游标、批次幂等键、数据来源、删除/更新标记、重试状态；同一游标提交和数据写入事务化，失败不能提前推进游标。
+- disconnect 停调度；revoke 尝试平台支持的撤权及本地凭证清理。无法远程撤权时引导用户去系统设置，仍立即停本系统同步。
+- normalizeRecords 保留 provider 原 ID、source app/设备、原单位/值、UTC 时间、原时区/偏移、来源许可和原始引用。未知时区标记 unknown，不擅自解释为北京时间。
+- HealthKit 的读权限状态不能简单用授权请求成功推断，空结果也不能区分所有拒绝/无数据情况；状态应如实显示“未取得可用数据/读取授权未确认”，以目标 API 的可观察结果为准。
+
+## capability matrix
+
+完整逐路径逐指标矩阵在 `WEARABLE_CAPABILITY_MATRIX.csv`：6条平台候选路径（A1、H1–H5）×15种指标=90行。每行记录可读、可写、实时/历史、采样粒度、地区、权限scope、审核、字段样例、单位、时区、依据、待验证状态。文件/手动回退不视为设备能力，不混入90行。
+
+覆盖 steps、heart_rate、resting_heart_rate、active_energy、workout、distance、pace、sleep、route、elevation、cycling_cadence、swimming_laps、swimming_stroke、power、body_metrics。后五类用于验证专属运动和身体数据，不表示原文承诺任何厂商都有该指标。
+
+所有字段样例为**合成的内部标准化格式**，不是 SDK 返回样本；单位是内部建议，不是官方原始单位；scope 不填猜测的权限字符串。实测后须增加官方数据标识与原始单位映射。配速等程序推导可作为 derived 独立记录，不混进设备 measured 指标。
+
+## Apple 路线
+
+Apple Watch/其他源 → Apple Health/HealthKit → iPhone companion → 本项目后端 → Web/PWA。系统同步不保证实时，原生后台投递也不是无限持续运行。初版只读训练/健康数据，若要 Watch 上独立开始训练或实时采集则另设 watchOS app 里程碑。真机、Mac/Xcode、受支持系统与签名/分发条件必须另行验证。
+
+申请逐类权限、用途说明和 HealthKit capability；审核健康数据用途、隐私政策、允许存储/处理方式及删除/撤权流程。HealthKit 不提供可由任意网页直接获取数据的通用云 key。官方实际历史范围、读取保护、后台通知、路线访问条件均待核实。
+
+## 各路径接入研究检查表
+
+| 路径 | 必查事项 | 测试前置材料 |
+| --- | --- | --- |
+| A1 | HealthKit数据类型/读写授权、后台通知、增量与删除、分发与隐私要求 | iPhone/Watch/OS型号、Mac/Xcode、合法开发签名、用户授权样本 |
+| H1 | Android/HMS/Health Kit版本、个人或企业资格、开放地区、scope/签名及申请 | 手机/手表/账号地区、开发者后台审批、官方SDK |
+| H2 | iOS SDK是否存在且对目标地区开放、能力与Android差异 | 官方当前文档、支持矩阵和真机应用 |
+| H3 | 官方云接口是否存在、谁能申请、OAuth/服务端鉴权/回调、删除通知 | 官方端点与合同/资格依据；没有依据不得构造请求 |
+| H4 | Health Connect最低系统要求、数据权限/历史限制、源app是否实际写入 | 配对手机、源app版本、脱敏源记录及读取结果 |
+| H5 | HarmonyOS代际、健康SDK/权限与开发者资格、手机/表端边界 | 具体系统和设备、官方工具链、批准权限及样本 |
+
+统一真机验收：空库、授权拒绝、部分授权、断网、重复批次、跨源重复、UTC/时区切换、夏令时、采样缺口、权限撤回、历史记录更新/删除、账号退出及删除。仅出现 PID、成功回调或模拟样本不构成真实能力验证。
+
+官方入口：
+- https://developer.apple.com/documentation/healthkit/
+- https://developer.apple.com/documentation/healthkit/authorizing-access-to-health-data
+- https://developer.huawei.com/consumer/en/hms/huaweihealth/
+- https://developer.android.com/health-and-fitness/guides/health-connect
+
+这些入口当前未能读取；审核时间、收费、个人/企业资格及每条scope都待官方确认。不得以非官方抓取、用户密码或绕过平台授权替代。
+
+
+========================================================================
+WEARABLE_CAPABILITY_MATRIX.csv
+========================================================================
+
+adapter_id,adapter,metric_type,read,write,realtime,historical,sampling_granularity,region,permission_scope,review_status,normalized_synthetic_example,normalized_unit,timezone,evidence_status,official_entry,validation_required
+A1,AppleHealthKitAdapter,steps,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:aggregate,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""steps"", ""value"": 100, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",count（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.apple.com/documentation/healthkit/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+A1,AppleHealthKitAdapter,heart_rate,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:sample,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""heart_rate"", ""value"": 72, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",bpm（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.apple.com/documentation/healthkit/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+A1,AppleHealthKitAdapter,resting_heart_rate,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:aggregate,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""resting_heart_rate"", ""value"": 60, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",bpm（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.apple.com/documentation/healthkit/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+A1,AppleHealthKitAdapter,active_energy,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:interval,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""active_energy"", ""value"": 120, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",kcal（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.apple.com/documentation/healthkit/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+A1,AppleHealthKitAdapter,workout,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:session,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""workout"", ""value"": {""sport_code"": ""outdoor_run"", ""elapsed_s"": 1800}, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",typed_object（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.apple.com/documentation/healthkit/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+A1,AppleHealthKitAdapter,distance,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:interval,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""distance"", ""value"": 5000, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",m（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.apple.com/documentation/healthkit/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+A1,AppleHealthKitAdapter,pace,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:sample_or_derived,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""pace"", ""value"": 360, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",s/km（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.apple.com/documentation/healthkit/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+A1,AppleHealthKitAdapter,sleep,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:interval,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""sleep"", ""value"": {""stage"": ""unknown""}, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",stage_interval（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.apple.com/documentation/healthkit/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+A1,AppleHealthKitAdapter,route,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:time_series,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""route"", ""value"": {""lat"": 0, ""lon"": 0, ""accuracy_m"": 10}, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",WGS84_deg（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.apple.com/documentation/healthkit/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+A1,AppleHealthKitAdapter,elevation,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:sample,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""elevation"", ""value"": 100, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",m（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.apple.com/documentation/healthkit/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+A1,AppleHealthKitAdapter,cycling_cadence,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:sample,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""cycling_cadence"", ""value"": 80, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",rpm（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.apple.com/documentation/healthkit/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+A1,AppleHealthKitAdapter,swimming_laps,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:interval,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""swimming_laps"", ""value"": {""length_m"": 25, ""duration_s"": 30}, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",count_and_s（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.apple.com/documentation/healthkit/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+A1,AppleHealthKitAdapter,swimming_stroke,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:interval,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""swimming_stroke"", ""value"": ""freestyle"", ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",controlled_enum（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.apple.com/documentation/healthkit/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+A1,AppleHealthKitAdapter,power,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:sample,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""power"", ""value"": 150, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",W（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.apple.com/documentation/healthkit/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+A1,AppleHealthKitAdapter,body_metrics,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:sample,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""body_metrics"", ""value"": {""weight_kg"": 70}, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",per_metric_kg_cm_percent（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.apple.com/documentation/healthkit/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H1,HuaweiHealthKitAndroidAdapter,steps,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:aggregate,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""steps"", ""value"": 100, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",count（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.huawei.com/consumer/en/hms/huaweihealth/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H1,HuaweiHealthKitAndroidAdapter,heart_rate,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:sample,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""heart_rate"", ""value"": 72, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",bpm（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.huawei.com/consumer/en/hms/huaweihealth/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H1,HuaweiHealthKitAndroidAdapter,resting_heart_rate,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:aggregate,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""resting_heart_rate"", ""value"": 60, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",bpm（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.huawei.com/consumer/en/hms/huaweihealth/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H1,HuaweiHealthKitAndroidAdapter,active_energy,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:interval,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""active_energy"", ""value"": 120, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",kcal（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.huawei.com/consumer/en/hms/huaweihealth/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H1,HuaweiHealthKitAndroidAdapter,workout,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:session,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""workout"", ""value"": {""sport_code"": ""outdoor_run"", ""elapsed_s"": 1800}, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",typed_object（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.huawei.com/consumer/en/hms/huaweihealth/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H1,HuaweiHealthKitAndroidAdapter,distance,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:interval,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""distance"", ""value"": 5000, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",m（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.huawei.com/consumer/en/hms/huaweihealth/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H1,HuaweiHealthKitAndroidAdapter,pace,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:sample_or_derived,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""pace"", ""value"": 360, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",s/km（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.huawei.com/consumer/en/hms/huaweihealth/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H1,HuaweiHealthKitAndroidAdapter,sleep,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:interval,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""sleep"", ""value"": {""stage"": ""unknown""}, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",stage_interval（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.huawei.com/consumer/en/hms/huaweihealth/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H1,HuaweiHealthKitAndroidAdapter,route,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:time_series,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""route"", ""value"": {""lat"": 0, ""lon"": 0, ""accuracy_m"": 10}, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",WGS84_deg（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.huawei.com/consumer/en/hms/huaweihealth/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H1,HuaweiHealthKitAndroidAdapter,elevation,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:sample,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""elevation"", ""value"": 100, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",m（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.huawei.com/consumer/en/hms/huaweihealth/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H1,HuaweiHealthKitAndroidAdapter,cycling_cadence,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:sample,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""cycling_cadence"", ""value"": 80, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",rpm（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.huawei.com/consumer/en/hms/huaweihealth/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H1,HuaweiHealthKitAndroidAdapter,swimming_laps,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:interval,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""swimming_laps"", ""value"": {""length_m"": 25, ""duration_s"": 30}, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",count_and_s（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.huawei.com/consumer/en/hms/huaweihealth/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H1,HuaweiHealthKitAndroidAdapter,swimming_stroke,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:interval,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""swimming_stroke"", ""value"": ""freestyle"", ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",controlled_enum（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.huawei.com/consumer/en/hms/huaweihealth/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H1,HuaweiHealthKitAndroidAdapter,power,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:sample,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""power"", ""value"": 150, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",W（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.huawei.com/consumer/en/hms/huaweihealth/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H1,HuaweiHealthKitAndroidAdapter,body_metrics,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:sample,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""body_metrics"", ""value"": {""weight_kg"": 70}, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",per_metric_kg_cm_percent（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.huawei.com/consumer/en/hms/huaweihealth/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H2,HuaweiHealthKitiOSAdapter,steps,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:aggregate,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""steps"", ""value"": 100, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",count（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.huawei.com/consumer/en/hms/huaweihealth/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H2,HuaweiHealthKitiOSAdapter,heart_rate,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:sample,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""heart_rate"", ""value"": 72, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",bpm（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.huawei.com/consumer/en/hms/huaweihealth/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H2,HuaweiHealthKitiOSAdapter,resting_heart_rate,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:aggregate,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""resting_heart_rate"", ""value"": 60, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",bpm（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.huawei.com/consumer/en/hms/huaweihealth/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H2,HuaweiHealthKitiOSAdapter,active_energy,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:interval,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""active_energy"", ""value"": 120, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",kcal（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.huawei.com/consumer/en/hms/huaweihealth/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H2,HuaweiHealthKitiOSAdapter,workout,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:session,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""workout"", ""value"": {""sport_code"": ""outdoor_run"", ""elapsed_s"": 1800}, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",typed_object（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.huawei.com/consumer/en/hms/huaweihealth/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H2,HuaweiHealthKitiOSAdapter,distance,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:interval,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""distance"", ""value"": 5000, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",m（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.huawei.com/consumer/en/hms/huaweihealth/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H2,HuaweiHealthKitiOSAdapter,pace,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:sample_or_derived,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""pace"", ""value"": 360, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",s/km（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.huawei.com/consumer/en/hms/huaweihealth/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H2,HuaweiHealthKitiOSAdapter,sleep,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:interval,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""sleep"", ""value"": {""stage"": ""unknown""}, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",stage_interval（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.huawei.com/consumer/en/hms/huaweihealth/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H2,HuaweiHealthKitiOSAdapter,route,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:time_series,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""route"", ""value"": {""lat"": 0, ""lon"": 0, ""accuracy_m"": 10}, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",WGS84_deg（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.huawei.com/consumer/en/hms/huaweihealth/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H2,HuaweiHealthKitiOSAdapter,elevation,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:sample,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""elevation"", ""value"": 100, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",m（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.huawei.com/consumer/en/hms/huaweihealth/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H2,HuaweiHealthKitiOSAdapter,cycling_cadence,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:sample,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""cycling_cadence"", ""value"": 80, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",rpm（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.huawei.com/consumer/en/hms/huaweihealth/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H2,HuaweiHealthKitiOSAdapter,swimming_laps,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:interval,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""swimming_laps"", ""value"": {""length_m"": 25, ""duration_s"": 30}, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",count_and_s（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.huawei.com/consumer/en/hms/huaweihealth/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H2,HuaweiHealthKitiOSAdapter,swimming_stroke,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:interval,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""swimming_stroke"", ""value"": ""freestyle"", ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",controlled_enum（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.huawei.com/consumer/en/hms/huaweihealth/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H2,HuaweiHealthKitiOSAdapter,power,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:sample,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""power"", ""value"": 150, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",W（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.huawei.com/consumer/en/hms/huaweihealth/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H2,HuaweiHealthKitiOSAdapter,body_metrics,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:sample,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""body_metrics"", ""value"": {""weight_kg"": 70}, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",per_metric_kg_cm_percent（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.huawei.com/consumer/en/hms/huaweihealth/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H3,HuaweiOfficialCloudAdapter,steps,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:aggregate,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""steps"", ""value"": 100, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",count（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.huawei.com/consumer/en/hms/huaweihealth/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H3,HuaweiOfficialCloudAdapter,heart_rate,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:sample,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""heart_rate"", ""value"": 72, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",bpm（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.huawei.com/consumer/en/hms/huaweihealth/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H3,HuaweiOfficialCloudAdapter,resting_heart_rate,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:aggregate,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""resting_heart_rate"", ""value"": 60, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",bpm（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.huawei.com/consumer/en/hms/huaweihealth/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H3,HuaweiOfficialCloudAdapter,active_energy,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:interval,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""active_energy"", ""value"": 120, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",kcal（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.huawei.com/consumer/en/hms/huaweihealth/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H3,HuaweiOfficialCloudAdapter,workout,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:session,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""workout"", ""value"": {""sport_code"": ""outdoor_run"", ""elapsed_s"": 1800}, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",typed_object（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.huawei.com/consumer/en/hms/huaweihealth/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H3,HuaweiOfficialCloudAdapter,distance,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:interval,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""distance"", ""value"": 5000, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",m（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.huawei.com/consumer/en/hms/huaweihealth/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H3,HuaweiOfficialCloudAdapter,pace,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:sample_or_derived,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""pace"", ""value"": 360, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",s/km（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.huawei.com/consumer/en/hms/huaweihealth/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H3,HuaweiOfficialCloudAdapter,sleep,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:interval,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""sleep"", ""value"": {""stage"": ""unknown""}, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",stage_interval（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.huawei.com/consumer/en/hms/huaweihealth/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H3,HuaweiOfficialCloudAdapter,route,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:time_series,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""route"", ""value"": {""lat"": 0, ""lon"": 0, ""accuracy_m"": 10}, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",WGS84_deg（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.huawei.com/consumer/en/hms/huaweihealth/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H3,HuaweiOfficialCloudAdapter,elevation,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:sample,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""elevation"", ""value"": 100, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",m（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.huawei.com/consumer/en/hms/huaweihealth/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H3,HuaweiOfficialCloudAdapter,cycling_cadence,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:sample,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""cycling_cadence"", ""value"": 80, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",rpm（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.huawei.com/consumer/en/hms/huaweihealth/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H3,HuaweiOfficialCloudAdapter,swimming_laps,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:interval,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""swimming_laps"", ""value"": {""length_m"": 25, ""duration_s"": 30}, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",count_and_s（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.huawei.com/consumer/en/hms/huaweihealth/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H3,HuaweiOfficialCloudAdapter,swimming_stroke,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:interval,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""swimming_stroke"", ""value"": ""freestyle"", ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",controlled_enum（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.huawei.com/consumer/en/hms/huaweihealth/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H3,HuaweiOfficialCloudAdapter,power,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:sample,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""power"", ""value"": 150, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",W（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.huawei.com/consumer/en/hms/huaweihealth/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H3,HuaweiOfficialCloudAdapter,body_metrics,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:sample,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""body_metrics"", ""value"": {""weight_kg"": 70}, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",per_metric_kg_cm_percent（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.huawei.com/consumer/en/hms/huaweihealth/,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H4,AndroidHealthConnectAdapter,steps,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:aggregate,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""steps"", ""value"": 100, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",count（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.android.com/health-and-fitness/guides/health-connect,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H4,AndroidHealthConnectAdapter,heart_rate,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:sample,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""heart_rate"", ""value"": 72, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",bpm（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.android.com/health-and-fitness/guides/health-connect,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H4,AndroidHealthConnectAdapter,resting_heart_rate,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:aggregate,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""resting_heart_rate"", ""value"": 60, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",bpm（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.android.com/health-and-fitness/guides/health-connect,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H4,AndroidHealthConnectAdapter,active_energy,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:interval,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""active_energy"", ""value"": 120, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",kcal（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.android.com/health-and-fitness/guides/health-connect,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H4,AndroidHealthConnectAdapter,workout,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:session,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""workout"", ""value"": {""sport_code"": ""outdoor_run"", ""elapsed_s"": 1800}, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",typed_object（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.android.com/health-and-fitness/guides/health-connect,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H4,AndroidHealthConnectAdapter,distance,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:interval,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""distance"", ""value"": 5000, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",m（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.android.com/health-and-fitness/guides/health-connect,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H4,AndroidHealthConnectAdapter,pace,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:sample_or_derived,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""pace"", ""value"": 360, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",s/km（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.android.com/health-and-fitness/guides/health-connect,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H4,AndroidHealthConnectAdapter,sleep,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:interval,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""sleep"", ""value"": {""stage"": ""unknown""}, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",stage_interval（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.android.com/health-and-fitness/guides/health-connect,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H4,AndroidHealthConnectAdapter,route,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:time_series,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""route"", ""value"": {""lat"": 0, ""lon"": 0, ""accuracy_m"": 10}, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",WGS84_deg（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.android.com/health-and-fitness/guides/health-connect,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H4,AndroidHealthConnectAdapter,elevation,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:sample,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""elevation"", ""value"": 100, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",m（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.android.com/health-and-fitness/guides/health-connect,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H4,AndroidHealthConnectAdapter,cycling_cadence,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:sample,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""cycling_cadence"", ""value"": 80, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",rpm（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.android.com/health-and-fitness/guides/health-connect,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H4,AndroidHealthConnectAdapter,swimming_laps,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:interval,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""swimming_laps"", ""value"": {""length_m"": 25, ""duration_s"": 30}, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",count_and_s（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.android.com/health-and-fitness/guides/health-connect,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H4,AndroidHealthConnectAdapter,swimming_stroke,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:interval,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""swimming_stroke"", ""value"": ""freestyle"", ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",controlled_enum（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.android.com/health-and-fitness/guides/health-connect,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H4,AndroidHealthConnectAdapter,power,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:sample,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""power"", ""value"": 150, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",W（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.android.com/health-and-fitness/guides/health-connect,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H4,AndroidHealthConnectAdapter,body_metrics,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:sample,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""body_metrics"", ""value"": {""weight_kg"": 70}, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",per_metric_kg_cm_percent（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,https://developer.android.com/health-and-fitness/guides/health-connect,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H5,HarmonyOSNativeHealthAdapter,steps,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:aggregate,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""steps"", ""value"": 100, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",count（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,待取得匹配系统代际的官方入口,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H5,HarmonyOSNativeHealthAdapter,heart_rate,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:sample,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""heart_rate"", ""value"": 72, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",bpm（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,待取得匹配系统代际的官方入口,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H5,HarmonyOSNativeHealthAdapter,resting_heart_rate,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:aggregate,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""resting_heart_rate"", ""value"": 60, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",bpm（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,待取得匹配系统代际的官方入口,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H5,HarmonyOSNativeHealthAdapter,active_energy,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:interval,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""active_energy"", ""value"": 120, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",kcal（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,待取得匹配系统代际的官方入口,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H5,HarmonyOSNativeHealthAdapter,workout,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:session,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""workout"", ""value"": {""sport_code"": ""outdoor_run"", ""elapsed_s"": 1800}, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",typed_object（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,待取得匹配系统代际的官方入口,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H5,HarmonyOSNativeHealthAdapter,distance,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:interval,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""distance"", ""value"": 5000, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",m（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,待取得匹配系统代际的官方入口,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H5,HarmonyOSNativeHealthAdapter,pace,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:sample_or_derived,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""pace"", ""value"": 360, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",s/km（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,待取得匹配系统代际的官方入口,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H5,HarmonyOSNativeHealthAdapter,sleep,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:interval,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""sleep"", ""value"": {""stage"": ""unknown""}, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",stage_interval（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,待取得匹配系统代际的官方入口,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H5,HarmonyOSNativeHealthAdapter,route,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:time_series,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""route"", ""value"": {""lat"": 0, ""lon"": 0, ""accuracy_m"": 10}, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",WGS84_deg（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,待取得匹配系统代际的官方入口,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H5,HarmonyOSNativeHealthAdapter,elevation,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:sample,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""elevation"", ""value"": 100, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",m（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,待取得匹配系统代际的官方入口,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H5,HarmonyOSNativeHealthAdapter,cycling_cadence,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:sample,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""cycling_cadence"", ""value"": 80, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",rpm（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,待取得匹配系统代际的官方入口,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H5,HarmonyOSNativeHealthAdapter,swimming_laps,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:interval,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""swimming_laps"", ""value"": {""length_m"": 25, ""duration_s"": 30}, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",count_and_s（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,待取得匹配系统代际的官方入口,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H5,HarmonyOSNativeHealthAdapter,swimming_stroke,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:interval,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""swimming_stroke"", ""value"": ""freestyle"", ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",controlled_enum（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,待取得匹配系统代际的官方入口,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H5,HarmonyOSNativeHealthAdapter,power,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:sample,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""power"", ""value"": 150, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",W（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,待取得匹配系统代际的官方入口,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+H5,HarmonyOSNativeHealthAdapter,body_metrics,待验证,待验证；产品初版禁用写回,待验证；不承诺实时,待验证；窗口未知,待验证；内部候选:sample,待验证；设备/账号/分发地区未提供,待官方确认；未填写猜测字符串,未申请/未审核,"{""synthetic"": true, ""metric_type"": ""body_metrics"", ""value"": {""weight_kg"": 70}, ""start_at"": ""2026-01-01T00:00:00Z"", ""source_record_id"": ""test-only""}",per_metric_kg_cm_percent（内部建议；原始单位待验证）,内部UTC+原始时区/偏移；源缺失则unknown,unverified；无官方正文/真机样本,待取得匹配系统代际的官方入口,SDK存在性与资格、官方字段/scope、真机授权、粒度、历史/删除和去重
+
+
+========================================================================
+docs/INDEX.md
+========================================================================
+
+# 文档索引
+
+项目根目录：`/workspace/fitness-os-2.0`。下列17份工作文档均直接位于 `docs/`，含隐藏文件 `.env.example`。
+
+| 文档 | 审阅结论 |
+| --- | --- |
+| [README.md](README.md) | 交付物为文档包而非网站源码；低成本和授权边界明确。 |
+| [PRD.md](PRD.md) | 覆盖13个需求章节；发现管理员权限、收藏搜索、食物估重、液体密度和历史身体信息等须补入此前报告。 |
+| [FEATURES.md](FEATURES.md) | 每个勾选条目独立建立覆盖记录；原状态保持未开始。 |
+| [DESIGN.md](DESIGN.md) | 深浅主题、减少动态、手机降级、付费/公开/删除二次确认与真实状态。 |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | 采用src/features模块化单体；运动注册表、专属扩展与统一连接器。 |
+| [DATABASE.md](DATABASE.md) | 逐项实体保留并映射关系；补充类型、索引、复合归属外键与RLS方案，尚未执行迁移。 |
+| [API.md](API.md) | 11个服务边界；导入确认、设备增量/撤权、AI结构化校验与服务端预算。 |
+| [MASTER_PROMPT.txt](MASTER_PROMPT.txt) | 全部原则保留，仅补全路径；0–9与PHASES的0–10冲突显式记录。 |
+| [PHASES.md](PHASES.md) | 0–10独立GPS阶段；报告逐阶段映射，不丢弃旧路线能力。 |
+| [CODING_RULES.md](CODING_RULES.md) | 16项规范作为后续验收门槛；不因文档中的开发指令越过当前PHASE 0授权。 |
+| [INITIAL_TRAINING_DATA.md](INITIAL_TRAINING_DATA.md) | 历史身体/力量/游泳/疼痛数据只读审查；日期和现状不明，不自动seed到真实账户。 |
+| [TEST_CASES.md](TEST_CASES.md) | 逐条建立验收映射，全部未执行；不将文档检查作为应用测试通过。 |
+| [CHANGELOG.md](CHANGELOG.md) | 原始需求基线保留，本阶段变更另写项目根CHANGELOG。 |
+| [.env.example](.env.example) | 模板无真实值；OPENAI_等变量名可能受当前云平台限制，后续使用受支持映射；未创建.env.local。 |
+| [DEPLOYMENT.md](DEPLOYMENT.md) | 测试/生产隔离、GPS/原生边界、发布检查保留；未部署。 |
+| [BACKUP.md](BACKUP.md) | 数据库与对象存储分开备份；用户导出/删除、恢复演练需实体覆盖。 |
+| [WEARABLE_INTEGRATION.md](WEARABLE_INTEGRATION.md) | 官方链接是研究入口而非验证证据；具体SDK/范围待核实；禁止非官方抓取。 |
+
+原始副本与 ZIP hash 见项目根 `DOCUMENT_MANIFEST.json`；17份原始文件位于 `documentation-originals/FITNESS-OS-2.0-PROJECT/`。工作文档中仅 README 和 MASTER_PROMPT 调整导航，其余15份字节不变。
+
+本阶段新增材料：
+
+- [技术报告](../PHASE_0_TECHNICAL_REPORT.md)
+- [需求覆盖与验收映射](../REQUIREMENTS_COVERAGE.md)
+- [设备研究及适配器边界](../WEARABLE_RESEARCH.md)
+- [完整能力矩阵CSV](../WEARABLE_CAPABILITY_MATRIX.csv)
+- [功能状态](../FEATURES_STATUS.md)
+- [检查报告](../TEST_REPORT.md)
+- [阶段变更记录](../CHANGELOG.md)
+
+
+========================================================================
+FEATURES_STATUS.md
+========================================================================
+
+# 功能状态 — PHASE 0
+
+2026-11-03：17份原始文档已完整阅读并保留；工作副本导航已修正。PRD 98条、FEATURES 64项、TEST_CASES 43条已建立来源映射，见REQUIREMENTS_COVERAGE.md。
+
+- **设计中**：架构、数据库ER/RLS、运动注册和专属指标、多图食品、智能导入流程、同步、AI与长期记忆、设备适配器契约、费用及PHASE 1方案。
+- **待验证**：Apple及五条华为候选路径共90项能力记录；缺少官方正文/资质/真机证据。候选五路径不等于用户已确认的原五项。
+- **未开始**：全部业务功能开发、真实设备连接、数据库迁移、生产部署及应用测试。
+- **尚未完成**：Windows本机检查；当前套餐和官方权限核实。
+
+原始 docs/FEATURES.md 不改勾选。本状态文件不将“设计覆盖”升级为“已完成/已验证”。
+
+
+========================================================================
+TEST_REPORT.md
+========================================================================
+
+# PHASE 0 文档与设计检查报告
+
+日期：2026-11-03。这里只记录本阶段文档检查；应用业务测试、RLS执行和设备实测均未执行。
+
+检查方法：ZIP CRC；17份原始文件与压缩包内容/manifest SHA-256逐字节比较；15份工作文档不变及README/MASTER的导航差异核对；本地导航路径存在性；逐条覆盖数；设备矩阵唯一性/字段完整性/待验证状态；旧项目git状态；未创建业务工程。机器可读结果见 `PHASE_0_CHECK_RESULTS.json`。
+
+首次导航检查发现新增索引引用的本报告尚未写入；补齐后重跑完整检查，最终结果以机器记录为准。该问题是文档生成顺序问题，未涉及原始文档或业务代码。
+
+官方资料检查：Apple两个入口、Huawei、Android、Supabase、Vercel，共6个公开URL，均被当前代理返回403。失败记录见 `OFFICIAL_SOURCE_CHECKS.json`；不能算官方资料核验通过，也不能据此判断服务本身不可用。
+
+未执行：43项产品验收、Supabase迁移/RLS、Web安装/build/E2E、Windows本机、Apple/华为/Health Connect/HarmonyOS真机、备份恢复、费用计量。没有业务测试通过数量可报告。
+
+
+========================================================================
+CHANGELOG.md
+========================================================================
+
+# CHANGELOG
+
+## 2026-11-03 — PHASE 0 完整文档复审
+
+- 取得并检查25,038字节ZIP；目标同名文件先比较，均不存在；17份原文按原层级存档，工作文档平铺docs并记录SHA-256。
+- 仅调整工作副本README和MASTER_PROMPT导航，新增docs/INDEX；未改原始需求和阶段原文。
+- 完整读取17份文件；新增98条PRD/64项FEATURES/43条TEST_CASES追踪。
+- 更新技术报告：实体关系、user_id/RLS、全运动模型、多图食品、导入、明确OpenAI/Gemini、长期记忆、成本、备份恢复和PHASE 1方案。
+- 新增Apple/五条华为候选独立适配器设计与90行capability matrix，具体能力全为待验证。
+- 记录MASTER与PHASES编号差异、华为原五项缺少明确列表、官方页面403和本机/真机未测。
+- 无数据库迁移，无业务实现，无部署、购买或密钥配置；旧项目未改。

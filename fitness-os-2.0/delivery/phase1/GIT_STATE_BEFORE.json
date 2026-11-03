@@ -1,0 +1,23 @@
+{
+  "source_project": "/workspace/fitness-os-2.0",
+  "source_branch": "main",
+  "source_head": "unborn (no commits)",
+  "source_remotes": [],
+  "old_project": "/workspace/gpt",
+  "old_project_branch": "work",
+  "old_project_head": "e55ff9175bcc82e7c4c2934d089c26118dfcba71",
+  "old_project_clean": true,
+  "github_repository": "https://github.com/123kai453/gpt",
+  "remote_main_at_inspection": "4e8efdbc6cb2ef5cfd06c4bfffeadc9dd137dc35",
+  "prepared_branch": "delivery/fitness-os-phase1",
+  "delivery_checkout": "/tmp/fitness-phase1-delivery.J2ilc8",
+  "push_authorized_this_turn": false,
+  "excluded_generated_paths": [
+    ".git",
+    "node_modules",
+    ".next",
+    "playwright-report",
+    "test-results",
+    "*.tsbuildinfo"
+  ]
+}

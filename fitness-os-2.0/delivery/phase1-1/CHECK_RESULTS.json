@@ -1,0 +1,46 @@
+{
+  "date": "2026-11-03",
+  "phase": "PHASE 1.1",
+  "lint": "passed",
+  "typecheck": "passed",
+  "unit_tests": {
+    "passed": 15,
+    "failed": 0,
+    "files": 3
+  },
+  "browser_tests": {
+    "total": 13,
+    "expected": 13,
+    "unexpected": 0,
+    "flaky": 0,
+    "skipped": 0,
+    "ok": true
+  },
+  "module_routes": 43,
+  "rendered_pages": 44,
+  "navigation_targets": 44,
+  "browser_errors": [],
+  "failed_resources": [],
+  "local_photo_variants": 30,
+  "all_photo_variants_decoded": 30,
+  "webp_photo_total_bytes": 1036722,
+  "desktop_hero_bytes": 50680,
+  "mobile_hero_bytes": 54664,
+  "desktop_motion_sample": {
+    "frames": 90,
+    "duration": 1513.29999999851,
+    "meanFrameMs": 16.814444444427888,
+    "p95FrameMs": 16.700000000000273
+  },
+  "original_documents_verified": 17,
+  "phase1_staging_unchanged": true,
+  "old_gpt_clean": true,
+  "before_screenshots": 7,
+  "after_screenshots": 7,
+  "comparison_images": 7,
+  "pwa_version": "phase1-1-v1",
+  "real_device_performance_verified": false,
+  "public_preview_available": false,
+  "pushed": false,
+  "phase2_started": false
+}

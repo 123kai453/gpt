@@ -1,0 +1,1 @@
+export default function Loading() { return <div className="module-page" role="status" aria-label="正在加载页面"><span className="eyebrow">FITNESS OS</span><p>正在加载…</p><div className="loading-line" /></div>; }

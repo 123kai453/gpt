@@ -1,0 +1,152 @@
+[
+  {
+    "path": "/images/hero/athlete-desktop.webp",
+    "width": 1600,
+    "height": 900
+  },
+  {
+    "path": "/images/hero/athlete-desktop-960.webp",
+    "width": 960,
+    "height": 540
+  },
+  {
+    "path": "/images/hero/athlete-mobile.webp",
+    "width": 753,
+    "height": 941
+  },
+  {
+    "path": "/images/hero/athlete-mobile-390.webp",
+    "width": 390,
+    "height": 487
+  },
+  {
+    "path": "/images/sports/strength.webp",
+    "width": 768,
+    "height": 512
+  },
+  {
+    "path": "/images/sports/strength-480.webp",
+    "width": 480,
+    "height": 320
+  },
+  {
+    "path": "/images/training/strength-detail.webp",
+    "width": 768,
+    "height": 512
+  },
+  {
+    "path": "/images/sports/swimming.webp",
+    "width": 768,
+    "height": 512
+  },
+  {
+    "path": "/images/sports/swimming-480.webp",
+    "width": 480,
+    "height": 320
+  },
+  {
+    "path": "/images/swimming/pool-detail.webp",
+    "width": 768,
+    "height": 512
+  },
+  {
+    "path": "/images/sports/outdoor-run.webp",
+    "width": 768,
+    "height": 512
+  },
+  {
+    "path": "/images/sports/outdoor-run-480.webp",
+    "width": 480,
+    "height": 320
+  },
+  {
+    "path": "/images/sports/treadmill.webp",
+    "width": 768,
+    "height": 512
+  },
+  {
+    "path": "/images/sports/treadmill-480.webp",
+    "width": 480,
+    "height": 320
+  },
+  {
+    "path": "/images/sports/indoor-cycle.webp",
+    "width": 768,
+    "height": 512
+  },
+  {
+    "path": "/images/sports/indoor-cycle-480.webp",
+    "width": 480,
+    "height": 320
+  },
+  {
+    "path": "/images/sports/hike.webp",
+    "width": 768,
+    "height": 512
+  },
+  {
+    "path": "/images/sports/hike-480.webp",
+    "width": 480,
+    "height": 320
+  },
+  {
+    "path": "/images/sports/elliptical.webp",
+    "width": 768,
+    "height": 512
+  },
+  {
+    "path": "/images/sports/elliptical-480.webp",
+    "width": 480,
+    "height": 320
+  },
+  {
+    "path": "/images/sports/rowing.webp",
+    "width": 768,
+    "height": 512
+  },
+  {
+    "path": "/images/sports/rowing-480.webp",
+    "width": 480,
+    "height": 320
+  },
+  {
+    "path": "/images/sports/jump-rope.webp",
+    "width": 724,
+    "height": 543
+  },
+  {
+    "path": "/images/sports/jump-rope-480.webp",
+    "width": 480,
+    "height": 360
+  },
+  {
+    "path": "/images/sports/stair-climber.webp",
+    "width": 724,
+    "height": 543
+  },
+  {
+    "path": "/images/sports/stair-climber-480.webp",
+    "width": 480,
+    "height": 360
+  },
+  {
+    "path": "/images/sports/other.webp",
+    "width": 724,
+    "height": 543
+  },
+  {
+    "path": "/images/sports/other-480.webp",
+    "width": 480,
+    "height": 360
+  },
+  {
+    "path": "/images/nutrition/balanced-plate.webp",
+    "width": 724,
+    "height": 543
+  },
+  {
+    "path": "/images/nutrition/balanced-plate-480.webp",
+    "width": 480,
+    "height": 360
+  }
+]

@@ -1,0 +1,8 @@
+feat: prepare complete FITNESS OS phase 1 delivery
+
+- Add the runnable Next.js application under fitness-os-2.0/
+- Include original 17 documents, working docs, pnpm lockfile and tests
+- Include seven actual screenshots and Windows/LAN instructions
+- Record final checks: 12 unit tests, 9 browser scenarios, 43 module routes
+- Preserve all existing main files and previously published reports
+- Do not enable Supabase, paid APIs or phase 2 functionality

@@ -1,0 +1,86 @@
+[
+  {
+    "filename": "01-dashboard-desktop-dark.png",
+    "route": "/",
+    "theme": "dark",
+    "width": 1440,
+    "height": 1000,
+    "title": "首页桌面深色",
+    "before": "before/01-dashboard-desktop-dark.png",
+    "after": "after/01-dashboard-desktop-dark.png",
+    "comparison": "comparisons/01-comparison.png",
+    "afterSha256": "ef00358698a7a6f37accefe1178e57a4455e3ec1947f1681fdc7301e733aed5b"
+  },
+  {
+    "filename": "02-dashboard-desktop-light.png",
+    "route": "/",
+    "theme": "light",
+    "width": 1440,
+    "height": 1000,
+    "title": "首页桌面浅色",
+    "before": "before/02-dashboard-desktop-light.png",
+    "after": "after/02-dashboard-desktop-light.png",
+    "comparison": "comparisons/02-comparison.png",
+    "afterSha256": "273b2d21f80dfdd8025f9bb0cf44412d03257d9d8813f5f1d116668d14498bad"
+  },
+  {
+    "filename": "03-dashboard-mobile.png",
+    "route": "/",
+    "theme": "dark",
+    "width": 390,
+    "height": 844,
+    "title": "首页手机端",
+    "before": "before/03-dashboard-mobile.png",
+    "after": "after/03-dashboard-mobile.png",
+    "comparison": "comparisons/03-comparison.png",
+    "afterSha256": "8388ccff54c69d867aea66a6ebcac9e89e4346f6d6f97bd029e7fb6340a82e85"
+  },
+  {
+    "filename": "04-sports-center.png",
+    "route": "/sports",
+    "theme": "dark",
+    "width": 1440,
+    "height": 1000,
+    "title": "运动中心",
+    "before": "before/04-sports-center.png",
+    "after": "after/04-sports-center.png",
+    "comparison": "comparisons/04-comparison.png",
+    "afterSha256": "3b613f3909e88412768ff9f2cd082a84446c74a44dbe9f86d3ced451d831a26f"
+  },
+  {
+    "filename": "05-nutrition-center.png",
+    "route": "/nutrition",
+    "theme": "dark",
+    "width": 1440,
+    "height": 1000,
+    "title": "营养中心",
+    "before": "before/05-nutrition-center.png",
+    "after": "after/05-nutrition-center.png",
+    "comparison": "comparisons/05-comparison.png",
+    "afterSha256": "1ccbe4d3c5d8844288dc8d13ea656493346176e7f29fcf202eb1bbccf1ae6128"
+  },
+  {
+    "filename": "06-ai-coach.png",
+    "route": "/ai",
+    "theme": "dark",
+    "width": 1440,
+    "height": 1000,
+    "title": "AI私人教练",
+    "before": "before/06-ai-coach.png",
+    "after": "after/06-ai-coach.png",
+    "comparison": "comparisons/06-comparison.png",
+    "afterSha256": "5c28851036507fc40ac6eabc300fd06e226fc5f69e54f7d9f82b1f4d655647ae"
+  },
+  {
+    "filename": "07-device-center.png",
+    "route": "/devices",
+    "theme": "dark",
+    "width": 1440,
+    "height": 1000,
+    "title": "设备中心",
+    "before": "before/07-device-center.png",
+    "after": "after/07-device-center.png",
+    "comparison": "comparisons/07-comparison.png",
+    "afterSha256": "6fb9a9902e7af7015d0e73aa114b696133de233204e1c54d9748122ebd0de7fd"
+  }
+]

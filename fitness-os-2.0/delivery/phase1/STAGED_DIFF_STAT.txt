@@ -1,0 +1,124 @@
+ fitness-os-2.0/.env.example                        |    3 +
+ fitness-os-2.0/.gitattributes                      |    8 +
+ fitness-os-2.0/.gitignore                          |   12 +
+ fitness-os-2.0/.node-version                       |    1 +
+ fitness-os-2.0/.npmrc                              |    2 +
+ fitness-os-2.0/CHANGELOG.md                        |   32 +
+ fitness-os-2.0/DOCUMENT_MANIFEST.json              |  286 ++
+ fitness-os-2.0/FEATURES.md                         |   82 +
+ fitness-os-2.0/FEATURES_STATUS.md                  |   15 +
+ .../FITNESS_OS_2.0_PHASE_0_ALL_REVIEW_TEXT.txt     |  828 ++++
+ fitness-os-2.0/FITNESS_OS_2.0_PHASE_0_REPORT.txt   |  314 ++
+ fitness-os-2.0/OFFICIAL_SOURCE_CHECKS.json         |   29 +
+ fitness-os-2.0/PHASE_0_CHECK_RESULTS.json          |   21 +
+ fitness-os-2.0/PHASE_0_TECHNICAL_REPORT.md         |  310 ++
+ fitness-os-2.0/PHASE_1_CHECK_RESULTS.json          |   50 +
+ fitness-os-2.0/README.md                           |   80 +
+ fitness-os-2.0/REPORT_UPDATE_RECORD.json           |    7 +
+ fitness-os-2.0/REQUIREMENTS_COVERAGE.md            |  239 +
+ fitness-os-2.0/TEST_REPORT.md                      |   30 +
+ fitness-os-2.0/WEARABLE_CAPABILITY_MATRIX.csv      |   91 +
+ fitness-os-2.0/WEARABLE_RESEARCH.md                |   70 +
+ fitness-os-2.0/components.json                     |    9 +
+ fitness-os-2.0/delivery/phase1/COMMIT_MESSAGE.txt  |    8 +
+ .../delivery/phase1/DELIVERY_CHANGE_SUMMARY.json   |   29 +
+ fitness-os-2.0/delivery/phase1/DELIVERY_REVIEW.md  |   34 +
+ .../delivery/phase1/FINAL_CHECK_RESULTS.json       |   56 +
+ .../delivery/phase1/GIT_STATE_BEFORE.json          |   23 +
+ .../delivery/phase1/LOCAL_GIT_STATUS_BEFORE.txt    |  104 +
+ .../phase1/PHASE1_IMPLEMENTATION_REPORT.md         |  213 +
+ .../phase1/PHASE_1_IMPLEMENTATION_REPORT.txt       |  213 +
+ .../delivery/phase1/SOURCE_SNAPSHOT_MANIFEST.json  |  727 +++
+ .../delivery/phase1/STAGED_DIFF_STAT.txt           |  124 +
+ fitness-os-2.0/delivery/phase1/STAGED_FILES.txt    |  123 +
+ .../phase1/navigation-and-console-audit.json       |  294 ++
+ .../screenshots/01-dashboard-desktop-dark.png      |  Bin 0 -> 281355 bytes
+ .../screenshots/02-dashboard-desktop-light.png     |  Bin 0 -> 282219 bytes
+ .../phase1/screenshots/03-dashboard-mobile.png     |  Bin 0 -> 148736 bytes
+ .../phase1/screenshots/04-sports-center.png        |  Bin 0 -> 166581 bytes
+ .../phase1/screenshots/05-nutrition-center.png     |  Bin 0 -> 124645 bytes
+ .../delivery/phase1/screenshots/06-ai-coach.png    |  Bin 0 -> 120678 bytes
+ .../phase1/screenshots/07-device-center.png        |  Bin 0 -> 129227 bytes
+ .../phase1/screenshots/SCREENSHOT_MANIFEST.json    |   65 +
+ fitness-os-2.0/docs/.env.example                   |    9 +
+ fitness-os-2.0/docs/API.md                         |   41 +
+ fitness-os-2.0/docs/ARCHITECTURE.md                |   60 +
+ fitness-os-2.0/docs/BACKUP.md                      |    5 +
+ fitness-os-2.0/docs/CHANGELOG.md                   |   15 +
+ fitness-os-2.0/docs/CODING_RULES.md                |   17 +
+ fitness-os-2.0/docs/DATABASE.md                    |   48 +
+ fitness-os-2.0/docs/DEPLOYMENT.md                  |   16 +
+ fitness-os-2.0/docs/DESIGN.md                      |   15 +
+ fitness-os-2.0/docs/FEATURES.md                    |   83 +
+ fitness-os-2.0/docs/INDEX.md                       |   54 +
+ fitness-os-2.0/docs/INITIAL_TRAINING_DATA.md       |    8 +
+ fitness-os-2.0/docs/MASTER_PROMPT.txt              |   65 +
+ fitness-os-2.0/docs/PHASE1_EXECUTION_PROMPT.txt    |  529 +++
+ fitness-os-2.0/docs/PHASES.md                      |   25 +
+ fitness-os-2.0/docs/PRD.md                         |  174 +
+ fitness-os-2.0/docs/PROJECT_DECISIONS.md           |   40 +
+ fitness-os-2.0/docs/README.md                      |   26 +
+ fitness-os-2.0/docs/TEST_CASES.md                  |   60 +
+ fitness-os-2.0/docs/WEARABLE_INTEGRATION.md        |   36 +
+ fitness-os-2.0/docs/WINDOWS_LOCAL_RUN.md           |   83 +
+ .../FITNESS-OS-2.0-PROJECT/01-产品需求/DESIGN.md   |   15 +
+ .../FITNESS-OS-2.0-PROJECT/01-产品需求/FEATURES.md |   83 +
+ .../FITNESS-OS-2.0-PROJECT/01-产品需求/PRD.md      |  174 +
+ .../FITNESS-OS-2.0-PROJECT/02-技术架构/API.md      |   41 +
+ .../02-技术架构/ARCHITECTURE.md                    |   60 +
+ .../FITNESS-OS-2.0-PROJECT/02-技术架构/DATABASE.md |   48 +
+ .../03-Codex开发指令/CODING_RULES.md               |   17 +
+ .../03-Codex开发指令/MASTER_PROMPT.txt             |   57 +
+ .../03-Codex开发指令/PHASES.md                     |   25 +
+ .../04-数据与测试/CHANGELOG.md                     |   15 +
+ .../04-数据与测试/INITIAL_TRAINING_DATA.md         |    8 +
+ .../04-数据与测试/TEST_CASES.md                    |   60 +
+ .../05-配置与部署/.env.example                     |    9 +
+ .../FITNESS-OS-2.0-PROJECT/05-配置与部署/BACKUP.md |    5 +
+ .../05-配置与部署/DEPLOYMENT.md                    |   16 +
+ .../05-配置与部署/WEARABLE_INTEGRATION.md          |   36 +
+ .../FITNESS-OS-2.0-PROJECT/README.md               |   26 +
+ fitness-os-2.0/eslint.config.mjs                   |    7 +
+ fitness-os-2.0/next-env.d.ts                       |    7 +
+ fitness-os-2.0/next.config.ts                      |   18 +
+ fitness-os-2.0/package.json                        |   40 +
+ fitness-os-2.0/playwright.config.ts                |   28 +
+ fitness-os-2.0/pnpm-lock.yaml                      | 4697 ++++++++++++++++++++
+ fitness-os-2.0/pnpm-workspace.yaml                 |   33 +
+ fitness-os-2.0/postcss.config.mjs                  |    2 +
+ fitness-os-2.0/public/icons/apple-touch-icon.png   |  Bin 0 -> 4321 bytes
+ fitness-os-2.0/public/icons/icon-192.png           |  Bin 0 -> 4449 bytes
+ fitness-os-2.0/public/icons/icon-512.png           |  Bin 0 -> 11799 bytes
+ fitness-os-2.0/public/icons/mark.svg               |    1 +
+ fitness-os-2.0/public/icons/maskable-512.png       |  Bin 0 -> 9686 bytes
+ fitness-os-2.0/public/manifest.json                |   18 +
+ fitness-os-2.0/public/offline.html                 |   22 +
+ fitness-os-2.0/public/sw.js                        |   84 +
+ .../PHASE_0_TECHNICAL_REPORT.before_docs_review.md |  320 ++
+ .../review-history/TEST_REPORT.before_phase1.md    |   11 +
+ fitness-os-2.0/scripts/check-docs.mjs              |   26 +
+ fitness-os-2.0/src/app/[...slug]/page.tsx          |   23 +
+ fitness-os-2.0/src/app/error.tsx                   |    5 +
+ fitness-os-2.0/src/app/globals.css                 |  451 ++
+ fitness-os-2.0/src/app/layout.tsx                  |   20 +
+ fitness-os-2.0/src/app/loading.tsx                 |    1 +
+ fitness-os-2.0/src/app/not-found.tsx               |    5 +
+ fitness-os-2.0/src/app/page.tsx                    |    2 +
+ .../src/components/common/phase-badge.tsx          |    3 +
+ .../src/components/common/theme-choice.tsx         |    9 +
+ fitness-os-2.0/src/components/layout/app-shell.tsx |   59 +
+ .../src/components/layout/theme-provider.tsx       |   42 +
+ fitness-os-2.0/src/components/pwa/pwa-controls.tsx |  227 +
+ fitness-os-2.0/src/components/ui/button.tsx        |   29 +
+ fitness-os-2.0/src/components/ui/utils.ts          |    6 +
+ .../src/features/dashboard/dashboard.tsx           |   44 +
+ .../src/features/dashboard/movement-art.tsx        |   26 +
+ fitness-os-2.0/src/lib/navigation.ts               |   60 +
+ fitness-os-2.0/src/lib/utils.ts                    |    3 +
+ fitness-os-2.0/tests/e2e/final-delivery.spec.ts    |   61 +
+ fitness-os-2.0/tests/e2e/phase1.spec.ts            |  177 +
+ fitness-os-2.0/tests/unit/navigation.test.ts       |   52 +
+ fitness-os-2.0/tests/unit/service-worker.test.ts   |  170 +
+ fitness-os-2.0/tsconfig.json                       |   12 +
+ fitness-os-2.0/vitest.config.mts                   |    6 +
+ 123 files changed, 13443 insertions(+)

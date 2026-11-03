@@ -1,0 +1,29 @@
+{
+  "repository": "123kai453/gpt",
+  "branch": "delivery/fitness-os-phase1",
+  "base_commit": "4e8efdbc6cb2ef5cfd06c4bfffeadc9dd137dc35",
+  "added": 123,
+  "modified": 0,
+  "deleted": 0,
+  "groups": {
+    "(project root)": 32,
+    "delivery/": 20,
+    "docs/": 21,
+    "documentation-originals/": 17,
+    "public/": 8,
+    "review-history/": 2,
+    "scripts/": 1,
+    "src/": 18,
+    "tests/": 4
+  },
+  "preserved_main_paths": [
+    "README.md",
+    "gpt",
+    "fitness-os-2.0/docs/PHASE1_IMPLEMENTATION_REPORT.md",
+    "fitness-os-2.0/PHASE_1_IMPLEMENTATION_REPORT.txt"
+  ],
+  "proposed_commit_title": "feat: prepare complete FITNESS OS phase 1 delivery",
+  "commit_created": false,
+  "pushed": false,
+  "approval_required": true
+}

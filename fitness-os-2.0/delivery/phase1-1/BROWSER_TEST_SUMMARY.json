@@ -1,0 +1,12 @@
+{
+  "stats": {
+    "total": 13,
+    "expected": 13,
+    "unexpected": 0,
+    "flaky": 0,
+    "skipped": 0,
+    "ok": true
+  },
+  "errors": [],
+  "phase": "1.1"
+}
