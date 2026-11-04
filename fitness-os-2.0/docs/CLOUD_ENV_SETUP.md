@@ -42,3 +42,17 @@ Supabase 项目 URL 是 API 地址，不是 FITNESS OS 网站。正式网站缺�
 当前被 Git 忽略的 `.env.local` 是本地 Docker 测试配置，不能证明托管配置已完成。已有 `test:integration` 和 `test:e2e:local` 明确拒绝托管 URL；不会删除这些保护来强行执行云端测试。托管浏览器构建必须使用已生效的完整公开配置，服务端还需正确的同项目 Secret。未满足前不启动任何托管写入测试。
 
 本轮不升级套餐、不购买 SMTP、不调用付费 AI，不进入 BRAND STUDIO 或 PHASE 3。
+
+## APP_URL 只读复核：内部建议值不是正式回调
+
+用户询问后再次只读核对：`http://127.0.0.1:3000` 目前只在草稿的 suggested_value 中；当前运行实例没有 NEXT_PUBLIC_APP_URL 注入，也没有 Supabase 公开运行配置。内部端口探测未连通。这个值曾用于临时本地自动化服务器，不是已部署的 Cloud 公网入口。我没有通过此变量修改 Supabase Dashboard 的 Site URL 或 Redirect URLs；其托管实际值仍待读取。
+
+代码行为如下：
+
+1. 注册、重发、密码找回使用 `window.location.origin` 构造 `/auth/callback`，Supabase 还会按项目自己的 Redirect URLs 接受或回退该地址。它们不是仅根据 APP_URL 生成邮件链接。
+2. `/auth/callback` 成功交换 PKCE code 后，使用 APP_URL 的可信 origin 跳到账户/重置页面；写接口的 Origin 检查也使用这个配置。公网前端与 APP_URL 不一致时，可能错误跳回回环地址或触发来源拒绝。
+3. 对 Cloud 容器中的进程，127.0.0.1 是该容器网络命名空间的回环；对用户电脑/手机的浏览器，它是用户设备自身。邮件中的回环链接不会自动映射到 Cloud。
+4. 两个指定测试邮箱的地址不会因此变化，但验证/恢复链接可能无法到达正确应用。PKCE 还要求在发起流程的浏览器打开链接。本轮没有给指定收件箱发信或创建托管测试账号，真实邮箱流程仍待执行。
+5. 当前没有自动把 APP_URL 更新为部署平台 HTTPS 地址的逻辑。后续需要明确配置真实 origin、审查并设置 Supabase callback 规则，然后重新构建/部署并重启；不要保留回环地址作为正式公网回调。
+
+暂时保留该草稿建议仅用于本地/容器内部测试。正式邮件验收前，必须先确定浏览器可达的实际测试 origin 和回调配置，不能仅因草稿中有 APP_URL 就宣称可向真实收件箱完成验收。
