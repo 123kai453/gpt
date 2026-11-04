@@ -1,5 +1,7 @@
 # FITNESS OS 2.0
 
+托管最终验收：**ACCEPTANCE BLOCKED**。配置仍未生效；[本轮总报告](docs/PHASE2_HOSTED_ACCEPTANCE_REPORT.md) · [配置操作说明](docs/CLOUD_ENV_SETUP.md)。BRAND STUDIO 仅登记为强制 PHASE 2.1，未开发。
+
 当前分支：`feature/phase2-cloud-foundation`，基于 PHASE 1.1 稳定提交 `8d0c462`。账户认证、资料/偏好同步、离线队列和私有媒体基础已加入；实际验证与尚未完成的云端部署见 [PHASE 2 实施报告](docs/PHASE2_IMPLEMENTATION_REPORT.md)。未合并 main。
 
 PHASE 1.1 稳定版本保留在 `delivery/fitness-os-phase1-1`：[视觉报告](docs/PHASE1_1_VISUAL_REPORT.md) · [素材来源](docs/VISUAL_ASSETS.md) · [七组前后截图](delivery/phase1-1/SCREENSHOTS.md)。17 份原始文档、43 个模块、品牌视觉与 PWA 保留。

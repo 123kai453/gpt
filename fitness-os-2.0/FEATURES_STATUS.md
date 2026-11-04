@@ -1,5 +1,7 @@
 # 功能状态 — PHASE 2 进行中
 
+托管最终验收：ACCEPTANCE BLOCKED，运行配置尚未生效；本轮没有托管写入。BR-01 BRAND STUDIO 已登记为强制 PHASE 2.1，尚未开发，等待 PHASE 2 托管验收与用户确认。详见 docs/PHASE2_HOSTED_ACCEPTANCE_REPORT.md。
+
 当前：账户认证、RLS、同步队列、私人文件与数据管理已实现；本地 SQL 79 项、SDK 113 项通过。66 项单元、20 项浏览器场景均通过；云端最终状态见 [PHASE 2 报告](docs/PHASE2_IMPLEMENTATION_REPORT.md)。托管云项目尚未部署，不宣布阶段完成。
 
 以下为历史阶段记录：

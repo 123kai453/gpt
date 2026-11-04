@@ -1,0 +1,31 @@
+FITNESS OS 2.0 HOSTED ACCEPTANCE PREPARATION
+Status: ACCEPTANCE BLOCKED; not a successful hosted acceptance delivery.
+Baseline: 8ca8d3e04a5d58b54f86f21679e9e115f716f5d5
+Only review documents, phase registration, and read-only SQL were prepared.
+
+M	fitness-os-2.0/.gitattributes
+M	fitness-os-2.0/CHANGELOG.md
+M	fitness-os-2.0/DOCUMENT_MANIFEST.json
+M	fitness-os-2.0/FEATURES.md
+M	fitness-os-2.0/FEATURES_STATUS.md
+M	fitness-os-2.0/README.md
+A	fitness-os-2.0/delivery/phase2-hosted/CHANGES.txt
+A	fitness-os-2.0/delivery/phase2-hosted/PREFLIGHT_RESULTS.json
+A	fitness-os-2.0/delivery/phase2-hosted/REVIEW.md
+A	fitness-os-2.0/docs/BRAND_STUDIO_PHASE_LOCK.md
+A	fitness-os-2.0/docs/CLOUD_ENV_SETUP.md
+M	fitness-os-2.0/docs/DATABASE_SCHEMA.md
+M	fitness-os-2.0/docs/FEATURES.md
+A	fitness-os-2.0/docs/HOSTED_MIGRATION_PLAN.md
+A	fitness-os-2.0/docs/HOSTED_SCHEMA_REVIEW.md
+A	fitness-os-2.0/docs/HOSTED_SECURITY_REPORT.md
+A	fitness-os-2.0/docs/HOSTED_SYNC_REPORT.md
+A	fitness-os-2.0/docs/HOSTED_TEST_REPORT.md
+M	fitness-os-2.0/docs/INDEX.md
+M	fitness-os-2.0/docs/MASTER_PROMPT.txt
+A	fitness-os-2.0/docs/PHASE2_HOSTED_ACCEPTANCE_REPORT.md
+A	fitness-os-2.0/docs/PHASE2_HOSTED_EXECUTION_PROMPT.txt
+M	fitness-os-2.0/docs/PHASES.md
+M	fitness-os-2.0/docs/PRD.md
+M	fitness-os-2.0/docs/PROJECT_DECISIONS.md
+A	fitness-os-2.0/supabase/reviews/hosted_schema_readonly.sql

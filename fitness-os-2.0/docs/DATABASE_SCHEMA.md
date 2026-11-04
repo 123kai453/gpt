@@ -121,3 +121,7 @@ username唯一性冲突为SQLSTATE `23505`。其他输入错误使用 `22023`，
 | 托管云项目 | **待配置和验证**；上述结果不证明用户云项目已部署或可连接，没有把本地成功记作云端成功 |
 
 本地Storage 1.88对直接SQL删除元数据有官方保护，返回 `42501`，应使用Storage API删除文件。SQL测试验证该保护；HTTP测试真实验证本人文件删除及跨用户删除失败。测试运行不需要关闭或绕过官方删除保护。运行日志保存在本次执行环境的 `/tmp/fitness-phase2-sql-results.log`、`/tmp/fitness-phase2-sdk-results.log`，不包含密钥或令牌。
+
+## PHASE 2.1 扩展锁（仅文档）
+
+BR-01 BRAND STUDIO 为后续强制阶段。需要独立的品牌领域、明确归属/发布范围、版本及媒体关联，并隔离公共品牌素材与私人健康 Storage。具体表名、字段、角色、桶和迁移在该阶段规格确认后设计；当前九张账户表和已测试迁移不变，不把 private-media 改成公开桶。详见 BRAND_STUDIO_PHASE_LOCK.md。

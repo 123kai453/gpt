@@ -1,0 +1,49 @@
+{
+  "date": "2026-11-04",
+  "status": "ACCEPTANCE BLOCKED",
+  "source_commit": "8ca8d3e04a5d58b54f86f21679e9e115f716f5d5",
+  "local": {
+    "unit_tests_passed": 66,
+    "browser_passed": 20,
+    "browser_failed": 0,
+    "browser_skipped": 0,
+    "readonly_schema_sql_smoke": "passed on isolated local PostgreSQL only",
+    "original_documents_sha256": "17 passed",
+    "module_routes": 43
+  },
+  "hosted": {
+    "authenticated_business_tests_executed": 0,
+    "schema_review_executed": false,
+    "migration_executed": false,
+    "fixture_users_created": 0,
+    "files_uploaded": 0,
+    "emails_sent": 0,
+    "unauthenticated_health_probe": {
+      "endpoint": "https://lrehapbujedrwpxzhqrt.supabase.co/auth/v1/health",
+      "at_utc": "2026-11-04T03:16:14.089845+00:00",
+      "result": "proxy CONNECT 403; origin not reached"
+    }
+  },
+  "user_confirmed": {
+    "public_website_deployed": false,
+    "public_preview_available": false,
+    "designated_inboxes": "A/B recorded privately; email tests pending"
+  },
+  "migration_sha256": "e3ee70b56d33b0ab3d4e73e95525a5d1c16fa94624901006a92387c9f405f436",
+  "application_source_tests_dependencies_migrations_changed": false,
+  "brand_studio": {
+    "phase": "2.1",
+    "mandatory": true,
+    "implemented": false,
+    "migration_created": false
+  },
+  "configuration": {
+    "draft_saved": true,
+    "requires_publish": true,
+    "last_verified_runtime_network_state": "enforced",
+    "target_in_runtime_allowlist": false,
+    "runtime_supabase_credentials_present": false,
+    "secret_saved_binding": false,
+    "app_url_suggestion": "controlled loopback frontend only; not a public preview"
+  }
+}

@@ -7,3 +7,4 @@ docs/PHASE1_EXECUTION_PROMPT.txt -text whitespace=cr-at-eol
 *.md whitespace=-blank-at-eol
 WEARABLE_CAPABILITY_MATRIX.csv -text whitespace=cr-at-eol
 docs/PHASE1_1_EXECUTION_PROMPT.txt -text whitespace=cr-at-eol
+docs/PHASE2_HOSTED_EXECUTION_PROMPT.txt -text whitespace=cr-at-eol

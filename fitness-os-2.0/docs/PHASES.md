@@ -6,6 +6,8 @@ PHASE 1：Next.js基础、设计系统、响应式页面、Dashboard、PWA骨架
 
 PHASE 2：Supabase Auth、迁移、RLS、多用户隔离、资料、云端同步、数据导出。
 
+PHASE 2.1（强制子阶段）：BRAND STUDIO。先完成 PHASE 2 托管全部验收并得到用户明确确认，才能启动；本轮只登记，不创建后台或迁移。2.1 不改变既有 0–10 编号。
+
 PHASE 3：力量动作库、计划自主编辑/版本、训练记录、游泳和通用运动中心、专属指标、手动记录。
 
 PHASE 4：GPS前台记录、路线隐私、轨迹质量过滤；说明PWA后台限制。
@@ -23,3 +25,5 @@ PHASE 9：3D人体、粒子、按需食物3D。
 PHASE 10：单元、集成、端到端、多用户安全、同步、GPS、导入、AI成本、设备数据去重测试；部署和备份恢复。
 
 每阶段报告已完成、未完成、测试证据、风险、费用和下一步。
+
+2026-11-04 阶段锁：当前 PHASE 2 托管验收为 ACCEPTANCE BLOCKED；BRAND STUDIO 不是解除配置阻塞的替代任务。详细见 BRAND_STUDIO_PHASE_LOCK.md。

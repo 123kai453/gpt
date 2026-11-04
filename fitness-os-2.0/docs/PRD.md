@@ -172,3 +172,9 @@ FITNESS OS 是面向个人和多用户社区的运动、力量训练、游泳、
 - 图片压缩和缓存。
 - 正式接入Apple/Huawei前核实开发者计划、审核、平台和地区限制。
 - 不为省钱牺牲RLS、安全和数据备份。
+
+## PHASE 2.1 强制追加需求 — BRAND STUDIO
+
+2026-11-04 用户正式决定：BR-01「BRAND STUDIO」是 PHASE 2.1 强制交付，不能删减为可选功能。本次只登记需求与后续数据库/Storage 扩展约束，不创建品牌后台、页面、表、桶或迁移。
+
+必须先完成 PHASE 2 托管云端全部验收，再等待用户明确确认，之后才启动 PHASE 2.1；不得提前转 PHASE 3。详细阶段锁和待定规格见 [BRAND_STUDIO_PHASE_LOCK.md](BRAND_STUDIO_PHASE_LOCK.md)。原产品需求保持完整，具体品牌子功能不能根据名称自行臆造。

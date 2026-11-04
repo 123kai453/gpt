@@ -94,17 +94,33 @@
       "docs_path": "docs/PHASES.md",
       "bytes": 1321,
       "original_sha256": "de401ad821bea5f88215fdd0a360dd3e964be522b1baf727e1d9816294b600f3",
-      "working_sha256": "de401ad821bea5f88215fdd0a360dd3e964be522b1baf727e1d9816294b600f3",
-      "working_change": "unchanged"
+      "working_sha256": "96785e83bab33cb06e8aba305c68b1058246803a51ac6e36b0301af7b7d592a4",
+      "working_change": "append_phase2_1_phase_lock",
+      "working_history": [
+        {
+          "date": "2026-11-04",
+          "previous_working_sha256": "de401ad821bea5f88215fdd0a360dd3e964be522b1baf727e1d9816294b600f3",
+          "reason": "append_phase2_1_phase_lock",
+          "source": "docs/PHASE2_HOSTED_EXECUTION_PROMPT.txt"
+        }
+      ]
     },
     {
       "archive_path": "FITNESS-OS-2.0-PROJECT/03-Codex开发指令/MASTER_PROMPT.txt",
       "docs_path": "docs/MASTER_PROMPT.txt",
       "bytes": 4123,
       "original_sha256": "e5d42c370c697626a7695d4fb8443b5ad7f065b9cf67760da37cbbbc53b15689",
-      "working_sha256": "4b0e0198cc7fc0e63d74598bc470768b888369274d6f07d1523c5a64dda1ea8b",
-      "working_change": "phase1_formal_stage_decision",
-      "phase0_working_sha256": "0d47e04a1158a6c5e542637edf7ab84c74ce3b882c18231c508c9e8757cceffd"
+      "working_sha256": "cfd0e03093e7b846f968851b3608cdbc39f9bea3e850b88a3e0451cdcb33d77c",
+      "working_change": "update_navigation_and_append_phase2_1_phase_lock",
+      "phase0_working_sha256": "0d47e04a1158a6c5e542637edf7ab84c74ce3b882c18231c508c9e8757cceffd",
+      "working_history": [
+        {
+          "date": "2026-11-04",
+          "previous_working_sha256": "4b0e0198cc7fc0e63d74598bc470768b888369274d6f07d1523c5a64dda1ea8b",
+          "reason": "update_navigation_and_append_phase2_1_phase_lock",
+          "source": "docs/PHASE2_HOSTED_EXECUTION_PROMPT.txt"
+        }
+      ]
     },
     {
       "archive_path": "FITNESS-OS-2.0-PROJECT/03-Codex开发指令/CODING_RULES.md",
@@ -119,8 +135,16 @@
       "docs_path": "docs/FEATURES.md",
       "bytes": 2439,
       "original_sha256": "41a02c59af2b1a84c1725d5b37142d6771a2bc1a4e4615ee2c2c90ae17b48140",
-      "working_sha256": "41a02c59af2b1a84c1725d5b37142d6771a2bc1a4e4615ee2c2c90ae17b48140",
-      "working_change": "unchanged"
+      "working_sha256": "54f6424b97b72695c0bdc503384e65bed61899443d24048024f909a3e4ee378d",
+      "working_change": "append_phase2_1_mandatory_requirement",
+      "working_history": [
+        {
+          "date": "2026-11-04",
+          "previous_working_sha256": "41a02c59af2b1a84c1725d5b37142d6771a2bc1a4e4615ee2c2c90ae17b48140",
+          "reason": "append_phase2_1_mandatory_requirement",
+          "source": "docs/PHASE2_HOSTED_EXECUTION_PROMPT.txt"
+        }
+      ]
     },
     {
       "archive_path": "FITNESS-OS-2.0-PROJECT/01-产品需求/DESIGN.md",
@@ -135,8 +159,16 @@
       "docs_path": "docs/PRD.md",
       "bytes": 11305,
       "original_sha256": "61ae1c949e6d0e5a1f131b1afa4725a50239ece1dbdecd565496815780791ac4",
-      "working_sha256": "61ae1c949e6d0e5a1f131b1afa4725a50239ece1dbdecd565496815780791ac4",
-      "working_change": "unchanged"
+      "working_sha256": "2f41edf5191a6592df06765b60f5a5279edd6e367ff8b022edb8b041cb28aac4",
+      "working_change": "append_phase2_1_mandatory_requirement",
+      "working_history": [
+        {
+          "date": "2026-11-04",
+          "previous_working_sha256": "61ae1c949e6d0e5a1f131b1afa4725a50239ece1dbdecd565496815780791ac4",
+          "reason": "append_phase2_1_mandatory_requirement",
+          "source": "docs/PHASE2_HOSTED_EXECUTION_PROMPT.txt"
+        }
+      ]
     }
   ],
   "pre_copy_comparison": [

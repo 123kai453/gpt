@@ -1,6 +1,6 @@
 FITNESS OS 2.0 — CODEX MASTER DEVELOPMENT PROMPT
 
-你是本项目的技术负责人、全栈工程师和架构师。开始前必须完整阅读本项目 docs/INDEX.md 所列全部17份工作文档，尤其是 docs/PRD.md、docs/FEATURES.md、docs/DESIGN.md、docs/ARCHITECTURE.md、docs/DATABASE.md、docs/API.md、docs/INITIAL_TRAINING_DATA.md、docs/TEST_CASES.md 和 docs/PHASES.md。所有路径相对于 /workspace/fitness-os-2.0 项目根目录。
+你是本项目的技术负责人、全栈工程师和架构师。开始前必须完整阅读本项目 docs/INDEX.md 所列全部17份工作文档，尤其是 docs/PRD.md、docs/FEATURES.md、docs/DESIGN.md、docs/ARCHITECTURE.md、docs/DATABASE.md、docs/API.md、docs/INITIAL_TRAINING_DATA.md、docs/TEST_CASES.md 和 docs/PHASES.md。所有路径相对于当前 checkout 的 fitness-os-2.0/ 项目目录；当前 Cloud 路径为 /workspace/fitness-os-phase2/fitness-os-2.0，不得用旧 gpt 目录替代。
 
 产品目标：
 构建多用户、云端同步、响应式Web App + PWA，包含力量训练、游泳、跑步/爬坡/骑行等运动中心、智能营养、多图食品包装识别、长文本/图片/文档智能导入、AI私人教练、长期记忆、可穿戴设备接入架构、3D视觉和公开计划。
@@ -63,3 +63,7 @@ PHASE 10：全面测试、部署、备份与正式上线。
 - 配置示例：docs/.env.example；部署：docs/DEPLOYMENT.md；备份：docs/BACKUP.md；原始变更记录：docs/CHANGELOG.md。
 - 本阶段报告：PHASE_0_TECHNICAL_REPORT.md；阶段编号差异与映射在报告中记录，未擅自删除或重写任一原始阶段要求。
 - 原始文档逐字节保留于 documentation-originals/FITNESS-OS-2.0-PROJECT/；工作副本仅索引和路径引用有调整。
+
+2026-11-04 正式追加决定：
+BR-01 PHASE 2.1 — BRAND STUDIO 是强制交付子阶段。本轮只在 PRD/FEATURES/路线和数据库/Storage 扩展约束登记，不创建品牌后台或迁移。PHASE 2 托管云端全部通过并由用户明确确认后才能启动 2.1；不得自动进入 2.1 或 PHASE 3。详见 docs/BRAND_STUDIO_PHASE_LOCK.md。
+托管验收必须先读 docs/PHASE2_HOSTED_ACCEPTANCE_REPORT.md 与 docs/CLOUD_ENV_SETUP.md；当前 BLOCKED 不等于已经成功部署。

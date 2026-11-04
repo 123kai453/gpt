@@ -78,3 +78,18 @@
 - [同步架构](SYNC_ARCHITECTURE.md)
 - [环境配置](ENV_SETUP.md)
 - [实际测试报告](TEST_REPORT.md)
+
+## PHASE 2 托管最终验收（当前 BLOCKED）
+
+- [托管执行指令](PHASE2_HOSTED_EXECUTION_PROMPT.txt)
+- [总报告](PHASE2_HOSTED_ACCEPTANCE_REPORT.md)
+- [Schema 审查状态](HOSTED_SCHEMA_REVIEW.md)
+- [迁移方案草案](HOSTED_MIGRATION_PLAN.md)
+- [安全报告](HOSTED_SECURITY_REPORT.md)
+- [同步报告](HOSTED_SYNC_REPORT.md)
+- [实际测试报告](HOSTED_TEST_REPORT.md)
+- [Cloud 配置操作说明](CLOUD_ENV_SETUP.md)
+- [只读目录检查 SQL](../supabase/reviews/hosted_schema_readonly.sql)
+- [BRAND STUDIO 强制阶段锁](BRAND_STUDIO_PHASE_LOCK.md)
+
+本地、托管、正式网站分开记录；旧阶段报告为对应提交的历史证据，不将本地通过等同于托管通过。
