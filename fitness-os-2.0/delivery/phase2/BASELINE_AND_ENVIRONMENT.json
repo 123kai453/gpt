@@ -1,0 +1,28 @@
+{
+  "baseline": "8d0c4622632038c703e49cbdc35b4d8bf960c612",
+  "checkpoint": "0caad38",
+  "branch": "feature/phase2-cloud-foundation",
+  "original_documents": 17,
+  "original_hashes_pass": true,
+  "phase11_manifest_entries": 101,
+  "old_gpt_head": "e55ff9175bcc82e7c4c2934d089c26118dfcba71",
+  "old_gpt_clean": true,
+  "cloud_database_deployed": false,
+  "migration_sha256": "e3ee70b56d33b0ab3d4e73e95525a5d1c16fa94624901006a92387c9f405f436",
+  "local_services": [
+    "PostgreSQL",
+    "GoTrue Auth",
+    "PostgREST",
+    "Storage",
+    "Kong",
+    "Mailpit"
+  ],
+  "final_verification_date": "2026-11-04",
+  "unit_tests_passed": 66,
+  "sql_assertions_passed": 79,
+  "http_assertions_passed": 113,
+  "browser_scenarios_passed": 20,
+  "browser_skipped": 0,
+  "local_test_users_remaining": 0,
+  "private_media_objects_remaining": 0
+}

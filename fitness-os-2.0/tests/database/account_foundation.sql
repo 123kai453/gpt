@@ -122,8 +122,7 @@ with deleted as (delete from public.user_data_exports where id='eeeeeeee-2222-42
 select pg_temp.check_true((select count(*) = 0 from deleted),'B cannot delete A exports');
 with updated as (update storage.objects set name='aaaabbbb-0000-4000-8000-000000000002/stolen.png' where bucket_id='private-media' returning id)
 select pg_temp.check_true((select count(*) = 0 from updated),'B cannot move A object');
-with deleted as (delete from storage.objects where bucket_id='private-media' returning id)
-select pg_temp.check_true((select count(*) = 0 from deleted),'B cannot delete A object');
+select pg_temp.check_throws($sql$delete from storage.objects where bucket_id='private-media'$sql$,'42501','official Storage guard rejects direct SQL deletion; real API DELETE tested separately');
 select pg_temp.check_throws($sql$insert into public.user_media (user_id,object_path,mime_type,size_bytes) values ('aaaabbbb-0000-4000-8000-000000000001','aaaabbbb-0000-4000-8000-000000000001/stolen.png','image/png',100)$sql$,'42501','B cannot insert media owned by A');
 select pg_temp.check_throws($sql$insert into public.user_consents (user_id,scope,granted,policy_version) values ('aaaabbbb-0000-4000-8000-000000000001','privacy_policy',true,'1')$sql$,'42501','B cannot insert consent owned by A');
 select pg_temp.check_throws($sql$select public.apply_account_mutation('bbbbbbbb-1111-4111-8111-111111111111','dddddddd-2222-4222-8222-222222222222','profile',1,'{"username":"testalpha"}')$sql$,'23505','username uniqueness is case insensitive');
@@ -146,8 +145,10 @@ select pg_temp.check_throws($sql$select public.apply_account_mutation('aaaaaaaa-
 select pg_temp.check_throws($sql$insert into public.user_media (object_path,mime_type,size_bytes) values ('aaaabbbb-0000-4000-8000-000000000001/new.png','image/png',123)$sql$,'42501','media inserts blocked during deletion');
 select pg_temp.check_throws($sql$insert into storage.objects (bucket_id,name) values ('private-media','aaaabbbb-0000-4000-8000-000000000001/new.png')$sql$,'42501','direct storage upload blocked during deletion');
 select pg_temp.check_throws($sql$update storage.objects set name='aaaabbbb-0000-4000-8000-000000000001/changed.png' where bucket_id='private-media'$sql$,'42501','direct storage update blocked during deletion');
-delete from storage.objects where bucket_id='private-media';
-select pg_temp.check_true((select count(*)=0 from storage.objects where bucket_id='private-media'),'own storage cleanup remains possible during deletion');
+select pg_temp.check_true((select count(*)=1 from storage.objects where bucket_id='private-media'),'own object remains visible for Storage API cleanup during deletion');
+-- Storage 1.88 forbids direct SQL DELETE even for the owner. The HTTP integration
+-- suite verifies actual Storage API cleanup; this transaction rolls back rows.
+select pg_temp.check_throws($sql$delete from storage.objects where bucket_id='private-media'$sql$,'42501','own direct SQL Storage delete also protected');
 select pg_temp.set_actor('aaaabbbb-0000-4000-8000-000000000002'::uuid);
 select pg_temp.check_true((select count(*)=0 from public.account_deletion_jobs),'B cannot see A deletion job');
 

@@ -116,6 +116,7 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
       <div className="auth-heading"><span className="auth-icon"><Fingerprint size={24} strokeWidth={1.4} /></span><p className="auth-eyebrow">{content.eyebrow}</p><h1 id="auth-title">{content.title.split("\n").map((line, index) => <span key={line}>{index > 0 && <br />}{line}</span>)}</h1><p>{content.description}</p></div>
       {!configured && <div className="auth-notice" role="status"><ShieldCheck size={19} /><div><strong>账户服务尚未配置</strong><p>请在环境设置中配置 Supabase 项目地址和公开的 publishable / anon key，然后重新构建应用。当前不能注册或登录。</p></div></div>}
       {alreadySignedIn && <div className="auth-notice" role="status"><ShieldCheck size={19} /><div><strong>当前已登录 {user?.email}</strong><p>切换账户前，请先在账号安全中退出，并处理尚未同步的修改。</p><Link href="/account/security">管理当前账户与退出 <ArrowRight size={14} /></Link></div></div>}
+      {mode === "sign-in" && !user && configured && <p className="auth-privacy-note">不同账号的待同步修改隔离保存。重新登录原账号，可以恢复其待同步修改。</p>}
       {callbackFailed && <p className="auth-message auth-error" role="alert">确认链接无效、已使用或已过期。请重新登录，或申请新的确认 / 重置邮件。</p>}
       {mode === "verify-email" && user?.email_confirmed_at && <div className="auth-notice auth-positive"><CheckCircle2 size={20} /><div><strong>邮箱已确认</strong><p>{user.email}</p><Link href="/account/profile">进入个人账户 <ArrowRight size={14} /></Link></div></div>}
       {mode === "reset-password" && loading && <p className="auth-session-check" role="status"><LoaderCircle size={16} className="auth-spin" /> 正在检查恢复会话…</p>}

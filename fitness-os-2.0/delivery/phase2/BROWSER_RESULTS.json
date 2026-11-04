@@ -1,0 +1,131 @@
+{
+  "environment": "isolated-local-supabase",
+  "date": "2026-11-04",
+  "passed": 20,
+  "failed": 0,
+  "skipped": 0,
+  "flaky": 0,
+  "duration_ms": 117927.119,
+  "scenarios": [
+    {
+      "file": "final-delivery.spec.ts",
+      "title": "final delivery audits every rendered module, navigation target and browser console",
+      "status": "expected",
+      "duration_ms": 35465
+    },
+    {
+      "file": "final-delivery.spec.ts",
+      "title": "captures seven requested final-delivery views from the running application",
+      "status": "expected",
+      "duration_ms": 9265
+    },
+    {
+      "file": "phase1.spec.ts",
+      "title": "every registered route is reachable and unknown paths show a recoverable 404",
+      "status": "expected",
+      "duration_ms": 1503
+    },
+    {
+      "file": "phase1.spec.ts",
+      "title": "desktop Dashboard has honest empty states, working links and no external API calls",
+      "status": "expected",
+      "duration_ms": 1856
+    },
+    {
+      "file": "phase1.spec.ts",
+      "title": "theme changes persist across reload and settings controls remain synchronized",
+      "status": "expected",
+      "duration_ms": 2213
+    },
+    {
+      "file": "phase1.spec.ts",
+      "title": "mobile navigation reaches all centers and layouts fit narrow touch screens",
+      "status": "expected",
+      "duration_ms": 2470
+    },
+    {
+      "file": "phase1.spec.ts",
+      "title": "manifest, original icons, install guidance and service-worker registration are usable",
+      "status": "expected",
+      "duration_ms": 1082
+    },
+    {
+      "file": "phase1.spec.ts",
+      "title": "offline reload opens the public shell and caches exclude pages and private requests",
+      "status": "expected",
+      "duration_ms": 1507
+    },
+    {
+      "file": "phase1.spec.ts",
+      "title": "new service-worker version waits for user confirmation, reloads and removes only stale app cache",
+      "status": "expected",
+      "duration_ms": 5288
+    },
+    {
+      "file": "phase2-account.spec.ts",
+      "title": "profile saves to the real database; own JSON/CSV exports and CSRF controls",
+      "status": "expected",
+      "duration_ms": 2668
+    },
+    {
+      "file": "phase2-account.spec.ts",
+      "title": "real private media validates bytes, rejects cross-user reads, and deletes file plus metadata",
+      "status": "expected",
+      "duration_ms": 3401
+    },
+    {
+      "file": "phase2-account.spec.ts",
+      "title": "confirmed deletion removes Auth, SQL and private storage including orphan files",
+      "status": "expected",
+      "duration_ms": 2071
+    },
+    {
+      "file": "phase2-auth.spec.ts",
+      "title": "auth callbacks reject malformed input and prevent caching",
+      "status": "expected",
+      "duration_ms": 52
+    },
+    {
+      "file": "phase2-auth.spec.ts",
+      "title": "real local email signup, resend, PKCE verification, signin, signout and password recovery",
+      "status": "expected",
+      "duration_ms": 14078
+    },
+    {
+      "file": "phase2-session-queue.spec.ts",
+      "title": "remote session revocation preserves an offline outbox across account isolation and original-account reauthentication",
+      "status": "expected",
+      "duration_ms": 4419
+    },
+    {
+      "file": "phase2-sync.spec.ts",
+      "title": "real desktop/mobile sync, durable offline edits, explicit conflicts, idempotent lost-ack retry and logout isolation",
+      "status": "expected",
+      "duration_ms": 20976
+    },
+    {
+      "file": "visual.spec.ts",
+      "title": "the fixed brand hero and all local editorial pictures load without an external image service",
+      "status": "expected",
+      "duration_ms": 1650
+    },
+    {
+      "file": "visual.spec.ts",
+      "title": "reduced-motion preferences disable ambient and parallax motion",
+      "status": "expected",
+      "duration_ms": 1062
+    },
+    {
+      "file": "visual.spec.ts",
+      "title": "image failure has a readable fallback and does not break genuine navigation",
+      "status": "expected",
+      "duration_ms": 959
+    },
+    {
+      "file": "visual.spec.ts",
+      "title": "records desktop motion pacing without claiming real-phone performance",
+      "status": "expected",
+      "duration_ms": 3002
+    }
+  ]
+}

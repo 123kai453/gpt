@@ -1,0 +1,309 @@
+{
+  "routes": [
+    {
+      "route": "/",
+      "status": 200,
+      "title": "突破极限，持续进化。"
+    },
+    {
+      "route": "/sports",
+      "status": 200,
+      "title": "运动中心"
+    },
+    {
+      "route": "/sports/strength",
+      "status": 200,
+      "title": "力量训练"
+    },
+    {
+      "route": "/sports/plans",
+      "status": 200,
+      "title": "自主训练计划"
+    },
+    {
+      "route": "/sports/swimming",
+      "status": 200,
+      "title": "游泳"
+    },
+    {
+      "route": "/sports/outdoor-run",
+      "status": 200,
+      "title": "户外跑步"
+    },
+    {
+      "route": "/sports/treadmill",
+      "status": 200,
+      "title": "跑步机爬坡"
+    },
+    {
+      "route": "/sports/indoor-cycle",
+      "status": 200,
+      "title": "室内动感单车"
+    },
+    {
+      "route": "/sports/hike",
+      "status": 200,
+      "title": "徒步与登山"
+    },
+    {
+      "route": "/sports/elliptical",
+      "status": 200,
+      "title": "椭圆机"
+    },
+    {
+      "route": "/sports/rowing",
+      "status": 200,
+      "title": "划船机"
+    },
+    {
+      "route": "/sports/jump-rope",
+      "status": 200,
+      "title": "跳绳"
+    },
+    {
+      "route": "/sports/stair-climber",
+      "status": 200,
+      "title": "登山机"
+    },
+    {
+      "route": "/sports/other",
+      "status": 200,
+      "title": "其他运动"
+    },
+    {
+      "route": "/nutrition",
+      "status": 200,
+      "title": "营养中心"
+    },
+    {
+      "route": "/nutrition/log",
+      "status": 200,
+      "title": "饮食记录"
+    },
+    {
+      "route": "/nutrition/library",
+      "status": 200,
+      "title": "私人食品库"
+    },
+    {
+      "route": "/nutrition/recognition",
+      "status": 200,
+      "title": "食品识别"
+    },
+    {
+      "route": "/nutrition/analysis",
+      "status": 200,
+      "title": "营养分析"
+    },
+    {
+      "route": "/nutrition/plans",
+      "status": 200,
+      "title": "饮食计划"
+    },
+    {
+      "route": "/ai",
+      "status": 200,
+      "title": "AI 私人教练"
+    },
+    {
+      "route": "/ai/training",
+      "status": 200,
+      "title": "训练分析"
+    },
+    {
+      "route": "/ai/nutrition",
+      "status": 200,
+      "title": "饮食分析"
+    },
+    {
+      "route": "/ai/memory",
+      "status": 200,
+      "title": "长期记忆"
+    },
+    {
+      "route": "/ai/models",
+      "status": 200,
+      "title": "模型设置"
+    },
+    {
+      "route": "/data",
+      "status": 200,
+      "title": "数据中心"
+    },
+    {
+      "route": "/data/body",
+      "status": 200,
+      "title": "身体数据"
+    },
+    {
+      "route": "/data/trends",
+      "status": 200,
+      "title": "运动趋势"
+    },
+    {
+      "route": "/data/history",
+      "status": 200,
+      "title": "训练历史"
+    },
+    {
+      "route": "/data/personal",
+      "status": 200,
+      "title": "个人数据"
+    },
+    {
+      "route": "/devices",
+      "status": 200,
+      "title": "设备中心"
+    },
+    {
+      "route": "/devices/apple",
+      "status": 200,
+      "title": "Apple Health"
+    },
+    {
+      "route": "/devices/huawei",
+      "status": 200,
+      "title": "Huawei Health"
+    },
+    {
+      "route": "/devices/health-connect",
+      "status": 200,
+      "title": "Android Health Connect"
+    },
+    {
+      "route": "/devices/files",
+      "status": 200,
+      "title": "设备文件导入"
+    },
+    {
+      "route": "/community",
+      "status": 200,
+      "title": "社区"
+    },
+    {
+      "route": "/community/plans",
+      "status": 200,
+      "title": "公开训练计划"
+    },
+    {
+      "route": "/community/favorites",
+      "status": 200,
+      "title": "我的收藏"
+    },
+    {
+      "route": "/community/share",
+      "status": 200,
+      "title": "分享计划"
+    },
+    {
+      "route": "/community/profile",
+      "status": 200,
+      "title": "个人主页"
+    },
+    {
+      "route": "/import",
+      "status": 200,
+      "title": "智能导入"
+    },
+    {
+      "route": "/settings",
+      "status": 200,
+      "title": "偏好设置"
+    },
+    {
+      "route": "/admin",
+      "status": 200,
+      "title": "管理中心"
+    },
+    {
+      "route": "/explore",
+      "status": 200,
+      "title": "探索 FITNESS OS"
+    }
+  ],
+  "uniqueNavigationTargets": [
+    "/",
+    "/account/privacy",
+    "/account/profile",
+    "/account/security",
+    "/account/sync",
+    "/admin",
+    "/ai",
+    "/ai/memory",
+    "/ai/models",
+    "/ai/nutrition",
+    "/ai/training",
+    "/auth/sign-in",
+    "/community",
+    "/community/favorites",
+    "/community/plans",
+    "/community/profile",
+    "/community/share",
+    "/data",
+    "/data/body",
+    "/data/history",
+    "/data/personal",
+    "/data/trends",
+    "/devices",
+    "/devices/apple",
+    "/devices/files",
+    "/devices/health-connect",
+    "/devices/huawei",
+    "/explore",
+    "/import",
+    "/nutrition",
+    "/nutrition/analysis",
+    "/nutrition/library",
+    "/nutrition/log",
+    "/nutrition/plans",
+    "/nutrition/recognition",
+    "/settings",
+    "/sports",
+    "/sports/elliptical",
+    "/sports/hike",
+    "/sports/indoor-cycle",
+    "/sports/jump-rope",
+    "/sports/other",
+    "/sports/outdoor-run",
+    "/sports/plans",
+    "/sports/rowing",
+    "/sports/stair-climber",
+    "/sports/strength",
+    "/sports/swimming",
+    "/sports/treadmill"
+  ],
+  "browserErrors": [],
+  "badResponses": [],
+  "cacheEntries": [
+    "/offline.html",
+    "/manifest.json",
+    "/icons/mark.svg",
+    "/icons/icon-192.png",
+    "/icons/icon-512.png",
+    "/icons/maskable-512.png",
+    "/icons/apple-touch-icon.png",
+    "/_next/static/chunks/app/account/layout-6367b62075892bf2.js",
+    "/_next/static/chunks/app/account/profile/page-3bf1df322873afdf.js",
+    "/_next/static/css/cf8257036359ab11.css",
+    "/_next/static/chunks/webpack-df0e944a21a16eb1.js",
+    "/_next/static/chunks/3e0fce1b-eeeab5105a5c095c.js",
+    "/_next/static/chunks/main-app-92b3a72887926de3.js",
+    "/_next/static/chunks/7197-96b6458c2aa885fb.js",
+    "/_next/static/chunks/28-2d2e4be8a6156bf2.js",
+    "/_next/static/chunks/7691-a848db77b3d1d2d3.js",
+    "/_next/static/chunks/1068-873a43c6057fc96c.js",
+    "/_next/static/chunks/1077-c46757891f76fa5a.js",
+    "/_next/static/chunks/6114-be992ad632a0e1d0.js",
+    "/_next/static/chunks/app/layout-7d4189bf8193b0f8.js",
+    "/_next/static/chunks/50bd6b7f-c9c28f9cb1b89e9e.js",
+    "/_next/static/chunks/app/error-bdd2c58896df2072.js",
+    "/_next/static/chunks/app/%5B...slug%5D/page-6747af2a6c6391c1.js",
+    "/_next/static/chunks/4013-de8f5cf6616b06b4.js",
+    "/_next/static/css/8667e121878c22d3.css",
+    "/_next/static/chunks/8883-3c912f71376448a8.js",
+    "/_next/static/chunks/app/page-b6bbc661f83d4503.js",
+    "/_next/static/chunks/app/account/sync/page-d05d96fc326bf24e.js",
+    "/_next/static/chunks/app/account/security/page-f93a5fd94b2ebc64.js",
+    "/_next/static/chunks/app/account/privacy/page-7f4ceb3d3499ae42.js"
+  ]
+}

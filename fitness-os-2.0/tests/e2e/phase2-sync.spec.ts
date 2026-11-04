@@ -53,11 +53,11 @@ test("real desktop/mobile sync, durable offline edits, explicit conflicts, idemp
     await login(a,email,password);await login(b,email,password);
     await saveName(a,"Saved on desktop");await waitName(desktop,"Saved on desktop");
     await expect(b.getByTestId("profile-display-name")).toHaveValue("Saved on desktop",{timeout:20_000});
-    await b.getByLabel("主题",{exact:true}).selectOption("light");
-    await b.getByLabel("计量单位",{exact:true}).selectOption("imperial");
+    await b.getByRole("combobox",{name:"主题",exact:true}).selectOption("light");
+    await b.getByRole("combobox",{name:"计量单位",exact:true}).selectOption("imperial");
     await b.getByRole("button",{name:"保存个人偏好",exact:true}).click();
     await expect.poll(async()=>(await snapshot(mobile)).preferences.theme).toBe("light");
-    await expect(a.getByLabel("计量单位",{exact:true})).toHaveValue("imperial",{timeout:20_000});
+    await expect(a.getByRole("combobox",{name:"计量单位",exact:true})).toHaveValue("imperial",{timeout:20_000});
 
     await desktop.setOffline(true);await expect.poll(()=>a.evaluate(()=>navigator.onLine)).toBe(false);
     await saveName(a,"Offline edit kept in IndexedDB");

@@ -3,6 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { isAuthRetryableFetchError, type SupabaseClient, type User } from "@supabase/supabase-js";
 import { createBrowserSupabaseClient } from "@/lib/supabase/browser";
+import { wasIntentionalSignOut } from "./signout";
 
 type AuthContextValue = {
   user: User | null;
@@ -39,12 +40,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const id = ++request.current;
     try {
       const result = await client?.auth.getUser();
+      let nextUser = result?.error ? null : (result?.data.user ?? null);
+      let transient = Boolean(result?.error && isAuthRetryableFetchError(result.error));
+      if (nextUser && client) {
+        // Auth can still recognize a non-expired JWT after global sign-out.
+        // The database independently checks that its auth.sessions row exists.
+        const session = await client.rpc("has_current_auth_session");
+        if (session.error || session.data !== true) {
+          transient = Boolean(session.error && (session.status === 0 || session.status === 429 || session.status >= 500));
+          nextUser = null;
+        }
+      }
       if (mounted.current && id === request.current) {
         // A previously verified user may keep editing their scoped outbox while
         // offline, until the known session expires. Servers still revalidate.
-        const transient = result?.error && isAuthRetryableFetchError(result.error);
         if (!transient || !expiresAt.current || Date.now() >= expiresAt.current) {
-          const nextUser = result?.error ? null : (result?.data.user ?? null);
           replaceUser(nextUser, nextUser ? "account-changed" : "expired");
         }
       }
@@ -61,7 +71,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!client) return;
     queueMicrotask(() => { if (mounted.current) void refreshUser(); });
     const { data: { subscription } } = client.auth.onAuthStateChange((event, session) => {
-      const previousExpiry = expiresAt.current;
       expiresAt.current = session?.expires_at ? session.expires_at * 1000 : null;
       if (expiryTimer.current) clearTimeout(expiryTimer.current);
       if (expiresAt.current) {
@@ -69,7 +78,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       if (event === "SIGNED_OUT") {
         request.current += 1;
-        replaceUser(null, previousExpiry && previousExpiry <= Date.now() ? "expired" : "signed-out");
+        const previousUserId = verifiedUser.current?.id;
+        replaceUser(null, previousUserId && wasIntentionalSignOut(previousUserId) ? "signed-out" : "expired");
         setLoading(false);
       } else {
         // Leave the SDK auth lock before performing another auth request.

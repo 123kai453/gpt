@@ -10,7 +10,7 @@ export function createBrowserSupabaseClient(): SupabaseClient | null {
   const config = getSupabasePublicConfig();
   if (!config) return null;
   browserClient ??= createBrowserClient(config.url, config.key, {
-    auth: { flowType: "pkce", detectSessionInUrl: false },
+    auth: { flowType: "pkce", detectSessionInUrl: false, experimental: { appendPkceFlowIdToRedirects: true } },
   });
   return browserClient;
 }

@@ -422,7 +422,7 @@ begin
   );
   update app_private.account_mutation_receipts set result = v_result where user_id = v_user and mutation_id = p_mutation_id;
   insert into public.sync_metadata (user_id, device_id, last_seen_at, last_synced_at)
-    values (v_user, p_device_id, pg_catalog.clock_timestamp(), pg_catalog.clock_timestamp())
+    values (v_user, p_device_id, pg_catalog.clock_timestamp(), case when v_version = p_base_version then pg_catalog.clock_timestamp() else null end)
     on conflict (user_id, device_id) do update set last_seen_at = excluded.last_seen_at,
       last_synced_at = case when v_version = p_base_version then excluded.last_synced_at else public.sync_metadata.last_synced_at end;
   return v_result;

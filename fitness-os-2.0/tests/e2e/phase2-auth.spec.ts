@@ -60,7 +60,7 @@ async function signOut(page: Page) {
 }
 
 test("auth callbacks reject malformed input and prevent caching", async ({ request }) => {
-  for (const path of ["/auth/callback?next=//evil.example", "/auth/confirm?type=untrusted&token_hash=test&next=%2F%2Fevil.example"]) {
+  for (const path of ["/auth/callback?next=//evil.example", "/auth/callback?code=test&sb_flow_id=%2F%2Fbad-flow", "/auth/confirm?type=untrusted&token_hash=test&next=%2F%2Fevil.example", "/auth/confirm?type=email&token_hash=test"]) {
     const response = await request.get(path, { maxRedirects: 0 });
     expect(response.status()).toBe(303);
     expect(new URL(response.headers().location).pathname).toBe("/auth/sign-in");
@@ -114,7 +114,7 @@ test("real local email signup, resend, PKCE verification, signin, signout and pa
   await page.getByLabel("邮箱地址", { exact: true }).fill(email);
   await page.getByLabel("密码", { exact: true }).fill("Incorrect-Password-For-Test");
   await page.getByRole("button", { name: "登录账户", exact: true }).click();
-  await expect(page.getByRole("alert")).toHaveText("登录未完成，请检查邮箱和密码，或稍后再试。");
+  await expect(page.locator(".auth-form").getByRole("alert")).toHaveText("登录未完成，请检查邮箱和密码，或稍后再试。");
   await page.getByLabel("密码", { exact: true }).fill(password);
   await expect(page.getByRole("button", { name: "登录账户", exact: true })).toBeEnabled({ timeout: 10_000 });
   await page.getByRole("button", { name: "登录账户", exact: true }).click();

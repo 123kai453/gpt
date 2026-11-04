@@ -20,7 +20,7 @@ const jsonHeaders = { "Content-Type": "application/json" };
 const fileLimit = 5 * 1024 * 1024;
 export function AccountPrivacy() {
   const { user } = useAuth();
-  const { pending, logout, exportPending } = useSync();
+  const { pending, finalizeAccountDeletion, exportPending } = useSync();
   const router = useRouter();
   const [consents, setConsents] = useState<Consent[]>([]);
   const [currentConsents, setCurrentConsents] = useState<Record<string, Consent> | null>(null);
@@ -34,6 +34,7 @@ export function AccountPrivacy() {
   const [exportNotice, setExportNotice] = useState({ text: "", error: false });
   const [deleteNotice, setDeleteNotice] = useState({ text: "", error: false });
   const [consentBusy, setConsentBusy] = useState(false);
+  const [pendingConsent, setPendingConsent] = useState<{ scope: string; granted: boolean } | null>(null);
   const [mediaBusy, setMediaBusy] = useState(false);
   const [exportBusy, setExportBusy] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -72,10 +73,10 @@ export function AccountPrivacy() {
     finally { setMediaBusy(false); }
   }
   async function changeConsent(scope: string, granted: boolean) {
-    setConsentBusy(true); setConsentNotice({ text: "", error: false });
+    setConsentBusy(true); setPendingConsent({ scope, granted }); setConsentNotice({ text: "正在保存授权选择，等待服务器确认…", error: false });
     try { await accountRequest("/api/account/consents", { method: "POST", headers: jsonHeaders, body: JSON.stringify({ scope, granted, policy_version: "2.0-phase2" }) }); await loadConsents(); setConsentNotice({ text: "授权选择已记录。撤回会增加一条新的记录，以保留授权历史。", error: false }); }
     catch (error) { setConsentNotice({ text: messageOf(error), error: true }); }
-    finally { setConsentBusy(false); }
+    finally { setConsentBusy(false); setPendingConsent(null); }
   }
   async function downloadExport(format: "json" | "csv") {
     setExportBusy(true); setExportNotice({ text: "", error: false });
@@ -111,13 +112,14 @@ export function AccountPrivacy() {
     finally { setMediaBusy(false); }
   }
   async function deleteAccount(event: FormEvent) {
-    event.preventDefault(); if (confirmation !== "DELETE" || !acknowledged || !password) return;
+    event.preventDefault(); if (confirmation !== "DELETE" || !acknowledged || !password || !user) return;
+    const deletedUserId=user.id;
     setDeleting(true); setDeleteNotice({ text: "正在删除私人文件、数据库记录和登录账号，请保持页面打开。", error: false });
     try {
       const result = await accountRequest<{ deleted: boolean }>("/api/account/delete", { method: "POST", headers: jsonHeaders, body: JSON.stringify({ confirmation, password }) });
       if (!result.deleted) throw new Error("服务端尚未确认账号完整删除，请稍后重试。");
       setPassword("");
-      await logout({ discardPending: true });
+      await finalizeAccountDeletion(deletedUserId);
       router.replace("/auth/sign-in?deleted=1");
     } catch (error) { setDeleteNotice({ text: messageOf(error), error: true }); }
     finally { setDeleting(false); }
@@ -127,7 +129,7 @@ export function AccountPrivacy() {
     <section className="account-panel"><span className="eyebrow"><ShieldCheck size={14} />YOUR CONSENT</span><h2>每一次授权，都由你决定</h2><p className="account-description">默认私人。本阶段仅记录授权选择，不会因为勾选而启用未来的分析、健康采集或分享功能。</p>
       {!consentsLoaded ? <><p className="account-empty">{consentNotice.error ? "尚未取得授权记录。" : "正在读取授权记录…"}</p>{consentNotice.error && <button className="button button-secondary button-sm" onClick={() => void loadConsents().catch((e) => setConsentNotice({ text: messageOf(e), error: true }))}>重新读取</button>}</> : scopes.map((scope) => {
         const current = currentConsents?.[scope.key] || consents.filter((item) => item.scope === scope.key).sort((a, b) => b.created_at.localeCompare(a.created_at))[0];
-        return <label key={scope.key} className="account-consent-row"><input type="checkbox" checked={Boolean(current?.granted)} disabled={consentBusy || (!current && currentConsents === null && consentNextOffset !== null)} onChange={(e) => void changeConsent(scope.key, e.target.checked)} /><span><strong>{scope.title}</strong><small>{scope.detail}{!current && currentConsents === null && consentNextOffset !== null ? " 当前已加载记录中尚无此项，请继续加载历史记录确认。" : ""}</small></span></label>;
+        return <label key={scope.key} className="account-consent-row"><input type="checkbox" checked={pendingConsent?.scope === scope.key ? pendingConsent.granted : Boolean(current?.granted)} disabled={consentBusy || (!current && currentConsents === null && consentNextOffset !== null)} onChange={(e) => void changeConsent(scope.key, e.target.checked)} /><span><strong>{scope.title}</strong><small>{scope.detail}{!current && currentConsents === null && consentNextOffset !== null ? " 当前已加载记录中尚无此项，请继续加载历史记录确认。" : ""}</small></span></label>;
       })}<AccountNotice {...consentNotice} /><details className="account-conflict"><summary>查看已加载授权历史（{consents.length}{consentNextOffset !== null ? "+" : ""}）</summary><ul className="account-list">{consents.map((consent) => <li key={consent.id}>{scopes.find((s) => s.key === consent.scope)?.title || consent.scope} · {consent.granted ? "同意" : "撤回 / 未同意"}<p>{consent.policy_version} · {new Date(consent.created_at).toLocaleString("zh-CN")}</p></li>)}</ul>{consentNextOffset !== null && <button className="button button-secondary button-sm" disabled={consentBusy} onClick={() => void moreConsents()}>加载更多授权记录</button>}</details>
     </section></div>
     <section className="account-panel" style={{ marginTop: 20 }}><span className="eyebrow"><ImagePlus size={14} />PRIVATE MEDIA</span><h2>属于你的私人媒体空间</h2><p className="account-description">当前提供图片存储基础，不进行食品识别。PNG、JPEG 或 WebP，每张最多 5 MB；服务端会再次检查文件内容和权限。品牌图片继续保留在公开素材目录。</p>

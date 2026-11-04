@@ -16,9 +16,9 @@ export class SyncEngine {
   private emit(){if(!this.stopped)this.onChange({...this.local,online:this.online,syncing:this.busy,loading:this.loading,error:this.error,projected:projectSnapshot(this.local)});}
   private async save(transform:(s:LocalState)=>LocalState){
     if(this.stopped)return;
-    this.local=await updateState(this.userId,transform);this.emit();this.channel?.postMessage({type:"changed"});
+    const saved=await updateState(this.userId,transform);if(this.stopped)return;this.local=saved;this.emit();this.channel?.postMessage({type:"changed"});
   }
-  private async reload(){if(this.stopped)return;this.local=await readState(this.userId);this.emit();}
+  private async reload(){if(this.stopped)return;const saved=await readState(this.userId);if(this.stopped)return;this.local=saved;this.emit();}
   async start(){
     try{
       await this.reload();if(this.stopped)return;this.loading=false;this.emit();
@@ -100,5 +100,5 @@ export class SyncEngine {
     const href=URL.createObjectURL(blob);const a=document.createElement("a");a.href=href;a.download="fitness-os-pending.json";a.click();setTimeout(()=>URL.revokeObjectURL(href),1000);
   }
   async purge(){this.channel?.postMessage({type:"purge"});this.dispose();await clearPrivateStore(this.userId);}
-  dispose(){this.stopped=true;this.abort.abort();if(this.timer)clearInterval(this.timer);window.removeEventListener("online",this.handleOnline);window.removeEventListener("offline",this.handleOffline);window.removeEventListener("focus",this.handleFocus);this.channel?.close();this.channel=null;closePrivateStore(this.userId);}
+  dispose(){this.stopped=true;this.local=emptyState();this.error=null;this.abort.abort();if(this.timer)clearInterval(this.timer);window.removeEventListener("online",this.handleOnline);window.removeEventListener("offline",this.handleOffline);window.removeEventListener("focus",this.handleFocus);this.channel?.close();this.channel=null;closePrivateStore(this.userId);}
 }

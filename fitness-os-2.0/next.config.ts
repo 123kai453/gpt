@@ -12,6 +12,9 @@ const nextConfig: NextConfig = {
         { key: "X-Content-Type-Options", value: "nosniff" },
         { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
       ] },
+      { source: "/auth/:path*", headers: [
+        { key: "Referrer-Policy", value: "no-referrer" },
+      ] },
     ];
   },
 };

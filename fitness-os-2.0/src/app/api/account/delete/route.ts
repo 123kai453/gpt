@@ -1,4 +1,6 @@
 import { z } from "zod";
+import { cookies } from "next/headers";
+import { getSupabasePublicConfig } from "@/lib/supabase/config";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { accountError, dbError, PRIVATE_BUCKET, requireAccount } from "@/lib/account/server";
 import { createAdminSupabaseClient } from "@/lib/supabase/admin";
@@ -58,7 +60,20 @@ export async function POST(request: Request) {
     const { error: deleteError } = await admin.auth.admin.deleteUser(user.id, false);
     if (deleteError) throw new RequestError(503, "AUTH_DELETE_INCOMPLETE", "私人文件已处理，账号删除尚未完成。请重试以继续完成删除。");
     // Auth row deletion cascades all user-owned SQL records, receipts and deletion job.
-    await client.auth.signOut({ scope: "global" });
+    // Account removal has already revoked all sessions. Logout HTTP can return
+    // 403 for the deleted user, and a transient failure must not turn a completed
+    // deletion into a misleading error or leave its browser cookies behind.
+    try { await client.auth.signOut({ scope: "local" }); } catch { /* Explicit cookie cleanup below is authoritative. */ }
+    const publicConfig = getSupabasePublicConfig();
+    if (publicConfig) {
+      const base = `sb-${new URL(publicConfig.url).hostname.split(".")[0]}-auth-token`;
+      const cookieStore = await cookies();
+      for (const cookie of cookieStore.getAll()) {
+        if (cookie.name === base || cookie.name.startsWith(base + ".") || cookie.name.startsWith(base + "-")) {
+          cookieStore.set(cookie.name, "", { path: "/", maxAge: 0, sameSite: "lax" });
+        }
+      }
+    }
     return privateJson({ deleted: true, message: "账号、数据库记录及私人文件已删除。" });
   } catch (error) {
     if (jobId && context) {

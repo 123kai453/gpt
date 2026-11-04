@@ -1,6 +1,7 @@
 import { emptyState, type LocalState } from "./model";
 const PREFIX = "fitness-os-private-";
 const openHandles = new Map<string, IDBDatabase>();
+const purges = new Map<string, Promise<void>>();
 function request<T>(value: IDBRequest<T>): Promise<T> {
   return new Promise((resolve,reject) => { value.onsuccess=()=>resolve(value.result); value.onerror=()=>reject(value.error ?? new Error("本地存储失败")); });
 }
@@ -28,11 +29,17 @@ export async function updateState(userId: string, transform: (state: LocalState)
   read.onsuccess=()=>{ try {result=transform(read.result ?? emptyState());store.put(result,"current");}catch(e){error=e;tx.abort();} };
   try {await done;} catch(e) {throw error ?? e;} return result;
 }
-export async function clearPrivateStore(userId: string): Promise<void> {
-  openHandles.get(userId)?.close(); openHandles.delete(userId);
-  await new Promise<void>((resolve,reject)=>{const req=indexedDB.deleteDatabase(PREFIX+userId);req.onsuccess=()=>resolve();req.onerror=()=>reject(req.error);req.onblocked=()=>reject(new Error("其他页面仍在使用账户缓存，请关闭该页面后重试退出。"));});
-  try{localStorage.removeItem("fitness-os-device-"+userId);}catch{ /* not health data */ }
+export function clearPrivateStore(userId: string): Promise<void> {
+  const existing=purges.get(userId);if(existing)return existing;
+  const task=(async()=>{
+    openHandles.get(userId)?.close(); openHandles.delete(userId);
+    await new Promise<void>((resolve,reject)=>{const req=indexedDB.deleteDatabase(PREFIX+userId);req.onsuccess=()=>resolve();req.onerror=()=>reject(req.error);req.onblocked=()=>reject(new Error("其他页面仍在使用账户缓存，请关闭该页面后重试退出。"));});
+    try{localStorage.removeItem("fitness-os-device-"+userId);if(localStorage.getItem("fitness-os-last-account")===userId)localStorage.removeItem("fitness-os-last-account");}catch{ /* not health data */ }
+  })();
+  const pending=task.finally(()=>{if(purges.get(userId)===pending)purges.delete(userId);});
+  purges.set(userId,pending);return pending;
 }
+
 async function lease(userId:string, owner:string, release=false):Promise<boolean> {
   if(release && !openHandles.has(userId))return false;
   const db=await open(userId);const tx=db.transaction("leases","readwrite");const done=complete(tx);const store=tx.objectStore("leases");let acquired=false;

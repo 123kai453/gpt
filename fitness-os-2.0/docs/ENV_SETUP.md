@@ -34,7 +34,7 @@ pnpm dev
 
 ## Auth URL 与邮件
 
-Auth / URL Configuration 的 Site URL 设为正式站点 origin，Redirect URLs 精确列出 `<origin>/auth/callback` 和 `<origin>/auth/confirm`。保持邮箱确认开启。注册、密码恢复使用 PKCE；邮件链接需要在发起请求的浏览器打开。若自定义邮件模板使用 token_hash，可使用 `/auth/confirm?token_hash=…&type=email`（恢复使用 recovery）；不要把真实链接写入日志。
+Auth / URL Configuration 的 Site URL 设为正式站点 origin，Redirect URLs 精确列出 `<origin>/auth/callback`。保持邮箱确认开启，保留 Supabase 默认 ConfirmationURL 邮件模板。注册与恢复使用 PKCE；邮件链接需要在发起请求的浏览器打开。为防止未绑定浏览器的 token_hash 回调绕过 PKCE，`/auth/confirm` 只返回重新登录提示，不消费 token，也不建立会话。不要将模板改为直连 TokenHash 回调，不要把真实邮件链接写入日志。
 
 默认托管邮件服务有发送频率和收件人限制，不保证支持公开注册的生产流量。发布前需在 Dashboard 核对限制，按需配置自有 SMTP；本阶段未购买邮件服务。没有真实收件测试就不能声称生产邮件可用。
 
@@ -55,3 +55,21 @@ Auth / URL Configuration 的 Site URL 设为正式站点 origin，Redirect URLs 
 本次新增服务费用为 0。建议 Supabase Free 起步，数据库、Storage、流量、活跃用户、邮件频率和暂停规则以当前项目 Dashboard 为准；未实时核对官方套餐数字，因此不把历史额度当成保证。单文件上限 5 MiB；不等于用户总存储限额。监控 Dashboard 用量，后续再增加用户总配额、自动过期导出、监控告警和可配置备份。免费套餐不应当作有生产 SLA 的健康数据备份服务。
 
 Next.js 含服务端 API 与 SSR，需要 Node 托管环境，不能部署到仅支持静态文件的 GitHub Pages。托管平台免费额度和个人/商业使用条款需要上线前核对。没有生成或宣称公网预览链接。
+
+## 受代理管理的 Cloud 运行注意
+
+Node 24 的服务端 fetch 默认不一定读取 HTTPS_PROXY。此类环境启动 Node 服务时启用 `NODE_USE_ENV_PROXY=1`，保持平台注入的代理与 CA 信任以及 NO_PROXY 不变；不要关闭 TLS 检查。该变量只用于需要代理的 Cloud 环境，本机直连不需要。网络域名与密钥绑定仍必须先在环境配置中发布生效。
+
+本次 Cloud 的本地真实服务可复现命令（Linux + Docker）：
+
+```sh
+bash scripts/local-supabase-install.sh
+export SUPABASE_CLI=/tmp/fitness-supabase-cli/supabase
+export SUPABASE_HOME=/tmp/fitness-supabase-cli/home
+# 仅此代理环境下的 BusyBox loopback 健康检查需要此修正。
+export SUPABASE_LOCAL_HEALTHCHECK_PROXY_FIX=1
+bash scripts/local-supabase.sh start
+bash scripts/local-supabase.sh env
+```
+
+最后一条将本地开发凭据写入 mode600 的 `.env.local`，不会显示具体值。不会覆盖用户已有的非本地配置文件。修正只影响容器访问自身 127.0.0.1 的健康探针，不改变外部网络策略。Windows Docker Desktop 使用官方 Supabase CLI 本地开发步骤，无需 Cloud 专用健康探针修正。

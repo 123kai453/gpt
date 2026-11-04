@@ -17,7 +17,7 @@ export async function GET(_request: Request, context: Context) {
     if (media.status !== "ready") throw new RequestError(409, "MEDIA_NOT_READY", "图片尚未完成上传或正在清理。");
     const { data, error } = await client.storage.from(PRIVATE_BUCKET).download(media.object_path);
     if (error || !data) throw new RequestError(503, "DOWNLOAD_FAILED", "图片读取失败，请稍后重试。");
-    return new Response(data, { headers: { ...PRIVATE_HEADERS, "Content-Type": media.mime_type, "Content-Disposition": `inline; filename="${media.id}.${media.mime_type === "image/jpeg" ? "jpg" : media.mime_type.split("/")[1]}"`, "Content-Security-Policy": "default-src 'none'; sandbox" } });
+    return new Response(data, { headers: { ...PRIVATE_HEADERS, "Content-Type": media.mime_type, "Content-Disposition": `attachment; filename="${media.id}.${media.mime_type === "image/jpeg" ? "jpg" : media.mime_type.split("/")[1]}"`, "Content-Security-Policy": "default-src 'none'; sandbox" } });
   } catch (error) { return accountError(error); }
 }
 export async function DELETE(request: Request, context: Context) {

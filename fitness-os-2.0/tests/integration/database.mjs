@@ -62,6 +62,11 @@ function signedJwt(payload) {
   const body = Buffer.from(JSON.stringify(payload)).toString('base64url');
   return `${header}.${body}.${createHmac('sha256', jwtSecret).update(`${header}.${body}`).digest('base64url')}`;
 }
+function trackedPath(userId, extension = 'png') {
+  const path = `${userId}/${randomUUID()}.${extension}`;
+  storagePaths.add(path);
+  return path;
+}
 async function makeAccount(label) {
   const email = `phase2-${runId}-${label}@example.invalid`;
   const password = `Fitness!${randomUUID()}Aa9`;
@@ -84,6 +89,20 @@ try {
 
   for (const table of ['profiles', 'user_preferences', 'user_consents', 'sync_metadata', 'user_media', 'user_data_exports', 'account_deletion_jobs']) {
     denied(await anonymous.from(table).select('*'), `anonymous cannot read ${table}`);
+  }
+  const anonymousWrites = [
+    ['profiles', { id: a.id }, { display_name: 'forbidden' }, 'id'],
+    ['user_preferences', { user_id: a.id }, { theme: 'light' }, 'user_id'],
+    ['user_consents', { user_id: a.id, scope: 'privacy_policy', granted: true, policy_version: 'local-test' }, { granted: false }, 'user_id'],
+    ['sync_metadata', { user_id: a.id, device_id: randomUUID() }, { last_seen_at: new Date().toISOString() }, 'user_id'],
+    ['user_media', { user_id: a.id, object_path: trackedPath(a.id), mime_type: 'image/png', size_bytes: 100 }, { status: 'failed' }, 'user_id'],
+    ['user_data_exports', { user_id: a.id, format: 'json' }, { status: 'failed' }, 'user_id'],
+    ['account_deletion_jobs', { user_id: a.id }, { status: 'failed' }, 'user_id'],
+  ];
+  for (const [table, row, patch, ownerKey] of anonymousWrites) {
+    denied(await anonymous.from(table).insert(row), `anonymous cannot INSERT ${table}`);
+    denied(await anonymous.from(table).update(patch).eq(ownerKey, a.id), `anonymous cannot UPDATE ${table}`);
+    denied(await anonymous.from(table).delete().eq(ownerKey, a.id), `anonymous cannot DELETE ${table}`);
   }
   denied(await anonymous.rpc('consume_account_rate_limit', { p_action: 'export' }), 'anonymous cannot execute account RPC');
   denied(await a.client.schema('app_private').from('account_mutation_receipts').select('*'), 'private receipt schema is not exposed');
@@ -151,10 +170,12 @@ try {
   denied(await anonymous.storage.from(bucket).download(path), 'anonymous cannot download private object');
   denied(await b.client.storage.from(bucket).createSignedUrl(path, 60), 'B cannot sign A object URL');
   denied(await b.client.storage.from(bucket).update(path, png, { contentType: 'image/png' }), 'B cannot update A object');
-  denied(await b.client.storage.from(bucket).upload(`${a.id}/${randomUUID()}.png`, png, { contentType: 'image/png' }), 'B cannot upload into A folder');
-  denied(await anonymous.storage.from(bucket).upload(`${a.id}/${randomUUID()}.png`, png, { contentType: 'image/png' }), 'anonymous cannot upload');
+  denied(await b.client.storage.from(bucket).upload(trackedPath(a.id), png, { contentType: 'image/png' }), 'B cannot upload into A folder');
+  denied(await anonymous.storage.from(bucket).upload(trackedPath(a.id), png, { contentType: 'image/png' }), 'anonymous cannot upload');
   await b.client.storage.from(bucket).remove([path]);
   ok(await a.client.storage.from(bucket).download(path), 'B delete attempt leaves A object intact');
+  await anonymous.storage.from(bucket).remove([path]);
+  ok(await a.client.storage.from(bucket).download(path), 'anonymous delete attempt leaves A object intact');
   empty(await b.client.from('user_media').select('*').eq('user_id', a.id), 'B cannot read A media metadata');
   empty(await b.client.from('user_media').update({ status: 'failed' }).eq('id', mediaId).select(), 'B cannot update A media metadata');
   empty(await b.client.from('user_media').delete().eq('id', mediaId).select(), 'B cannot delete A media metadata');
@@ -216,7 +237,7 @@ try {
   denied(await mutation(a, 'preferences', 2, { theme: 'dark' }), 'deletion state blocks account mutation');
   denied(await a.client.from('user_media').insert({ object_path: `${a.id}/${randomUUID()}.png`, mime_type: 'image/png', size_bytes: 100 }), 'deletion state blocks media insert');
   denied(await a.client.from('user_data_exports').insert({ format: 'json' }), 'deletion state blocks new exports');
-  denied(await a.client.storage.from(bucket).upload(`${a.id}/${randomUUID()}.png`, png, { contentType: 'image/png' }), 'deletion state blocks direct Storage upload');
+  denied(await a.client.storage.from(bucket).upload(trackedPath(a.id), png, { contentType: 'image/png' }), 'deletion state blocks direct Storage upload');
   denied(await a.client.storage.from(bucket).update(path, png, { contentType: 'image/png' }), 'deletion state blocks direct Storage update');
   ok(await a.client.storage.from(bucket).remove([path]), 'deletion state allows own Storage cleanup');
   denied(await a.client.storage.from(bucket).download(path), 'removed object no longer downloadable');
@@ -226,7 +247,7 @@ try {
     empty(response, `Auth deletion cascades ${table}`);
   }
   empty(await a.client.from('profiles').select('*'), 'deleted account former JWT cannot read profile');
-  denied(await a.client.storage.from(bucket).upload(`${a.id}/${randomUUID()}.png`, png, { contentType: 'image/png' }), 'deleted account former JWT cannot recreate Storage files');
+  denied(await a.client.storage.from(bucket).upload(trackedPath(a.id), png, { contentType: 'image/png' }), 'deleted account former JWT cannot recreate Storage files');
   console.log(JSON.stringify({ status: 'passed', environment: 'isolated-local-supabase', assertions: passed.length, checks: passed }, null, 2));
 } catch (error) {
   console.error(JSON.stringify({ status: 'failed', environment: 'isolated-local-supabase', completedAssertions: passed.length, failure: error instanceof Error ? error.message : 'Unknown test failure' }));

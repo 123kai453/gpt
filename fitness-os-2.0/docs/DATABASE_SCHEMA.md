@@ -91,7 +91,9 @@ username唯一性冲突为SQLSTATE `23505`。其他输入错误使用 `22023`，
 
 ## Storage 与迁移安全
 
-`private-media` 为私人桶，上限5MiB，允许 `image/png`、`image/jpeg`、`image/webp`。Storage服务执行桶级大小和Content-Type约束，服务端还应验证图片真实字节/MIME；SQL媒体元数据约束不能证明上传内容有效。路径使用 `<auth.uid()>/<随机名称>.<扩展名>`，拒绝双斜杠和 `..`。预览只签发短时有效URL；数据库不持久化签名URL。SQL测试直接插入 `storage.objects` 仅检查RLS，不等同于真实文件上传测试。
+`private-media` 为私人桶，上限5MiB，允许 `image/png`、`image/jpeg`、`image/webp`。Storage服务执行桶级大小和Content-Type约束，服务端还应验证图片真实字节/MIME；SQL媒体元数据约束不能证明上传内容有效。路径使用 `<auth.uid()>/<随机名称>.<扩展名>`，拒绝双斜杠和 `..`。本阶段应用通过需要登录的受控下载接口读取文件，不持久化或签发签名URL。未来如使用签名URL，应限制有效期；退出无法提前撤销已签发的URL。SQL测试直接插入 `storage.objects` 仅检查RLS，不等同于真实文件上传测试。
+
+已签发的Storage签名URL在自身有效期内仍是持有者可用的凭据，退出登录不会提前撤销该URL；建议最长60秒，禁止永久URL或缓存。会话实时检查保护需要JWT的直接REST/RPC/Storage请求。如果产品要求签名URL也立即失效，应改用每次校验会话的服务端图片代理。
 
 迁移不会删除、覆盖或接管未知表。若上述公共表或 `app_private` 已存在，立即报冲突并要求先比对现有结构。若Storage已有策略，也会停止：多个PostgreSQL permissive策略以OR组合，直接叠加可能放宽私人桶权限，必须先单独审核。已有同名桶配置不一致同样报错。现有Auth用户会获得默认账户行，Auth本身不会被改写。
 
@@ -104,3 +106,18 @@ username唯一性冲突为SQLSTATE `23505`。其他输入错误使用 `22023`，
 - SQL运行命令：`psql "$LOCAL_DATABASE_URL" -X -v ON_ERROR_STOP=1 -f tests/database/account_foundation.sql`。HTTP测试运行命令见脚本顶部。
 
 是否实际通过、执行环境和限制以本次实施报告中的测试证据为准。没有云项目密钥和运行结果时，不宣称生产环境或云端RLS已验证。
+
+### 本次本地真实验证结果（2026-11-03 UTC）
+
+| 项目 | 实际结果 |
+| --- | --- |
+| 环境 | 隔离的本地Supabase；官方Docker数据库、Auth、PostgREST、Storage、网关和邮件收件箱，六项服务已运行 |
+| 迁移版本 | `20261103000100` / `account_foundation` |
+| 源SQL SHA256 | `e3ee70b56d33b0ab3d4e73e95525a5d1c16fa94624901006a92387c9f405f436` |
+| 已部署内容比对 | 从本地 `supabase_migrations.schema_migrations.statements` 读取85条语句，与源SQL逐条精确匹配，仅忽略语句间空白和分隔分号；没有未部署的尾部语句 |
+| SQL事务测试 | [account_foundation.sql](../tests/database/account_foundation.sql) 真实执行成功，79项断言（42次check_true、37次check_throws），打印PASS后ROLLBACK，退出码0 |
+| HTTP/Auth/Storage测试 | [database.mjs](../tests/integration/database.mjs) 真实执行成功，报告113项命名断言，退出码0；含全部七张公共表匿名SELECT/INSERT/UPDATE/DELETE拒绝、并发CAS、原始幂等重放、JWT过期、缺少/撤销会话、撤销refresh token、真实文件大小/MIME、跨用户访问与删除级联 |
+| 测试清理 | 实际数据库查询确认符合测试邮箱模式的临时账户剩余0，私人桶无孤立对象（0）；SQL测试整体回滚 |
+| 托管云项目 | **待配置和验证**；上述结果不证明用户云项目已部署或可连接，没有把本地成功记作云端成功 |
+
+本地Storage 1.88对直接SQL删除元数据有官方保护，返回 `42501`，应使用Storage API删除文件。SQL测试验证该保护；HTTP测试真实验证本人文件删除及跨用户删除失败。测试运行不需要关闭或绕过官方删除保护。运行日志保存在本次执行环境的 `/tmp/fitness-phase2-sql-results.log`、`/tmp/fitness-phase2-sdk-results.log`，不包含密钥或令牌。

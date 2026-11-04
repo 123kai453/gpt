@@ -1,4 +1,8 @@
-# 功能状态 — PHASE 1
+# 功能状态 — PHASE 2 进行中
+
+当前：账户认证、RLS、同步队列、私人文件与数据管理已实现；本地 SQL 79 项、SDK 113 项通过。66 项单元、20 项浏览器场景均通过；云端最终状态见 [PHASE 2 报告](docs/PHASE2_IMPLEMENTATION_REPORT.md)。托管云项目尚未部署，不宣布阶段完成。
+
+以下为历史阶段记录：
 
 2026-11-03：用户已正式授权PHASE 1，确认Codex Cloud、PHASE 0–10及H1–H5华为候选拆分。完整逐项状态见根目录 `FEATURES.md`。
 

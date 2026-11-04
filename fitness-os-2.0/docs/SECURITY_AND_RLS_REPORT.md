@@ -1,6 +1,6 @@
 # PHASE 2 — 安全与 RLS 实施说明
 
-本文件区分已经实现的控制与实际测试结果。代码存在不等于云端已经部署；真实环境测试的结论以 [TEST_REPORT.md](TEST_REPORT.md) 和 [PHASE2_IMPLEMENTATION_REPORT.md](PHASE2_IMPLEMENTATION_REPORT.md) 为准。当前实现没有接入 AI、设备、GPS、运动或营养的私人业务数据。
+本地真实 Supabase 已通过 79 项 PostgreSQL 事务断言及 113 项 HTTP/Auth/Storage 集成断言。浏览器与应用 API 验收由根任务汇总到 [TEST_REPORT.md](TEST_REPORT.md)。托管云项目尚未部署/验证，不能据此宣布云端完成；部署状态以 [PHASE2_IMPLEMENTATION_REPORT.md](PHASE2_IMPLEMENTATION_REPORT.md) 为准。当前实现没有接入 AI、设备、GPS、运动或营养的私人业务数据。
 
 ## 信任边界
 
@@ -40,7 +40,7 @@ Supabase 原生退出通常先撤销 refresh token，已签发的 access JWT 可
 
 所有账号 POST/DELETE 都检查 Origin，要求与 `NEXT_PUBLIC_APP_URL` 或请求本身的同源地址一致，同时拒绝 `Sec-Fetch-Site: cross-site`。JSON 请求有流式大小上限和 Content-Type 校验；上传流同样受上限控制。跨站或无 Origin 的写请求返回 403，命令行验证脚本需要显式发送正确 Origin。
 
-认证回调仅允许预定义的站内返回路径；拒绝外部 URL、协议相对地址、反斜杠、编码绕过和未知路由。PKCE/邮箱 OTP 使用 Supabase 官方 SDK。浏览器输入由 React 文本渲染，不使用用户 HTML 注入；私人图片拒绝 SVG/HTML，下载带 `nosniff` 和受限 CSP。
+认证回调仅允许预定义的站内返回路径；拒绝外部 URL、协议相对地址、反斜杠、编码绕过和未知路由。邮箱确认和密码恢复均使用 Supabase 官方 SDK 的 PKCE 流程。`/auth/confirm` 不交换 token_hash 或 OTP，只返回不带令牌的登录提示，避免回调把其他浏览器替换为攻击者会话。浏览器输入由 React 文本渲染，不使用用户 HTML 注入；应用上传拒绝 SVG/HTML；受控私人下载始终以 attachment 返回，并设置 `nosniff` 和受限 CSP。
 
 ## 限流
 
@@ -60,7 +60,7 @@ Supabase 原生退出通常先撤销 refresh token，已签发的 access JWT 可
 
 上传先建立 pending 元数据，成功后更新 ready；失败保留可清理状态，最终登记失败时尝试删除已上传对象，不返回假成功。读取通过已验证账号的受控下载 API，不公开桶或永久图片 URL。删除先标记 deleting，再清理对象和元数据；数据库触发器原子清空被删除图片对应的头像引用并递增资料版本，避免并发产生悬空引用。失败保留记录供重试。
 
-Storage 自身还限制命名空间、MIME、大小及活跃账号。公开品牌图片留在 public 目录。本阶段不接收 PDF、DOCX、视频或未来食品识别批量附件。
+Storage 自身限制命名空间、声明 MIME、5 MiB 大小及活跃账号，但 Supabase 原始 Storage API 不运行本应用的文件字节检测。通过原始 SDK/API 上传的本人文件不能因此声称已通过深度内容验证、重新编码或扫描；应用受控上传才执行上述签名检查。受控下载采用附件和 nosniff 限制浏览器主动内容解析。没有按用户累计容量、每日流量或文件数的硬配额；项目免费配额仍需在 Supabase 控制台监控，不能将单文件上限当成整体用量上限。公开品牌图片留在 public 目录。本阶段不接收 PDF、DOCX、视频或未来食品识别批量附件。
 
 ## 导出与账号删除
 
@@ -77,3 +77,16 @@ API 对外只返回受控错误码和中文说明，不记录密码、token、�
 ## 验证状态与正式上线门槛
 
 必须以真实 Supabase 实例执行 A/B/匿名用户的 SELECT、INSERT、UPDATE、DELETE、Storage、退出后和过期令牌测试，并完成账号流程、双会话同步、离线重放、导出和删除检查。测试脚本、运行环境和通过/失败统计记录在 TEST_REPORT.md。仅本地容器通过不等于托管云项目部署成功；只有完成目标云项目迁移、配置和同等回归，才能声明云端验收通过。
+
+
+### 已运行的本地安全证据
+
+| 检查 | 实测结果 | 范围与限制 |
+| --- | --- | --- |
+| PostgreSQL 事务断言 | 79 项通过，ROLLBACK 后退出码 0 | A/B/匿名所有权、直接写入拒绝、CAS、幂等、输入、头像清理、限流、删除、级联；只验证本地实例 |
+| Supabase HTTP/Auth/Storage | 113 项命名断言通过，退出码 0 | 七张表匿名 CRUD 拒绝、并发/重放、过期/撤销 JWT 会话、refresh token 撤销、文件大小/MIME、跨用户读取/写入/删除及清理 |
+| 图片签名/CSV 纯函数 | 11 项通过 | PNG/WebP 样例、伪造/截断拒绝、CSV 引号与公式防护；不替代真实 Storage/API 测试 |
+| 浏览器账户与离线验收 | 完整 20 场景通过，0 失败/跳过 | 含原有 13 场景及 7 项真实本地账户/同步测试；不代替托管云端 |
+| 托管项目 | 未验证 | 需要目标域名放行、真实环境配置和迁移后重新执行云端验收 |
+
+具体脚本、SQL 源文件校验与测试清理见 [DATABASE_SCHEMA.md](DATABASE_SCHEMA.md)。本地数据库验证通过不构成对云项目可用性或生产部署的声明。

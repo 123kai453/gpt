@@ -1,0 +1,578 @@
+{
+  "baseline": "8d0c4622632038c703e49cbdc35b4d8bf960c612",
+  "branch": "feature/phase2-cloud-foundation",
+  "file_count_including_this_manifest": 96,
+  "note": "Manifest self hash is omitted to avoid recursion. Health/auth credentials and private test artifacts are excluded.",
+  "files": [
+    {
+      "status": "M",
+      "path": "fitness-os-2.0/.env.example",
+      "bytes": 522,
+      "sha256": "a9e7ab3a9b2882013d36d6bcdd4de4eb7b22aa5f8b5b18e63e67568112d62888"
+    },
+    {
+      "status": "M",
+      "path": "fitness-os-2.0/.gitignore",
+      "bytes": 318,
+      "sha256": "b542a7c02dd09a5f99754c0e9901bf5dea677ab4c0fb541e07fe6bff1b53ebfe"
+    },
+    {
+      "status": "M",
+      "path": "fitness-os-2.0/CHANGELOG.md",
+      "bytes": 5097,
+      "sha256": "3b059f7bab6bf5c38da6e068f6ca6c900bdedaf4098776a6352d08daa6087a80"
+    },
+    {
+      "status": "M",
+      "path": "fitness-os-2.0/FEATURES.md",
+      "bytes": 9204,
+      "sha256": "a211463c55004eef644974100146ed6e05d61d970182701b4a7440b2743f3cf8"
+    },
+    {
+      "status": "M",
+      "path": "fitness-os-2.0/FEATURES_STATUS.md",
+      "bytes": 2144,
+      "sha256": "b57e524869ffa5c7957cf6d42d074012ae296e7dab9dedcef228620f41d194f2"
+    },
+    {
+      "status": "M",
+      "path": "fitness-os-2.0/README.md",
+      "bytes": 5275,
+      "sha256": "dd8f55b70df3cc11d39c94cde5900bfca5983a6b2bc7a83e65d932ad64920e69"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/delivery/phase2/BASELINE_AND_ENVIRONMENT.json",
+      "bytes": 832,
+      "sha256": "2c799e332847b69149172e5860c49fc6ab5d14573f06dec3ac52d4070b686c6f"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/delivery/phase2/BROWSER_RESULTS.json",
+      "bytes": 4260,
+      "sha256": "a5571b95ceb58492d1292d3a7f4c0d8ab0eb3653d85762d51e3eb1ce76bf8339"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/delivery/phase2/CHANGES.txt",
+      "bytes": 4766,
+      "sha256": "411f177db6dce5046072be50027c368f2f2850e60fbcf9cc1813b365f16a7c9a"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/delivery/phase2/DATABASE_HTTP_RESULTS.json",
+      "bytes": 5013,
+      "sha256": "eee9f794983586f8a10d84ae9b0efef7c48b83bb776d7fe18bbf67873439cb55"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/delivery/phase2/NAVIGATION_AUDIT.json",
+      "bytes": 6993,
+      "sha256": "d7effabe6dbb872802688eddcd105ccfd54d25953d2b607a151899004b225a4a"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/delivery/phase2/REVIEW.md",
+      "bytes": 1636,
+      "sha256": "153c0cccf598266b7107094f02bb1e455e4737260dff4530a03135cc4af089fa"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/docs/DATABASE_SCHEMA.md",
+      "bytes": 13971,
+      "sha256": "2d1b4c8728d94a4ca198ff28e8c4a39c294c4184f49c32ed40d6c91674e680c0"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/docs/ENV_SETUP.md",
+      "bytes": 6270,
+      "sha256": "e8ef8dce97e9251eb555fca0ba7f9452b760b6b63e9ab489822398141893843e"
+    },
+    {
+      "status": "M",
+      "path": "fitness-os-2.0/docs/INDEX.md",
+      "bytes": 5071,
+      "sha256": "3048e5e4994d43da87c2a972390af0d07416fec5e4b096d5cb21aba24dcede1d"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/docs/PHASE2_EXECUTION_PROMPT.txt",
+      "bytes": 11048,
+      "sha256": "809b779a5d189c017a52574dbf1e5adfcd8764c3468278c103d4b1359fa99380"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/docs/PHASE2_IMPLEMENTATION_REPORT.md",
+      "bytes": 7799,
+      "sha256": "a6676acd92076a69b822bd24d79bb08bfaea96fa7568097643857622598895e6"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/docs/SECURITY_AND_RLS_REPORT.md",
+      "bytes": 10692,
+      "sha256": "b95dfa2bd1c51948d9df07bb7b51bef93aaab096f8ee36e4f9e8d3f4e397fd31"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/docs/SYNC_ARCHITECTURE.md",
+      "bytes": 6377,
+      "sha256": "f4e4956e92f67f61185928be91137c89e45f29e167564c32339e2e87439803d0"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/docs/TEST_REPORT.md",
+      "bytes": 5935,
+      "sha256": "3fa7f4ded881a2d5bf12120cba70d235e9d943e157cf48a6c0f75b8ab56464cf"
+    },
+    {
+      "status": "M",
+      "path": "fitness-os-2.0/next.config.ts",
+      "bytes": 686,
+      "sha256": "7589f0d2b42e7fec3620e20ec4ef7e2e5a4be93ecca52a473e11cddd049f7e97"
+    },
+    {
+      "status": "M",
+      "path": "fitness-os-2.0/package.json",
+      "bytes": 1314,
+      "sha256": "adeec5146abbf15da4071619f3c16a0e1a396910f8794565f5987890598b40ff"
+    },
+    {
+      "status": "M",
+      "path": "fitness-os-2.0/pnpm-lock.yaml",
+      "bytes": 160772,
+      "sha256": "c19bf4f9e66326c1666e9f191c803432cc656b051785a0933d0b16b1271ccf97"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/scripts/local-supabase-docker.sh",
+      "bytes": 903,
+      "sha256": "4d3e9913be44f4c766408843915d7f7fae4795ddfc1766a24be4d272b926ec07"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/scripts/local-supabase-env.mjs",
+      "bytes": 1895,
+      "sha256": "75ffd096966ee7ed8a18061c1e4e079ab275bf39a238e3d3318efc9915105377"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/scripts/local-supabase-install.sh",
+      "bytes": 1434,
+      "sha256": "7d456bff45a06ad939a07439138f2c350c3807595ae311c8be373f65f291f5c6"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/scripts/local-supabase.sh",
+      "bytes": 1885,
+      "sha256": "d626c79e9a837b66dd5c06e6641e47f95eadcc2612cf62381980cc27498b19e8"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/scripts/test-phase2-browser.mjs",
+      "bytes": 919,
+      "sha256": "0d681160172284cf9e5ea45ac8a9a3e5294d85371a59e295b6e89e7a3002b3da"
+    },
+    {
+      "status": "M",
+      "path": "fitness-os-2.0/src/app/[...slug]/page.tsx",
+      "bytes": 3683,
+      "sha256": "12e3cc40a11b34f24cad3d40fe5c72336aa9e8d9e54964c659f6c31164f5622b"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/src/app/account/layout.tsx",
+      "bytes": 231,
+      "sha256": "4acd11ead2412dc72fe357f6701cf829d1ce504fa4a56ec6a52aee03b443805f"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/src/app/account/page.tsx",
+      "bytes": 116,
+      "sha256": "8cad8ec4a01842afc69991f5296dd9a40aba4d8f14df7fe1fc54c9ff2ff265e0"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/src/app/account/privacy/page.tsx",
+      "bytes": 135,
+      "sha256": "1f9f66fd89d3af24eb63a24af0ff4f03092e0308a79737183e2cfff0a74c95eb"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/src/app/account/profile/page.tsx",
+      "bytes": 135,
+      "sha256": "27e052b9d9668df0f3a6191efd0ee77165173a03e49fd64669190c9d65816022"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/src/app/account/security/page.tsx",
+      "bytes": 139,
+      "sha256": "db62a2b0132641b92e972794958cb8d1b39d01ca31fbf5d5106f70593e4065da"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/src/app/account/sync/page.tsx",
+      "bytes": 137,
+      "sha256": "28670b7d9a82a1d91b83c4d51cf0046d3e316a93af3a559d081ea18f973cbcbd"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/src/app/api/account/consents/route.ts",
+      "bytes": 1956,
+      "sha256": "09eb50df25805780f0f18ceb125e8774354072eeb4857293c440c8c749e38dae"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/src/app/api/account/delete/route.ts",
+      "bytes": 6033,
+      "sha256": "131122f4713713d4446638d630e2fe64e7414c830979de70d34d495ba5523331"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/src/app/api/account/export/route.ts",
+      "bytes": 3538,
+      "sha256": "cc52a223856112963ee2fb8c11d6f1a5b4906eb9fb78929a5eabf1ae6329003e"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/src/app/api/account/media/[id]/route.ts",
+      "bytes": 2882,
+      "sha256": "2c7a48b2b353c16c092350d6c9fe59bf29daff66203119c7dc2c8c775b9d4ea3"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/src/app/api/account/media/route.ts",
+      "bytes": 4653,
+      "sha256": "c89fd5e87e666cd4dc21196e0d374b1f26838a4285fca9dc299a6a0e563a062b"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/src/app/api/account/mutations/route.ts",
+      "bytes": 1199,
+      "sha256": "3662fc7399a1ec531b5e3f02b57b577fd9ca0179eb1eb3fb5905208da5da990f"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/src/app/api/account/snapshot/route.ts",
+      "bytes": 866,
+      "sha256": "1cc6137f338d62ed46096af61d0f9967ad458e5eaec1a95d6bc00cafb78b08d6"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/src/app/auth/auth.css",
+      "bytes": 6985,
+      "sha256": "67d8138430ca70b16ecd926519eb36d34bfd1828a33090fa4db2d2d2cff1e840"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/src/app/auth/callback/route.ts",
+      "bytes": 1760,
+      "sha256": "f0166e5874cc24b8a193831a5803219f4946a4bf3c5c3bf59f1a53f23d830c5b"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/src/app/auth/confirm/route.ts",
+      "bytes": 980,
+      "sha256": "e6cb89977d47bd5b1dece4dcbd3a12cd73ba4f4d2d927cc02bbb36686030483e"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/src/app/auth/forgot-password/page.tsx",
+      "bytes": 268,
+      "sha256": "bbff182ba3b7b032916e0701ae7bf0d9bd315ae4ac4e1b104ae768631eabfb5d"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/src/app/auth/layout.tsx",
+      "bytes": 335,
+      "sha256": "c886e08e3e66565750253a33e3e78da2f16020ce791c8e922ee9581925b82aa7"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/src/app/auth/reset-password/page.tsx",
+      "bytes": 266,
+      "sha256": "6cfbc0d3b2846d4824f510ee2a30c9783dd493106bbeeab378c30632ef007c2e"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/src/app/auth/sign-in/page.tsx",
+      "bytes": 246,
+      "sha256": "27ab6c46f57a03aaa44d88f861131372013fa893d971b97465d03049a199e7ea"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/src/app/auth/sign-up/page.tsx",
+      "bytes": 246,
+      "sha256": "69c3db9a7f1813f32e686022652694cb3f90541696c2fd713861eac869acd8e0"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/src/app/auth/verify-email/page.tsx",
+      "bytes": 262,
+      "sha256": "08421652b7874f623f47df3f8a6bd1a87d9fa16b7323f92629a022ebd29fb54a"
+    },
+    {
+      "status": "M",
+      "path": "fitness-os-2.0/src/app/layout.tsx",
+      "bytes": 1765,
+      "sha256": "44d2b7a3c76e05cb316a95dc04bae97dcc7a569f84455c51be469a91be3d45c7"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/src/components/layout/account-status.tsx",
+      "bytes": 1157,
+      "sha256": "413abd0d5e84a2a59a2ea3cf7a65f28e76acd8d13f07dbf9c2d2a9cfb950d5b5"
+    },
+    {
+      "status": "M",
+      "path": "fitness-os-2.0/src/components/layout/app-shell.tsx",
+      "bytes": 5516,
+      "sha256": "26df0dab097ac03f2e134bf39510aaa4438558b212401c51c648ebf7801bdaf3"
+    },
+    {
+      "status": "M",
+      "path": "fitness-os-2.0/src/components/pwa/pwa-controls.tsx",
+      "bytes": 11345,
+      "sha256": "66f89a9b6406bfd7a64d7b870e9d605177a5f5758f6930a59d9a826eb3b359b9"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/src/features/auth/auth-provider.tsx",
+      "bytes": 4629,
+      "sha256": "313b1dbfaa8fd7633a42f0acedbe1984d22584de731213c87dc7118c8c193ddb"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/src/features/auth/auth-screen.tsx",
+      "bytes": 12966,
+      "sha256": "8a6187060c14006d1b3aa5968b52e2264029775bf963c0652504fe21e2fc083f"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/src/features/auth/origin.ts",
+      "bytes": 1125,
+      "sha256": "6c3780fbdbe83e18c7141b8f0192ec6ef6217bb8f95c751775cd452d56e4aa4f"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/src/features/auth/redirects.ts",
+      "bytes": 792,
+      "sha256": "6b75ec4212ce5472ceb9837866a463226c2b7e67ff099507772efa501a2f755c"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/src/features/auth/signout.ts",
+      "bytes": 1401,
+      "sha256": "cdefbefcef3b99995bcf7b2364fa1475c1b1e9bb1a704bd4ae5bcb4694aba5e4"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/src/features/auth/validation.ts",
+      "bytes": 899,
+      "sha256": "19273e889fe09272eb647dc1c5f8fdf1bd724f56b5bc393bcb22dc3a41f16042"
+    },
+    {
+      "status": "M",
+      "path": "fitness-os-2.0/src/features/dashboard/dashboard.tsx",
+      "bytes": 5191,
+      "sha256": "4ddb8998f3edb2124bd31bb650fdcbea26b9dcc62ae50216e2b66455da99b8a3"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/src/features/sync/account-privacy.tsx",
+      "bytes": 18123,
+      "sha256": "969b1d07c40dbe5bba9070061060423e9d3e074e01ba171893db5d99dbf966f1"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/src/features/sync/account-profile.tsx",
+      "bytes": 8044,
+      "sha256": "f857793ed9ec196537e9beee5cc8fbf7891118b0e9790b6798190282cd90f4cd"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/src/features/sync/account-security.tsx",
+      "bytes": 4703,
+      "sha256": "cd733b1e6a22cc86a38936a7ae50310b57b99d0955a5db34ec0075f26fe874a3"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/src/features/sync/account-shell.tsx",
+      "bytes": 3769,
+      "sha256": "fd098166db15deed4f00c8d0f3be86d1dba2fb1269a4631d4c4e147e9986ac6c"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/src/features/sync/account-status.tsx",
+      "bytes": 4747,
+      "sha256": "dbdc5ea3a5be0c35248fbb2ed33c4b630e201f259b6c5a984941a3aa6ed41c59"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/src/features/sync/account.css",
+      "bytes": 6600,
+      "sha256": "ebc52fcecca604fd4896068af59df36c974b77ff0b0d0b90cc15371dfe91ee66"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/src/features/sync/engine.ts",
+      "bytes": 8429,
+      "sha256": "d451542c56b26c431b7d54f111e1788560c78296e0992d71879aab407c5dfc94"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/src/features/sync/indexed-store.ts",
+      "bytes": 4175,
+      "sha256": "6d4595be26dc42da7407c97d9e4de939877db17d8a1d5d1ea69959bd23e61f37"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/src/features/sync/model.ts",
+      "bytes": 4168,
+      "sha256": "8b983c6fa9a20ec5a013c339f8bcfc77fb45114969b46ca01ee4d0a384d5160d"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/src/features/sync/sync-provider.tsx",
+      "bytes": 8830,
+      "sha256": "22908fdd1bfbcdfaf9256233b1e1c70d3e050b069e4a5c242cdd18097ff944be"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/src/lib/account/files.ts",
+      "bytes": 1939,
+      "sha256": "e5d07afa0ceed81446fc741a56ce93c23b827cced4dcbc37c9dfcc119d275809"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/src/lib/account/server.ts",
+      "bytes": 4612,
+      "sha256": "ab732e52545b7af2ccc086dcfe21e18db9d1b2750679edb8f206947ea44faa42"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/src/lib/account/types.ts",
+      "bytes": 1172,
+      "sha256": "5465f93d8416a50945276b431bc612039779bbccdbd4a0c9b51c16d17304910d"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/src/lib/account/validation.ts",
+      "bytes": 1542,
+      "sha256": "2d5cade8c8942763618b3b29861641398a41e5c191eb4497a927d555250fbd78"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/src/lib/security/request.ts",
+      "bytes": 1959,
+      "sha256": "18db9790a9be4c9824e2b537f610f7e197d7d42d9b51040be87b394b452f78ed"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/src/lib/supabase/admin.ts",
+      "bytes": 603,
+      "sha256": "b8b8210daf2ecfb9ec5e109f6be148e4884ceeef0cbf6ccb14652afbccb83ee2"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/src/lib/supabase/browser.ts",
+      "bytes": 585,
+      "sha256": "f6fef83bb49c9cb57f2099ccf8e0d55e9295c155e8a3aa2ff46cd14900d32fef"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/src/lib/supabase/config.ts",
+      "bytes": 1243,
+      "sha256": "e32357a3170e9dabad8d8942d30c5f3b31eaa726f03259b78cf6ba23826ac3d4"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/src/lib/supabase/server.ts",
+      "bytes": 762,
+      "sha256": "cfa0beb736db02fffa5c58e64017551ce33eeee528ba1437c632ca338eb9ff53"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/src/proxy.ts",
+      "bytes": 1633,
+      "sha256": "17fc406b92bf01a52bb174cb8f3b6b7a403182c9498b939aedb171be56c6de5a"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/supabase/.gitignore",
+      "bytes": 72,
+      "sha256": "507699eb91144818edf61d3a079212cacf31d8db520eae428e3b48fcf0d6919c"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/supabase/config.toml",
+      "bytes": 16393,
+      "sha256": "1b195b0dea9d735844631716d9b47eae577bcc9f024ff9e684f2d33979282d37"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/supabase/migrations/20261103000100_account_foundation.sql",
+      "bytes": 30979,
+      "sha256": "e3ee70b56d33b0ab3d4e73e95525a5d1c16fa94624901006a92387c9f405f436"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/tests/database/account_foundation.sql",
+      "bytes": 19805,
+      "sha256": "05b7f9fcdeb32a8927d8b568ba5b2cd890c4d46e7202f5daea8739f34db614c3"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/tests/e2e/phase2-account.spec.ts",
+      "bytes": 13128,
+      "sha256": "d97cff8602f2e7b61034d3782e30af8642bd8151e91a36a2ed27c92308906ce2"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/tests/e2e/phase2-auth.spec.ts",
+      "bytes": 9170,
+      "sha256": "ebf28661645d735d2b3e1e98adb2dca2959e14220bf4d285e44ca3daccaaa36b"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/tests/e2e/phase2-session-queue.spec.ts",
+      "bytes": 7085,
+      "sha256": "6dd9bb5153838d052bfef6c5ec0c0381bfb851c48385248ea10c307bfb40b0e7"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/tests/e2e/phase2-sync.spec.ts",
+      "bytes": 8858,
+      "sha256": "61c401d700305f29fc25a0d15dd0ef5c55c201215db99076e553473f3177deea"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/tests/integration/database.mjs",
+      "bytes": 20773,
+      "sha256": "a34bdc4248059fd4ae8eb7b64f465afca7384420efa1844bf7cbca2e9040a3ab"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/tests/unit/account-files.test.ts",
+      "bytes": 2433,
+      "sha256": "9bd7a3491fdc39be0bfa4a8d008e88b92b78d298d59baaab9707fcc5e92277dd"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/tests/unit/account-validation.test.ts",
+      "bytes": 1862,
+      "sha256": "98375c21d463f254574422ebcb2a1fb99877171b397f8edf7dd0a697b6058075"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/tests/unit/auth-security.test.ts",
+      "bytes": 6269,
+      "sha256": "c13e85ba029851656b4df3f6b33298ca243f1af06ac80d59f697e2a3ab5fb2cc"
+    },
+    {
+      "status": "A",
+      "path": "fitness-os-2.0/tests/unit/sync-model.test.ts",
+      "bytes": 4256,
+      "sha256": "a69f09e2fb503506a069540542f411d986a0eed0c50cd096cc5fab6f496042ba"
+    }
+  ]
+}

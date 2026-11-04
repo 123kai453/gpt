@@ -2,8 +2,60 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { authCallbackUrl, safeAuthNextPath } from "../../src/features/auth/redirects";
 import { resetPasswordSchema, signInSchema, signUpSchema } from "../../src/features/auth/validation";
 import { getSupabasePublicConfig } from "../../src/lib/supabase/config";
+import { markIntentionalSignOut, wasIntentionalSignOut } from "../../src/features/auth/signout";
+import { authRedirectOrigin } from "../../src/features/auth/origin";
 
-afterEach(() => vi.unstubAllEnvs());
+afterEach(() => { vi.unstubAllEnvs(); vi.unstubAllGlobals(); vi.useRealTimers(); });
+
+describe("trusted callback origin", () => {
+  it("uses the configured browser origin instead of the server bind address", () => {
+    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("NEXT_PUBLIC_APP_URL", "https://fitness.example");
+    expect(authRedirectOrigin("http://0.0.0.0:3000/auth/callback")).toBe("https://fitness.example");
+  });
+  it("requires a configured trusted origin in production", () => {
+    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("NEXT_PUBLIC_APP_URL", "");
+    expect(authRedirectOrigin("http://127.0.0.1:3000/auth/callback")).toBeNull();
+  });
+  it("allows an explicitly configured private LAN origin only during development", () => {
+    vi.stubEnv("NEXT_PUBLIC_APP_URL", "http://192.168.1.12:3000");
+    vi.stubEnv("NODE_ENV", "development");
+    expect(authRedirectOrigin("http://0.0.0.0:3000/auth/callback")).toBe("http://192.168.1.12:3000");
+    vi.stubEnv("NODE_ENV", "production");
+    expect(authRedirectOrigin("http://0.0.0.0:3000/auth/callback")).toBeNull();
+  });
+  it("rejects insecure remote origins and URLs containing credentials or paths", () => {
+    for (const url of ["http://fitness.example", "https://user:password@fitness.example", "https://fitness.example/path", "https://fitness.example?next=bad"]) {
+      vi.stubEnv("NEXT_PUBLIC_APP_URL", url);
+      expect(authRedirectOrigin("http://0.0.0.0:3000")).toBeNull();
+    }
+  });
+});
+
+describe("intentional signout boundary", () => {
+  it("requires a recent explicit action for the same account", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-11-01T00:00:00Z"));
+    const values = new Map<string, string>();
+    vi.stubGlobal("localStorage", { getItem: (key: string) => values.get(key) ?? null, setItem: (key: string, value: string) => values.set(key, value), removeItem: (key: string) => values.delete(key) });
+    expect(wasIntentionalSignOut("no-explicit-action")).toBe(false);
+    markIntentionalSignOut("account-a");
+    expect(wasIntentionalSignOut("account-a")).toBe(true);
+    expect(wasIntentionalSignOut("account-b")).toBe(false);
+    vi.advanceTimersByTime(5001);
+    expect(wasIntentionalSignOut("account-a")).toBe(false);
+    expect(values.size).toBe(0);
+  });
+  it("retains the explicit signal in this tab when browser storage is blocked", () => {
+    vi.useFakeTimers();
+    vi.stubGlobal("localStorage", { getItem: () => { throw new Error("blocked"); }, setItem: () => { throw new Error("blocked"); }, removeItem: () => { throw new Error("blocked"); } });
+    markIntentionalSignOut("storage-blocked-account");
+    expect(wasIntentionalSignOut("storage-blocked-account")).toBe(true);
+    vi.advanceTimersByTime(5001);
+    expect(wasIntentionalSignOut("storage-blocked-account")).toBe(false);
+  });
+});
 
 describe("Supabase public configuration boundary", () => {
   function configure(url: string, key = "sb_publishable_unit_test") {

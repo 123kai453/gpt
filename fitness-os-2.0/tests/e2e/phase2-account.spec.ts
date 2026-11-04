@@ -1,6 +1,9 @@
 import { test, expect, type Page } from "@playwright/test";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { randomUUID } from "node:crypto";
+import { existsSync } from "node:fs";
+
+if(process.env.PHASE2_ACCOUNT_INTEGRATION === "1" && existsSync(".env.local"))process.loadEnvFile(".env.local");
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const publicKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
@@ -21,9 +24,13 @@ async function createUser(email: string): Promise<FixtureUser> {
 }
 async function login(page: Page, user: FixtureUser, next = "/account/privacy") {
   await page.goto(`${origin}/auth/sign-in?next=${encodeURIComponent(next)}`);
-  await page.getByLabel("邮箱地址", { exact: true }).fill(user.email);
-  await page.locator('input[name="password"]').fill(password);
-  await page.getByRole("button", { name: "登录账户", exact: true }).click();
+  const form = page.locator(".auth-form:visible");
+  await expect(form).toHaveCount(1);
+  const submit = form.getByRole("button", { name: "登录账户", exact: true });
+  await expect(submit).toBeEnabled();
+  await form.getByRole("textbox", { name: "邮箱地址", exact: true }).fill(user.email);
+  await form.locator('input[name="password"]').fill(password);
+  await submit.click();
   await expect(page).toHaveURL(new RegExp(`${next.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`));
   await expect(page.getByRole("heading", { name: "属于你的 FITNESS OS." })).toBeVisible();
 }
@@ -43,6 +50,7 @@ async function cleanupFolder(prefix: string) {
 test.describe.serial("PHASE 2 real account privacy and lifecycle", () => {
   test.skip(!enabled, "Requires PHASE2_ACCOUNT_INTEGRATION=1 and real Supabase URL/public/server credentials; no mocked backend.");
   test.beforeAll(async () => {
+    if(!supabaseUrl || !["127.0.0.1", "localhost", "[::1]"].includes(new URL(supabaseUrl).hostname))throw new Error("Account integration only permits real local Supabase services, never hosted-project test user creation or deletion.");
     admin = createClient(supabaseUrl!, adminKey!, { auth: { persistSession: false, autoRefreshToken: false } });
     const marker = randomUUID();
     userA = await createUser(`phase2-account-a-${marker}@example.test`);
@@ -72,6 +80,8 @@ test.describe.serial("PHASE 2 real account privacy and lifecycle", () => {
     await noSession.close();
     const csrf = await page.request.post("/api/account/export", { headers: { Origin: "https://foreign.invalid" }, data: { format: "json" } });
     expect(csrf.status()).toBe(403);
+    const mutationCsrf = await page.request.post("/api/account/mutations", { headers: { Origin: "https://foreign.invalid" }, data: { mutationId: randomUUID(), deviceId: randomUUID(), entity: "profile", baseVersion: 1, patch: { display_name: "blocked by origin" } } });
+    expect(mutationCsrf.status()).toBe(403);
     const spoofOwner = await page.request.post("/api/account/mutations", { headers: { Origin: origin }, data: { mutationId: randomUUID(), deviceId: randomUUID(), entity: "profile", baseVersion: 1, patch: { display_name: "forbidden", user_id: userB.id } } });
     expect(spoofOwner.status()).toBe(400);
 
@@ -130,6 +140,9 @@ test.describe.serial("PHASE 2 real account privacy and lifecycle", () => {
     expect(download.status()).toBe(200);
     expect(download.headers()["cache-control"]).toContain("no-store");
     expect(Buffer.compare(await download.body(), png)).toBe(0);
+    const noSession = await browser.newContext();
+    expect((await noSession.request.get(`${origin}/api/account/media/${media.id}`)).status()).toBe(401);
+    await noSession.close();
     const anonymous = createClient(supabaseUrl!, publicKey!, { auth: { persistSession: false, autoRefreshToken: false } });
     const publicDownload = await anonymous.storage.from("private-media").download(media.object_path);
     expect(Boolean(publicDownload.error)).toBe(true);
