@@ -1,0 +1,426 @@
+{
+  "status": "PASS",
+  "assertions": 104,
+  "checks": [
+    {
+      "label": "fresh Auth",
+      "status": "PASS"
+    },
+    {
+      "label": "no existing fixture users",
+      "status": "PASS"
+    },
+    {
+      "label": "create synthetic user",
+      "status": "PASS"
+    },
+    {
+      "label": "real password sign in",
+      "status": "PASS"
+    },
+    {
+      "label": "create synthetic user",
+      "status": "PASS"
+    },
+    {
+      "label": "real password sign in",
+      "status": "PASS"
+    },
+    {
+      "label": "authenticated Cookie cannot call trusted recovery",
+      "status": "PASS"
+    },
+    {
+      "label": "authenticated cannot call recovery RPC",
+      "status": "PASS"
+    },
+    {
+      "label": "client cannot read private journal",
+      "status": "PASS"
+    },
+    {
+      "label": "same request sequential retry uses one business record",
+      "status": "PASS"
+    },
+    {
+      "label": "local readonly evidence query",
+      "status": "PASS"
+    },
+    {
+      "label": "same request creates only one final Storage object",
+      "status": "PASS"
+    },
+    {
+      "label": "same idempotency key different actual file conflicts",
+      "status": "PASS"
+    },
+    {
+      "label": "idempotency is scoped to user A/B",
+      "status": "PASS"
+    },
+    {
+      "label": "concurrent same request has one canonical media ID",
+      "status": "PASS"
+    },
+    {
+      "label": "trusted probe",
+      "status": "PASS"
+    },
+    {
+      "label": "only one worker acquired initial concurrent upload lease",
+      "status": "PASS"
+    },
+    {
+      "label": "actual committed Storage response dropped; readback recovers",
+      "status": "PASS"
+    },
+    {
+      "label": "network interruption retry does not create another object",
+      "status": "PASS"
+    },
+    {
+      "label": "database finish committed but HTTP acknowledgement lost; result safely recovered",
+      "status": "PASS"
+    },
+    {
+      "label": "lost DB acknowledgement retains stable identity",
+      "status": "PASS"
+    },
+    {
+      "label": "trusted reserve",
+      "status": "PASS"
+    },
+    {
+      "label": "persist real staged source",
+      "status": "PASS"
+    },
+    {
+      "label": "local disposable fixture transaction",
+      "status": "PASS"
+    },
+    {
+      "label": "two real worker processes complete trusted HTTP sweeps",
+      "status": "PASS"
+    },
+    {
+      "label": "trusted probe",
+      "status": "PASS"
+    },
+    {
+      "label": "aged pending recovered once under exclusive lease",
+      "status": "PASS"
+    },
+    {
+      "label": "trusted probe",
+      "status": "PASS"
+    },
+    {
+      "label": "repeated recovery does not create records or consume attempts again",
+      "status": "PASS"
+    },
+    {
+      "label": "trusted reserve",
+      "status": "PASS"
+    },
+    {
+      "label": "local disposable fixture transaction",
+      "status": "PASS"
+    },
+    {
+      "label": "trusted probe",
+      "status": "PASS"
+    },
+    {
+      "label": "missing source records first recoverable failure",
+      "status": "PASS"
+    },
+    {
+      "label": "trusted probe",
+      "status": "PASS"
+    },
+    {
+      "label": "backoff blocks immediate repeated retry",
+      "status": "PASS"
+    },
+    {
+      "label": "trusted probe",
+      "status": "PASS"
+    },
+    {
+      "label": "second due attempt recorded",
+      "status": "PASS"
+    },
+    {
+      "label": "trusted probe",
+      "status": "PASS"
+    },
+    {
+      "label": "maximum attempts becomes audited terminal failure",
+      "status": "PASS"
+    },
+    {
+      "label": "local readonly evidence query",
+      "status": "PASS"
+    },
+    {
+      "label": "recovery audit retains bounded failure reasons",
+      "status": "PASS"
+    },
+    {
+      "label": "exact owned Next process selected",
+      "status": "PASS"
+    },
+    {
+      "label": "local readonly evidence query",
+      "status": "PASS"
+    },
+    {
+      "label": "actual killed process leaves durable processing task",
+      "status": "PASS"
+    },
+    {
+      "label": "trusted probe",
+      "status": "PASS"
+    },
+    {
+      "label": "live lease is not stolen immediately after crash",
+      "status": "PASS"
+    },
+    {
+      "label": "trusted probe",
+      "status": "PASS"
+    },
+    {
+      "label": "new worker recovers same media from actual committed bytes after lease expiry",
+      "status": "PASS"
+    },
+    {
+      "label": "old worker lease cannot finalize task",
+      "status": "PASS"
+    },
+    {
+      "label": "trusted replacement writes real new bytes",
+      "status": "PASS"
+    },
+    {
+      "label": "replacement invalidates old verification, never serves different bytes",
+      "status": "PASS"
+    },
+    {
+      "label": "actual replacement changes size",
+      "status": "PASS"
+    },
+    {
+      "label": "size-changed file is not served under old verification",
+      "status": "PASS"
+    },
+    {
+      "label": "API rejects actual bytes/MIME disagreement",
+      "status": "PASS"
+    },
+    {
+      "label": "trusted declaration differs from real PNG",
+      "status": "PASS"
+    },
+    {
+      "label": "MIME replacement never retains ready",
+      "status": "PASS"
+    },
+    {
+      "label": "replace after old snapshot was fetched",
+      "status": "PASS"
+    },
+    {
+      "label": "TOCTOU detects new version/state rather than returning stale proof",
+      "status": "PASS"
+    },
+    {
+      "label": "trusted probe",
+      "status": "PASS"
+    },
+    {
+      "label": "only exact synthetic backend version altered",
+      "status": "PASS"
+    },
+    {
+      "label": "real byte corruption is rejected by SHA256 even without Storage metadata event",
+      "status": "PASS"
+    },
+    {
+      "label": "trusted probe",
+      "status": "PASS"
+    },
+    {
+      "label": "SHA256 mismatch safely invalidates the old verification",
+      "status": "PASS"
+    },
+    {
+      "label": "trusted probe",
+      "status": "PASS"
+    },
+    {
+      "label": "only exact synthetic backend version altered",
+      "status": "PASS"
+    },
+    {
+      "label": "trusted probe",
+      "status": "PASS"
+    },
+    {
+      "label": "ambiguous provider 500 becomes unavailable, never falsely declared missing",
+      "status": "PASS"
+    },
+    {
+      "label": "B profile before transient outage",
+      "status": "PASS"
+    },
+    {
+      "label": "set valid verified avatar reference",
+      "status": "PASS"
+    },
+    {
+      "label": "real backend outage is transient API 503",
+      "status": "PASS"
+    },
+    {
+      "label": "trusted probe",
+      "status": "PASS"
+    },
+    {
+      "label": "transient network/server error preserves verification without declaring loss",
+      "status": "PASS"
+    },
+    {
+      "label": "read profile during actual Storage outage",
+      "status": "PASS"
+    },
+    {
+      "label": "temporary unavailable state preserves avatar reference",
+      "status": "PASS"
+    },
+    {
+      "label": "same healthy file works after actual outage",
+      "status": "PASS"
+    },
+    {
+      "label": "remove actual ready object",
+      "status": "PASS"
+    },
+    {
+      "label": "trusted probe",
+      "status": "PASS"
+    },
+    {
+      "label": "confirmed object loss no longer remains ready",
+      "status": "PASS"
+    },
+    {
+      "label": "user has a valid new-upload recovery path",
+      "status": "PASS"
+    },
+    {
+      "label": "register orphan fixture before actual upload",
+      "status": "PASS"
+    },
+    {
+      "label": "real Storage orphan source",
+      "status": "PASS"
+    },
+    {
+      "label": "local disposable fixture transaction",
+      "status": "PASS"
+    },
+    {
+      "label": "orphan Storage object actually cleaned",
+      "status": "PASS"
+    },
+    {
+      "label": "orphan cleanup does not touch B binaries",
+      "status": "PASS"
+    },
+    {
+      "label": "B cannot access A after reliability changes",
+      "status": "PASS"
+    },
+    {
+      "label": "direct client upload still cannot bypass verification",
+      "status": "PASS"
+    },
+    {
+      "label": "B own media remains normally available",
+      "status": "PASS"
+    },
+    {
+      "label": "trusted reserve",
+      "status": "PASS"
+    },
+    {
+      "label": "trusted claim",
+      "status": "PASS"
+    },
+    {
+      "label": "local disposable fixture transaction",
+      "status": "PASS"
+    },
+    {
+      "label": "active upload cannot be reported deleted before writer settles",
+      "status": "PASS"
+    },
+    {
+      "label": "cancelled late writer cannot commit Storage metadata",
+      "status": "PASS"
+    },
+    {
+      "label": "trusted retry",
+      "status": "PASS"
+    },
+    {
+      "label": "safe deletion retry succeeds after the known writer ended",
+      "status": "PASS"
+    },
+    {
+      "label": "local disposable fixture transaction",
+      "status": "PASS"
+    },
+    {
+      "label": "A deletion cancels jobs, cleans binaries and removes Auth",
+      "status": "PASS"
+    },
+    {
+      "label": "A physical registered binaries gone",
+      "status": "PASS"
+    },
+    {
+      "label": "local readonly evidence query",
+      "status": "PASS"
+    },
+    {
+      "label": "media_upload_jobs cascades with A Auth",
+      "status": "PASS"
+    },
+    {
+      "label": "local readonly evidence query",
+      "status": "PASS"
+    },
+    {
+      "label": "media_job_events cascades with A Auth",
+      "status": "PASS"
+    },
+    {
+      "label": "B unaffected by A complete deletion",
+      "status": "PASS"
+    },
+    {
+      "label": "B normal deletion retained",
+      "status": "PASS"
+    },
+    {
+      "label": "no emails sent",
+      "status": "PASS"
+    }
+  ],
+  "candidateSha256": "56ec5bce2f92876a931c1b845077535e4906840fe20563856a2a6cb5e4d07af2",
+  "realNetworkFaults": true,
+  "realNextProcessKilled": true,
+  "productionRequests": false
+}

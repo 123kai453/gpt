@@ -1,0 +1,171 @@
+import "server-only";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import sharp from "sharp";
+import { RequestError } from "@/lib/security/request";
+import { dbError } from "@/lib/account/server";
+import { assertOwnedKey, FINAL_BUCKET, STAGING_BUCKET } from "./trusted-state";
+import { digestBytes, MAX_VERIFIED_BYTES, MAX_IMAGE_PIXELS, normalizeImage } from "./verified-image";
+
+type Media = { id: string; user_id: string; object_path: string; mime_type: string; size_bytes: number;
+  status: string; content_sha256: string | null; verified_at: string | null; storage_object_id?: string | null; storage_object_version?: string | null };
+type Job = { media_id: string; user_id: string; expected_sha256: string; status: string; lease_token: string; attempts: number; last_error: string | null };
+type Ref = { id: string; version: string | null; metadata: unknown };
+type Probe = { media: Media; job: Job | null; final: Ref | null; staging: Ref | null };
+const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
+class MediaFault extends Error { constructor(public code: string) { super(code); } }
+export async function mediaJob(client: SupabaseClient, action: string, owner: string | null = null, media: string | null = null,
+  request: string | null = null, lease: string | null = null, data: Record<string, unknown> = {}) {
+  const result = await client.rpc("server_media_reliability", { p_action: action, p_owner: owner, p_media: media, p_request: request, p_lease: lease, p_data: data });
+  if (result.error) {
+    if (["idempotency_conflict", "idempotency_deleted"].includes(result.error.message)) throw new RequestError(409, "UPLOAD_REQUEST_CONFLICT", "该上传编号已绑定其他内容或已删除的文件，请创建新的上传操作。");
+    if (["stale_upload_lease", "verified_object_changed"].includes(result.error.message)) throw new MediaFault("OBJECT_CHANGED");
+    throw dbError(result.error);
+  }
+  return result.data;
+}
+const probe = (c: SupabaseClient, owner: string, id: string): Promise<Probe> => mediaJob(c, "probe", owner, id);
+function same(a: Ref | null, b: Ref | null) { return a?.id === b?.id && a?.version === b?.version; }
+function absent(error: unknown) {
+  const e = error as { statusCode?: string; status?: number; message?: string; code?: string };
+  const status = Number(e?.statusCode ?? e?.status);
+  // Only the trusted Admin download, never an arbitrary user's denied request.
+  return [400, 404].includes(status) && /^(object not found|not found|no such key|the resource was not found|Object not found)$/i.test(e?.message ?? "");
+}
+async function validateBytes(bytes: Uint8Array, type: string, media: Media, digest: string) {
+  if (bytes.byteLength !== media.size_bytes || bytes.byteLength > MAX_VERIFIED_BYTES || digestBytes(bytes) !== digest) throw new MediaFault("CONTENT_MISMATCH");
+  const formats: Record<string, string> = { png: "image/png", jpeg: "image/jpeg", webp: "image/webp" };
+  try {
+    const options = { failOn: "warning" as const, limitInputPixels: MAX_IMAGE_PIXELS, animated: false };
+    const info = await sharp(bytes, options).metadata();
+    if (!info.format || formats[info.format] !== media.mime_type || type !== media.mime_type || (info.pages ?? 1) !== 1) throw new Error("mime");
+    await sharp(bytes, options).raw().timeout({ seconds: 5 }).toBuffer();
+  } catch { throw new MediaFault("MIME_MISMATCH"); }
+}
+async function snapshot(client: SupabaseClient, owner: string, id: string, bucket: string, digest: string) {
+  const slot = bucket === FINAL_BUCKET ? "final" : "staging";
+  const before = await probe(client, owner, id);
+  assertOwnedKey(owner, before.media.object_path);
+  const r = await client.storage.from(bucket).download(before.media.object_path);
+  if (r.error || !r.data) {
+    if (!r.error || !absent(r.error)) throw new MediaFault("STORAGE_UNAVAILABLE");
+    const second = await client.storage.from(bucket).download(before.media.object_path);
+    if (second.data || !second.error || !absent(second.error)) throw new MediaFault("STORAGE_UNAVAILABLE");
+    const after = await probe(client, owner, id);
+    if (!same(before[slot], after[slot])) throw new MediaFault("OBJECT_CHANGED");
+    return null; // Two definitive trusted not-found responses, stable catalog reference.
+  }
+  if (r.data.size > MAX_VERIFIED_BYTES) throw new MediaFault("CONTENT_MISMATCH");
+  const bytes = new Uint8Array(await r.data.arrayBuffer());
+  await validateBytes(bytes, r.data.type, before.media, digest);
+  const after = await probe(client, owner, id);
+  if (!before[slot] || !same(before[slot], after[slot])) throw new MediaFault("OBJECT_CHANGED");
+  return { bytes, ref: after[slot]!, media: after.media };
+}
+async function pulse(c: SupabaseClient, owner: string, id: string, lease: string) { await mediaJob(c, "heartbeat", owner, id, null, lease); }
+async function ensure(client: SupabaseClient, owner: string, id: string, lease: string, bucket: string, bytes: Uint8Array, sha: string) {
+  await pulse(client, owner, id, lease);
+  const existing = await snapshot(client, owner, id, bucket, sha);
+  if (existing) return existing;
+  const state = await probe(client, owner, id);
+  await pulse(client, owner, id, lease);
+  // The canonical key is immutable. A lost acknowledgement is resolved by readback,
+  // never by upsert or a different key. A stale writer cannot finalize a job.
+  const uploaded = await client.storage.from(bucket).upload(state.media.object_path, bytes, { contentType: state.media.mime_type, upsert: false, cacheControl: "0" });
+  const actual = await snapshot(client, owner, id, bucket, sha);
+  if (!actual) throw new MediaFault(uploaded.error ? "STORAGE_UNAVAILABLE" : "SOURCE_MISSING");
+  return actual;
+}
+export async function processUpload(client: SupabaseClient, owner: string, id: string, input?: Uint8Array) {
+  const claim = await mediaJob(client, "claim", owner, id, null, null, { from_request: Boolean(input) });
+  if (!claim.claimed) return { claimed: false, completed: claim.media?.status === "ready", media: claim.media as Media | undefined, exhausted: Boolean(claim.exhausted) };
+  const lease = claim.job.lease_token as string;
+  const sha = claim.job.expected_sha256 as string;
+  let finishing = false;
+  try {
+    await pulse(client, owner, id, lease);
+    let final = await snapshot(client, owner, id, FINAL_BUCKET, sha);
+    if (!final) {
+      let stage = await snapshot(client, owner, id, STAGING_BUCKET, sha);
+      if (!stage && input) stage = await ensure(client, owner, id, lease, STAGING_BUCKET, input, sha);
+      if (!stage) throw new MediaFault("SOURCE_MISSING");
+      final = await ensure(client, owner, id, lease, FINAL_BUCKET, stage.bytes, sha);
+    }
+    await pulse(client, owner, id, lease);
+    finishing = true;
+    const finished = await mediaJob(client, "finish", owner, id, null, lease, { sha, object_id: final.ref.id, version: final.ref.version });
+    // Final readiness is durable before private staging cleanup. Cleanup is retried by sweeps.
+    await client.storage.from(STAGING_BUCKET).remove([finished.media.object_path]);
+    return { claimed: true, completed: true, media: finished.media as Media, exhausted: false };
+  } catch (error) {
+    if (finishing) {
+      const state = await probe(client, owner, id).catch(() => null);
+      if (state?.media.status === "ready" && state.media.content_sha256 === sha) return { claimed: true, completed: true, media: state.media, exhausted: false };
+    }
+    const code = error instanceof MediaFault ? error.code : finishing ? "DB_FINALIZE_FAILED" : "STORAGE_UNAVAILABLE";
+    // Keep verified objects for the next attempt. Database failure is not a reason
+    // to delete the only durable source or manufacture another upload ID.
+    await mediaJob(client, "retry", owner, id, null, lease, { code }).catch(() => null);
+    return { claimed: true, completed: false, media: (await probe(client, owner, id)).media, exhausted: false };
+  }
+}
+export async function submitUpload(client: SupabaseClient, owner: string, requestId: string, raw: Uint8Array, mime: string) {
+  if (!UUID.test(requestId)) throw new RequestError(400, "UPLOAD_REQUEST_ID_REQUIRED", "上传请求编号无效，请重新选择文件。");
+  const normalized = await normalizeImage(raw, mime);
+  const state: Probe = await mediaJob(client, "reserve", owner, null, requestId, null,
+    { request_sha: digestBytes(raw), expected_sha: normalized.digest, size: normalized.bytes.byteLength, mime: normalized.mime });
+  if (["ready", "unavailable"].includes(state.media.status)) {
+    const restored = await verifiedDownload(client, owner, state.media.id);
+    return { media: restored.media, completed: true, reused: true };
+  }
+  const result = await processUpload(client, owner, state.media.id, normalized.bytes);
+  if (result.exhausted || result.media?.status === "failed") throw new RequestError(409, "UPLOAD_RETRY_EXHAUSTED", "本次上传已停止自动重试，请删除失败记录后重新选择文件上传。");
+  return { media: result.media ?? state.media, completed: result.completed, reused: false };
+}
+export async function verifiedDownload(client: SupabaseClient, owner: string, id: string) {
+  const state = await probe(client, owner, id);
+  if (!["ready", "unavailable"].includes(state.media.status) || !state.media.content_sha256) throw new RequestError(409, "MEDIA_NOT_READY", "文件尚未完成验证或已不可用，请重试上传。");
+  try {
+    const actual = await snapshot(client, owner, id, FINAL_BUCKET, state.media.content_sha256);
+    if (!actual) throw new MediaFault("OBJECT_MISSING");
+    if (!same({ id: state.media.storage_object_id ?? actual.ref.id, version: state.media.storage_object_version ?? actual.ref.version, metadata: null }, actual.ref)) throw new MediaFault("OBJECT_CHANGED");
+    if (actual.media.status === "unavailable") {
+      const restored = await mediaJob(client, "check_ok", owner, id, null, null, { sha: state.media.content_sha256, object_id: actual.ref.id, version: actual.ref.version });
+      return { bytes: actual.bytes, media: restored.media as Media };
+    }
+    if (actual.media.status !== "ready" || actual.media.verified_at !== state.media.verified_at) throw new MediaFault("OBJECT_CHANGED");
+    return { bytes: actual.bytes, media: actual.media };
+  } catch (error) {
+    if (error instanceof MediaFault && error.code !== "STORAGE_UNAVAILABLE") {
+      await mediaJob(client, "invalidate", owner, id, null, null, { sha: state.media.content_sha256, verified_at: state.media.verified_at, code: error.code }).catch(() => null);
+      throw new RequestError(409, "MEDIA_VERIFICATION_FAILED", "文件已丢失或内容发生变化，已停止提供下载，请重新上传。");
+    }
+    await mediaJob(client, "unavailable", owner, id, null, null, { sha: state.media.content_sha256, verified_at: state.media.verified_at }).catch(() => null);
+    throw new RequestError(503, "STORAGE_UNAVAILABLE", "文件服务暂时不可用，未将文件判定为丢失。");
+  }
+}
+export async function reconcileMedia(client: SupabaseClient, after: string | null = null) {
+  const counts = { claimed: 0, completed: 0, deferred: 0, verified: 0, invalidated: 0, orphansCleaned: 0, stagingCleaned: 0 };
+  const due = await mediaJob(client, "due") as { user_id: string; media_id: string }[];
+  for (const j of due.slice(0, 10)) {
+    const result = await processUpload(client, j.user_id, j.media_id);
+    if (result.claimed) counts.claimed++; if (result.completed) counts.completed++; else counts.deferred++;
+  }
+  const ready = await mediaJob(client, "ready_list", null, null, null, null, { after }) as Media[];
+  for (const row of ready.slice(0, 10)) {
+    try {
+      await verifiedDownload(client, row.user_id, row.id); counts.verified++;
+      const stage = (await probe(client, row.user_id, row.id)).staging;
+      if (stage) { const r = await client.storage.from(STAGING_BUCKET).remove([row.object_path]); if (!r.error) counts.stagingCleaned++; }
+    } catch (error) { if (error instanceof RequestError && error.status === 409) counts.invalidated++; else counts.deferred++; }
+  }
+  const orphans = await mediaJob(client, "orphan_list") as { bucket_id: string; name: string; id: string; version: string | null }[];
+  for (const orphan of orphans.slice(0, 10)) {
+    const owner = orphan.name.split("/")[0]; assertOwnedKey(owner, orphan.name);
+    const args = { bucket: orphan.bucket_id, key: orphan.name, id: orphan.id, version: orphan.version };
+    const lock = await mediaJob(client, "orphan_claim", null, null, null, null, args);
+    if (!lock.claimed) continue;
+    const removed = await client.storage.from(orphan.bucket_id).remove([orphan.name]);
+    if (!removed.error) { const done = await mediaJob(client, "orphan_done", null, null, null, lock.lease_token, args); if (done.done) counts.orphansCleaned++; }
+  }
+  return { ...counts, nextCursor: ready.length > 10 ? ready[9].id : null };
+}
