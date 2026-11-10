@@ -1,0 +1,298 @@
+/** Real Next HTTP + isolated Supabase. No mocks and no hosted target. */
+import assert from 'node:assert/strict';
+import { readFileSync, writeFileSync } from 'node:fs';
+import { randomUUID, createHash } from 'node:crypto';
+import { spawnSync } from 'node:child_process';
+import { createClient } from '@supabase/supabase-js';
+import { createServerClient } from '@supabase/ssr';
+import sharp from 'sharp';
+import { assertLocalAclAuditTarget, observeUserRows } from '../helpers/local-acl-observer.mjs';
+import { setLocalStorageDeleteFault, countLocalStorageBinaryFiles } from '../helpers/local-acl-faults.mjs';
+
+await assertLocalAclAuditTarget();
+const cfg = JSON.parse(readFileSync(process.env.FITNESS_ACL_AUDIT_CONFIG, 'utf8'));
+assert.equal(cfg.productionCredentialsLoaded, false);
+assert.equal(new URL(cfg.appUrl).hostname, '127.0.0.1');
+const origin = cfg.appUrl;
+const admin = createClient(cfg.apiUrl, cfg.serviceRoleKey, { auth: { persistSession: false, autoRefreshToken: false } });
+const actors = [], checks = [], knownGaps = [], ownedPaths = [];
+let fault = false, readyFault = false, current = 'initialization';
+assert.match(cfg.runId, /^[a-f0-9]{8}$/);
+const readyFaultName = 'g52_ready_fault_' + cfg.runId;
+const sha = (bytes) => createHash('sha256').update(bytes).digest('hex');
+function check(condition, label) { current = label; assert.ok(condition, label); checks.push({ label, status: 'PASS' }); }
+function db(result, label) { current = label; assert.equal(result.error, null, label); checks.push({ label, status: 'PASS' }); return result.data; }
+function denied(result, label) { check(Boolean(result.error), label); }
+async function request(actor, path, method = 'GET', body, extraHeaders = {}) {
+  assert.ok(path.startsWith('/api/account/'));
+  const headers = { Origin: origin, ...extraHeaders };
+  if (actor) headers.Cookie = [...actor.cookies].map(([name, value]) => `${name}=${value}`).join('; ');
+  if (body && !(body instanceof FormData)) headers['Content-Type'] = 'application/json';
+  return fetch(origin + path, { method, headers, body: body instanceof FormData ? body : body ? JSON.stringify(body) : undefined, redirect: 'error' });
+}
+async function jsonRequest(actor, path, method, body, expected, label) {
+  const response = await request(actor, path, method, body);
+  check(response.status === expected, label);
+  return response.json();
+}
+const png = await sharp({ create: { width: 3, height: 2, channels: 3, background: 'green' } }).png().toBuffer();
+async function upload(actor, bytes = png, mime = 'image/png', expected = 201, extra, idempotencyKey) {
+  const form = new FormData(); form.append('file', new File([bytes], 'local.png', { type: mime }));
+  if (extra) form.append('status', extra);
+  const r = await request(actor, '/api/account/media', 'POST', form, { 'Idempotency-Key': idempotencyKey ?? randomUUID() });
+  check(r.status === expected, `Next upload ${mime} returns ${expected}`);
+  const data = await r.json();
+  if (data.media) ownedPaths.push(['private-media', data.media.object_path]);
+  return data.media;
+}
+const docker = ['--host=unix:///var/run/docker.sock'];
+const dockerEnv = { ...process.env };
+for (const key of Object.keys(dockerEnv)) if (/^(SUPABASE_|NEXT_PUBLIC_|PG|POSTGRES_|SMTP_)/.test(key)
+  || ['DATABASE_URL','DIRECT_URL','DOCKER_HOST','DOCKER_CONTEXT','DOCKER_TLS','DOCKER_TLS_VERIFY','DOCKER_CERT_PATH','FITNESS_ACL_AUDIT_CONFIG'].includes(key)) delete dockerEnv[key];
+async function rawSql(query, role = 'postgres', claims = {}, commit = false) {
+  await assertLocalAclAuditTarget();
+  assert.ok(['postgres','anon','authenticated','service_role'].includes(role));
+  const claimText = JSON.stringify(claims).replaceAll("'", "''");
+  return spawnSync('docker', [...docker, 'exec', '-i', cfg.containerId, 'psql', '-X', '-w', '-U', 'postgres', '-d', 'postgres', '-v', 'ON_ERROR_STOP=1', '-Atq'], {
+    env: dockerEnv, input: `\\set VERBOSITY verbose\nbegin; set local role ${role}; set local request.jwt.claims='${claimText}';\n${query}\n${commit ? 'commit' : 'rollback'};\n`, encoding: 'utf8', timeout: 15000,
+  });
+}
+async function sqlDenied(query, role, claims, label) {
+  const r = await rawSql(query, role, claims);
+  check(r.status !== 0 && /42501/.test(r.stderr), label);
+}
+// Appended to the actual HTTP helper prefix. All calls use real isolated services.
+import { spawn } from 'node:child_process';
+import { openSync, closeSync } from 'node:fs';
+const privateRoot = new URL('.', 'file://' + process.env.FITNESS_ACL_AUDIT_CONFIG).pathname;
+const control = privateRoot + 'proxy-control.json', eventFile = privateRoot + 'proxy-events.jsonl';
+const eventOffset = readFileSync(eventFile,'utf8').length;
+const phaseFile = privateRoot + 'reliability-progress.json';
+let replacementServer;
+function phase(name) { writeFileSync(phaseFile, JSON.stringify({ phase:name, checks:checks.length, time:new Date().toISOString() })); }
+const sleep = ms => new Promise(r=>setTimeout(r,ms));
+async function poll(fn,label,timeout=10000) {
+  const end=Date.now()+timeout;
+  while(Date.now()<end){if(await fn())return;await sleep(100);}
+  current=label;throw new Error(label);
+}
+function rule(id,action,path,method='POST',rpcAction) { writeFileSync(control,JSON.stringify({rules:[{id,action,path,method,rpcAction,remaining:1}],release:[]})); }
+function release(id){const x=JSON.parse(readFileSync(control,'utf8'));x.release=[id];writeFileSync(control,JSON.stringify(x));}
+function saw(id,stage) { return readFileSync(eventFile,'utf8').slice(eventOffset).split('\n').filter(Boolean).some(l=>{const e=JSON.parse(l);return e.id===id&&e.phase===stage;}); }
+async function post(actor,key,bytes=png,mime='image/png') {
+  const data=new FormData();data.set('file',new File([bytes],'synthetic.png',{type:mime}));
+  const response=await request(actor,'/api/account/media','POST',data,{'Idempotency-Key':key});
+  const body=await response.json();
+  if(body.media)ownedPaths.push(['private-media',body.media.object_path],['private-media-staging',body.media.object_path]);
+  return {status:response.status,body};
+}
+async function job(action,actor,id=null,key=null,lease=null,data={}) {
+  return db(await admin.rpc('server_media_reliability',{p_action:action,p_owner:actor?.id??null,p_media:id,p_request:key,p_lease:lease,p_data:data}),`trusted ${action}`);
+}
+async function worker(token=cfg.workerToken,actor=null) {
+  const headers={'Content-Type':'application/json'};if(token)headers.Authorization='Bearer '+token;
+  if(actor)headers.Cookie=[...actor.cookies].map(([n,v])=>n+'='+v).join('; ');
+  const response=await fetch(origin+'/api/internal/media/reconcile',{method:'POST',headers,body:'{}'});
+  return {status:response.status,body:await response.json()};
+}
+async function reserve(actor,key=randomUUID()) {
+  const bytes=await sharp(png).rotate().png().toBuffer();
+  const state=await job('reserve',actor,null,key,null,{request_sha:sha(png),expected_sha:sha(bytes),mime:'image/png',size:bytes.length});
+  ownedPaths.push(['private-media',state.media.object_path],['private-media-staging',state.media.object_path]);
+  return {...state,bytes,key};
+}
+async function stage(actor,state) { db(await admin.storage.from('private-media-staging').upload(state.media.object_path,state.bytes,{contentType:'image/png',upsert:false}),'persist real staged source'); }
+async function query(text){const r=await rawSql(text);check(r.status===0,'local readonly evidence query');return r.stdout.trim();}
+async function fixture(text){const r=await rawSql(text,'postgres',{},true);check(r.status===0,'local disposable fixture transaction');}
+async function workerProcess(){
+  return await new Promise(resolve=>{
+    const env={...process.env,MEDIA_WORKER_APP_ORIGIN:origin,FITNESS_MEDIA_WORKER_TOKEN:cfg.workerToken};
+    const child=spawn('node',['scripts/media-reconcile-worker.mjs','--once'],{cwd:cfg.app,env,stdio:['ignore','pipe','pipe']});
+    let text='';child.stdout.on('data',b=>text+=b);child.on('close',code=>resolve({code,text}));
+  });
+}
+function dockerChecked(args){
+  const actual=JSON.parse(spawnSync('docker',[...docker,'inspect',cfg.storageContainerId],{env:dockerEnv,encoding:'utf8'}).stdout)[0];
+  assert.equal(actual.Config.Labels['fitness.g53.run'],'g53-'+cfg.runId);
+  const r=spawnSync('docker',[...docker,...args],{env:dockerEnv,encoding:'utf8'});assert.equal(r.status,0);return r.stdout;
+}
+try {
+  phase('create real synthetic A/B sessions');
+  check(db(await admin.auth.admin.listUsers({perPage:2}),'fresh Auth').users.length===0,'no existing fixture users');
+  for(const email of ['user-a@example.invalid','user-b@example.invalid']){
+    const password='G53!'+randomUUID()+'Aa9';const user=db(await admin.auth.admin.createUser({email,password,email_confirm:true}),'create synthetic user').user;
+    const cookies=new Map();const client=createServerClient(cfg.apiUrl,cfg.anonKey,{cookies:{getAll:()=>[...cookies].map(([name,value])=>({name,value})),setAll:values=>values.forEach(({name,value})=>cookies.set(name,value))}});
+    const session=db(await client.auth.signInWithPassword({email,password}),'real password sign in').session;
+    const claims=JSON.parse(Buffer.from(session.access_token.split('.')[1],'base64url').toString());actors.push({id:user.id,password,client,cookies,claims});
+  }
+  const [a,b]=actors;
+  check((await worker(null,a)).status===401,'authenticated Cookie cannot call trusted recovery');
+  denied(await a.client.rpc('server_media_reliability',{p_action:'due'}),'authenticated cannot call recovery RPC');
+  denied(await a.client.schema('app_private').from('media_upload_jobs').select('*'),'client cannot read private journal');
+
+  phase('idempotency, concurrent HTTP submissions, conflicts');
+  const key=randomUUID(),first=await post(a,key),again=await post(a,key);
+  check(first.status===201&&again.status===200&&first.body.media.id===again.body.media.id,'same request sequential retry uses one business record');
+  const count=await query(`select count(*) from storage.objects where bucket_id='private-media' and name='${first.body.media.object_path}';`);
+  check(count==='1','same request creates only one final Storage object');
+  const blue=await sharp({create:{width:3,height:2,channels:3,background:'blue'}}).png().toBuffer();
+  check((await post(a,key,blue)).status===409,'same idempotency key different actual file conflicts');
+  const sameKeyB=await post(b,key);check(sameKeyB.status===201&&sameKeyB.body.media.id!==first.body.media.id,'idempotency is scoped to user A/B');
+  const concurrentKey=randomUUID();const pair=await Promise.all([post(a,concurrentKey),post(a,concurrentKey)]);
+  check(pair.every(r=>[200,201,202].includes(r.status))&&pair[0].body.media.id===pair[1].body.media.id,'concurrent same request has one canonical media ID');
+  const concurrentId=pair[0].body.media.id;check((await job('probe',a,concurrentId)).job.attempts===1,'only one worker acquired initial concurrent upload lease');
+
+  phase('real lost Storage and finalization acknowledgements');
+  rule('storage-ack','drop-after','/storage/v1/object/private-media-staging/');
+  const ackKey=randomUUID(),ack=await post(a,ackKey);
+  check(ack.status===201&&saw('storage-ack','dropped'),'actual committed Storage response dropped; readback recovers');
+  check((await post(a,ackKey)).body.media.id===ack.body.media.id,'network interruption retry does not create another object');
+  rule('finish-ack','drop-after','/rest/v1/rpc/server_media_reliability','POST','finish');
+  const finishKey=randomUUID(),finished=await post(a,finishKey);
+  check(finished.status===201&&saw('finish-ack','dropped'),'database finish committed but HTTP acknowledgement lost; result safely recovered');
+  check((await post(a,finishKey)).body.media.id===finished.body.media.id,'lost DB acknowledgement retains stable identity');
+  writeFileSync(control,'{"rules":[],"release":[]}');
+
+  phase('aged pending, two OS recovery workers, repeated recovery');
+  const pending=await reserve(a);await stage(a,pending);
+  await fixture(`update app_private.media_upload_jobs set created_at=clock_timestamp()-interval '1 minute' where media_id='${pending.media.id}';`);
+  const two=await Promise.all([workerProcess(),workerProcess()]);check(two.every(r=>r.code===0),'two real worker processes complete trusted HTTP sweeps');
+  const recovered=await job('probe',a,pending.media.id);
+  check(recovered.media.status==='ready'&&recovered.job.attempts===1,'aged pending recovered once under exclusive lease');
+  await worker();const repeated=await job('probe',a,pending.media.id);
+  check(repeated.job.attempts===1&&repeated.media.id===pending.media.id,'repeated recovery does not create records or consume attempts again');
+
+  phase('finite retries and server backoff');
+  const empty=await reserve(a);await fixture(`update app_private.media_upload_jobs set created_at=clock_timestamp()-interval '1 minute' where media_id='${empty.media.id}';`);
+  await worker();let retry=await job('probe',a,empty.media.id);
+  check(retry.job.status==='pending'&&retry.job.attempts===1,'missing source records first recoverable failure');
+  await worker();retry=await job('probe',a,empty.media.id);check(retry.job.attempts===1,'backoff blocks immediate repeated retry');
+  await sleep(2200);await worker();retry=await job('probe',a,empty.media.id);check(retry.job.attempts===2,'second due attempt recorded');
+  await sleep(4200);await worker();retry=await job('probe',a,empty.media.id);
+  check(retry.job.status==='failed'&&retry.job.attempts===3&&retry.job.last_error==='RETRY_EXHAUSTED','maximum attempts becomes audited terminal failure');
+  check(Number(await query(`select count(*) from app_private.media_job_events where media_id='${empty.media.id}' and event in ('retry','failed');`))>=3,'recovery audit retains bounded failure reasons');
+
+  phase('processing process actually killed before finish');
+  rule('process-crash','hold-before','/rest/v1/rpc/server_media_reliability','POST','finish');
+  const crashKey=randomUUID();const inflight=post(a,crashKey).catch(()=>({status:0}));
+  await poll(()=>saw('process-crash','held'),'request reaches finish hold after real Storage verification');
+  const serverPid=Number(readFileSync(privateRoot+'app.pid','utf8'));
+  check(readFileSync('/proc/'+serverPid+'/cmdline').includes(Buffer.from('next-server')),'exact owned Next process selected');
+  process.kill(serverPid,'SIGKILL');await inflight;
+  await poll(()=>saw('process-crash','cancelled'),'dead client request not forwarded after crash');
+  const crashRows=await query(`select row_to_json(x) from (select * from app_private.media_upload_jobs where user_id='${a.id}' and request_id='${crashKey}') x;`);
+  const crashed=JSON.parse(crashRows);check(crashed.status==='processing','actual killed process leaves durable processing task');
+  const log=openSync(privateRoot+'restarted-app.log','a',0o600);
+  replacementServer=spawn('python3',[cfg.sourceRoot+'/delivery/g5-3/run-local-check.py','start'],{cwd:cfg.sourceRoot,env:process.env,stdio:['ignore',log,log]});closeSync(log);
+  await poll(async()=>{try{return (await request(a,'/api/account/snapshot')).status===200;}catch{return false;}},'same source server restarts',15000);
+  writeFileSync(control,'{"rules":[],"release":[]}');
+  await worker();check((await job('probe',a,crashed.media_id)).job.attempts===1,'live lease is not stolen immediately after crash');
+  phase('waiting real 30-second lease expiry after process crash');
+  await sleep(Math.max(0,Date.parse(crashed.lease_until)-Date.now()+350));
+  await worker();const restarted=await job('probe',a,crashed.media_id);
+  check(restarted.media.status==='ready'&&restarted.job.attempts===2,'new worker recovers same media from actual committed bytes after lease expiry');
+  const stale=await admin.rpc('server_media_reliability',{p_action:'finish',p_owner:a.id,p_media:crashed.media_id,p_lease:crashed.lease_token,p_data:{}});
+  denied(stale,'old worker lease cannot finalize task');
+
+  phase('replacement, size and MIME checks, real TOCTOU');
+  const replace=await post(a,randomUUID());
+  db(await admin.storage.from('private-media').update(replace.body.media.object_path,blue,{contentType:'image/png'}),'trusted replacement writes real new bytes');
+  check((await request(a,'/api/account/media/'+replace.body.media.id)).status===409,'replacement invalidates old verification, never serves different bytes');
+  const resized=await post(a,randomUUID());const large=await sharp({create:{width:30,height:40,channels:3,background:'red'}}).png().toBuffer();
+  db(await admin.storage.from('private-media').update(resized.body.media.object_path,large,{contentType:'image/png'}),'actual replacement changes size');
+  check((await request(a,'/api/account/media/'+resized.body.media.id)).status===409,'size-changed file is not served under old verification');
+  check((await post(a,randomUUID(),png,'image/jpeg')).status===415,'API rejects actual bytes/MIME disagreement');
+  const mimeRow=await post(a,randomUUID());
+  db(await admin.storage.from('private-media').update(mimeRow.body.media.object_path,png,{contentType:'image/jpeg'}),'trusted declaration differs from real PNG');
+  check((await request(a,'/api/account/media/'+mimeRow.body.media.id)).status===409,'MIME replacement never retains ready');
+  const race=await post(a,randomUUID());
+  rule('read-race','hold-after','/storage/v1/object/','GET');
+  const racingRead=request(a,'/api/account/media/'+race.body.media.id);
+  await poll(()=>saw('read-race','held'),'actual file bytes captured before concurrent replacement');
+  db(await admin.storage.from('private-media').update(race.body.media.object_path,blue,{contentType:'image/png'}),'replace after old snapshot was fetched');release('read-race');
+  check((await racingRead).status===409,'TOCTOU detects new version/state rather than returning stale proof');
+  writeFileSync(control,'{"rules":[],"release":[]}');
+
+  phase('actual backend bit corruption and missing bytes without metadata events');
+  const corrupt=await post(a,randomUUID());
+  const corruptState=await job('probe',a,corrupt.body.media.id);
+  function binaryFault(media,version,mode){
+    const code=`const fs=require('fs'),path=require('path');const key=process.argv[1],version=process.argv[2],mode=process.argv[3];if(!/^[a-f0-9-]{36}\\/[a-f0-9-]{36}\\.png$/.test(key)||!/^[a-f0-9-]{36}$/.test(version))process.exit(2);let files=[];function walk(d){for(const e of fs.readdirSync(d,{withFileTypes:true})){const q=path.join(d,e.name);if(e.isDirectory())walk(q);else if(q.includes('/private-media/'+key)&&q.endsWith(version))files.push(q);}}walk('/mnt');if(files.length!==1)process.exit(3);const f=files[0];if(mode==='corrupt'){const bytes=fs.readFileSync(f);bytes[bytes.length-1]^=1;fs.writeFileSync(f,bytes);}else if(mode==='missing'){fs.unlinkSync(f);}else process.exit(4);process.stdout.write('ONE_SYNTHETIC_VERSION_CHANGED');`;
+    check(dockerChecked(['exec',cfg.storageContainerId,'node','-e',code,media.object_path,version,mode]).includes('ONE_SYNTHETIC_VERSION_CHANGED'),'only exact synthetic backend version altered');
+  }
+  binaryFault(corrupt.body.media,corruptState.final.version,'corrupt');
+  check((await request(a,'/api/account/media/'+corrupt.body.media.id)).status===409,'real byte corruption is rejected by SHA256 even without Storage metadata event');
+  check((await job('probe',a,corrupt.body.media.id)).media.status==='failed','SHA256 mismatch safely invalidates the old verification');
+  const lost=await post(a,randomUUID()),lostState=await job('probe',a,lost.body.media.id);
+  binaryFault(lost.body.media,lostState.final.version,'missing');await worker();
+  check((await job('probe',a,lost.body.media.id)).media.status==='unavailable','ambiguous provider 500 becomes unavailable, never falsely declared missing');
+
+  phase('temporary real Storage outage does not mark healthy ready missing');
+  const bSnapshot=await jsonRequest(b,'/api/account/snapshot','GET',undefined,200,'B profile before transient outage');
+  await jsonRequest(b,'/api/account/mutations','POST',{mutationId:randomUUID(),deviceId:randomUUID(),entity:'profile',baseVersion:bSnapshot.profile.version,patch:{avatar_path:sameKeyB.body.media.object_path}},200,'set valid verified avatar reference');
+  dockerChecked(['stop','--time','5',cfg.storageContainerId]);
+  try{
+    check((await request(b,'/api/account/media/'+sameKeyB.body.media.id)).status===503,'real backend outage is transient API 503');
+    check((await job('probe',b,sameKeyB.body.media.id)).media.status==='unavailable','transient network/server error preserves verification without declaring loss');
+    const preserved=await jsonRequest(b,'/api/account/snapshot','GET',undefined,200,'read profile during actual Storage outage');
+    check(preserved.profile.avatar_path===sameKeyB.body.media.object_path,'temporary unavailable state preserves avatar reference');
+  }finally{dockerChecked(['start',cfg.storageContainerId]);}
+  await poll(async()=>{try{return (await admin.storage.from('private-media').download(sameKeyB.body.media.object_path)).data!==null;}catch{return false;}},'Storage restarts with same real object',15000);
+  check((await request(b,'/api/account/media/'+sameKeyB.body.media.id)).status===200,'same healthy file works after actual outage');
+  const missing=await post(a,randomUUID());db(await admin.storage.from('private-media').remove([missing.body.media.object_path]),'remove actual ready object');
+  await worker();const gone=await job('probe',a,missing.body.media.id);
+  check(gone.media.status==='failed'&&(await request(a,'/api/account/media/'+missing.body.media.id)).status===409,'confirmed object loss no longer remains ready');
+  const fresh=await post(a,randomUUID());check(fresh.status===201,'user has a valid new-upload recovery path');
+
+  phase('real orphan object, bounded cleanup and A/B isolation');
+  const orphanId=randomUUID(),orphanKey=a.id+'/'+orphanId+'.png';
+  db(await admin.rpc('server_media_write',{p_owner:a.id,p_id:orphanId,p_action:'begin',p_mime:'image/png',p_size:png.length}),'register orphan fixture before actual upload');
+  db(await admin.storage.from('private-media').upload(orphanKey,png,{contentType:'image/png'}),'real Storage orphan source');ownedPaths.push(['private-media',orphanKey]);
+  await fixture(`delete from public.user_media where id='${orphanId}';`); // Only this synthetic fixture row, leaves genuine binary.
+  const bBefore=await countLocalStorageBinaryFiles(b.id);await worker();
+  check((await admin.storage.from('private-media').download(orphanKey)).data===null,'orphan Storage object actually cleaned');
+  check(await countLocalStorageBinaryFiles(b.id)===bBefore,'orphan cleanup does not touch B binaries');
+  check((await request(b,'/api/account/media/'+first.body.media.id)).status===404,'B cannot access A after reliability changes');
+  check((await a.client.storage.from('private-media-staging').upload(a.id+'/'+randomUUID()+'.png',png,{contentType:'image/png'})).error!==null,'direct client upload still cannot bypass verification');
+  check((await request(b,'/api/account/media/'+sameKeyB.body.media.id)).status===200,'B own media remains normally available');
+
+  phase('late physical upload after cancellation is fenced and compensated');
+  const late=await reserve(a),lateClaim=await job('claim',a,late.media.id,null,null,{from_request:true});
+  const seq='g53_late_seq_'+cfg.runId,fn='g53_late_fn_'+cfg.runId;
+  await fixture(`create sequence app_private.${seq}; create function app_private.${fn}() returns trigger language plpgsql security definer set search_path='' as $$begin if new.bucket_id='private-media' and new.name='${late.media.object_path}' and new.version='1' then if pg_catalog.nextval('app_private.${seq}'::regclass)=2 then perform pg_catalog.pg_sleep(5); end if; end if;return new;end;$$; revoke all on function app_private.${fn}() from public,anon,authenticated,service_role; create trigger a_g53_late before insert on storage.objects for each row execute function app_private.${fn}();`);
+  const beforeLate=await countLocalStorageBinaryFiles(a.id);
+  const writing=admin.storage.from('private-media').upload(late.media.object_path,late.bytes,{contentType:'image/png'});
+  const writingPromise=Promise.resolve(writing);
+  await poll(async()=>await countLocalStorageBinaryFiles(a.id)>beforeLate,'actual bytes exist while final metadata transaction is delayed');
+  check((await request(a,'/api/account/media/'+late.media.id,'DELETE')).status===409,'active upload cannot be reported deleted before writer settles');
+  const lateResult=await writingPromise;check(Boolean(lateResult.error),'cancelled late writer cannot commit Storage metadata');
+  await poll(async()=>await countLocalStorageBinaryFiles(a.id)===beforeLate,'provider actually compensates rejected uncommitted binary');
+  await job('retry',a,late.media.id,null,lateClaim.job.lease_token,{code:'STORAGE_UNAVAILABLE'});
+  await jsonRequest(a,'/api/account/media/'+late.media.id,'DELETE',undefined,200,'safe deletion retry succeeds after the known writer ended');
+  await fixture(`drop trigger a_g53_late on storage.objects;drop function app_private.${fn}();drop sequence app_private.${seq};`);
+
+  phase('actual deletion with audit/journal cascade and reusable failed cleanup');
+  await jsonRequest(a,'/api/account/delete','POST',{confirmation:'DELETE',password:a.password},200,'A deletion cancels jobs, cleans binaries and removes Auth');
+  check(await countLocalStorageBinaryFiles(a.id)===0,'A physical registered binaries gone');
+  for(const table of ['media_upload_jobs','media_job_events'])check(await query(`select count(*) from app_private.${table} where user_id='${a.id}';`)==='0',`${table} cascades with A Auth`);
+  check((await request(b,'/api/account/media/'+sameKeyB.body.media.id)).status===200,'B unaffected by A complete deletion');
+  await jsonRequest(b,'/api/account/delete','POST',{confirmation:'DELETE',password:b.password},200,'B normal deletion retained');
+  const mail=await fetch('http://127.0.0.1:58324/api/v1/messages').then(r=>r.json());check(mail.total===0,'no emails sent');
+  phase('complete');
+  writeFileSync(new URL('./g53-reliability-results.json',import.meta.url),JSON.stringify({status:'PASS',assertions:checks.length,checks,candidateSha256:cfg.candidateSha256,realNetworkFaults:true,realNextProcessKilled:true,productionRequests:false},null,2));
+  console.log(JSON.stringify({status:'PASS',assertions:checks.length}));
+}catch{
+  writeFileSync(new URL('./g53-reliability-results.json',import.meta.url),JSON.stringify({status:'FAIL',current,assertions:checks.length,checks},null,2));
+  console.error(JSON.stringify({status:'FAIL',current,assertions:checks.length}));process.exitCode=1;
+}finally{
+  writeFileSync(control,'{"rules":[],"release":[]}');
+  for(const actor of actors){
+    const exists=await admin.auth.admin.getUserById(actor.id);if(!exists.data.user)continue;
+    await actor.client.rpc('request_account_deletion');await admin.rpc('server_media_reliability',{p_action:'cancel_account',p_owner:actor.id});
+    for(const bucket of ['private-media','private-media-staging']){
+      for(let page=0;page<10;page++){const list=await admin.storage.from(bucket).list(actor.id,{limit:100});if(!list.data?.length)break;await admin.storage.from(bucket).remove(list.data.filter(x=>x.id).map(x=>actor.id+'/'+x.name));}
+    }
+    await admin.auth.admin.deleteUser(actor.id);
+  }
+  if(replacementServer)replacementServer.kill('SIGTERM');
+}
